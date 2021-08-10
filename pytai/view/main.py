@@ -57,7 +57,7 @@ class View(tk.Tk):
         self.tree_view = TreeAreaView(self.pw, self.address_bar, self.callbacks)
         self.hex_view = HexAreaView(self.pw, self.callbacks)
 
-        self.pw.add(self.tree_view.widget, width = 700)
+        self.pw.add(self.tree_view.widget, width = 400)
         self.pw.add(self.hex_view.widget)
         self.pw.pack(fill = tk.BOTH, expand = True) 
         self.pw.configure(sashrelief = tk.RAISED)

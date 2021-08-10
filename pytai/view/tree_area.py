@@ -66,15 +66,13 @@ class TreeAreaView():
 
         self.wrapper = ttk.Frame(parent)
 
-        ColumnAttr = namedtuple("ColumnAttr", "name width")
-
-        columns = (ColumnAttr('Name', 400), ColumnAttr('Extra Info', 300))
+        columns = ['Name', 'Extra Info']
 
         self.tree = ttk.Treeview(self.wrapper, selectmode = 'browse', columns = columns)
 
         for i, column in enumerate(columns):
-            self.tree.heading(f"#{i}", text = column.name, anchor = tk.W)
-            self.tree.column(f"#{i}", minwidth = 100, stretch = tk.NO, width = column.width, anchor = tk.W)
+            self.tree.heading(f"#{i}", text = column, anchor = tk.W)
+            self.tree.column(f"#{i}", minwidth = 100, stretch = tk.NO, anchor = tk.W)
 
         self.tree.pack(side = tk.LEFT, fill = tk.BOTH, expand=True)
         self.tree.bind('<<TreeviewSelect>>', self._item_selected)
