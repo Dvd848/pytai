@@ -109,11 +109,15 @@ class KaitaiParser(Parser):
 
         return parsed_file
 
-    def get_children(self, parent: "KaitaiStruct") -> Tuple[str, Any]:
+    def get_children(self, parent: "KaitaiStruct") -> Tuple[str, Any, int, int]:
         if hasattr(parent, "SEQ_FIELDS"):
             for child in parent.SEQ_FIELDS:
                 debug_dict = getattr(parent, "_debug")
-                yield (child, getattr(parent, child), debug_dict[child]['start'], debug_dict[child]['end'] )
+                value = getattr(parent, child)
+                if isinstance(value, list):
+                    value = ((v, debug_dict[child]['arr'][i]['start'], debug_dict[child]['arr'][i]['end']) for i, v in enumerate(value))
+                
+                yield (child, value, debug_dict[child]['start'], debug_dict[child]['end'] )
 
 
 class Model(object):

@@ -2,6 +2,7 @@ from pathlib import Path
 from collections import namedtuple
 from pytai.view.events import Events
 from typing import Union
+import inspect
 
 from . import view as v
 from . import model as m
@@ -67,9 +68,10 @@ class Application():
                                              parser.get_item_description(node_attr.value), 
                                              node_attr.start_offset, node_attr.end_offset)
  
-            if isinstance(node_attr.value, list):
-                for i, child in enumerate(node_attr.value):
-                    queue.append( NodeAttributes(handle, f"[{i}]", child, None, None) )
+            # TODO: Find a better way
+            if inspect.isgenerator(node_attr.value):
+                for i, (child, start_offset, end_offset) in enumerate(node_attr.value):
+                    queue.append( NodeAttributes(handle, f"[{i}]", child, start_offset, end_offset) )
             else:
                 for name, value, start_offset, end_offset in parser.get_children(node_attr.value):
                     queue.append( NodeAttributes(handle, name, value, start_offset, end_offset) )
