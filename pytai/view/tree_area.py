@@ -94,3 +94,18 @@ class TreeAreaView():
         """Handle an event where the user selects a key."""
         selected_item = self.selected_item
         
+    def add_item(self, parent_handle: str, name: str) -> str:
+        """Add an item to the structure tree.
+        
+        Args:
+            parent_handle:
+                Handle to the parent of the current item, based on a previous
+                return value of add_item() (or '' for the root)
+            name:
+                Name of the current item.
+        
+        Returns:
+            Handle to this item, to be used for child items.
+        """
+        handle = self.tree.insert(parent_handle, 'end', text = name, open = True)
+        return handle

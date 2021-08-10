@@ -98,3 +98,17 @@ class View(tk.Tk):
         """
         messagebox.showerror("Error", msg)
 
+    def add_tree_item(self, parent_handle: str, name: str) -> str:
+        """Add an item to the structure tree.
+        
+        Args:
+            parent_handle:
+                Handle to the parent of the current item, based on a previous
+                return value of add_item() (or '' for the root)
+            name:
+                Name of the current item.
+        
+        Returns:
+            Handle to this item, to be used for child items.
+        """
+        return self.tree_view.add_item(parent_handle, name)
