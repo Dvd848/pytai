@@ -25,7 +25,7 @@ class Parser(object):
         """
         raise NotImplementedError("Inheriting classes must implement this method")
 
-    def get_children(self, parent: Any) -> Tuple[str, Any]:
+    def get_children(self, parent: Any) -> Tuple[str, Any, int, int]:
         """An iterator over the name and value of the children of the given parent.
         
         Args:
@@ -33,8 +33,9 @@ class Parser(object):
                 An object as returned by parse() or get_children()
 
         Returns:
-            A generator serving tuples containing the name of the child (str) and 
-            the value of the child (arbitrary object).
+            A generator serving tuples containing the name of the child (str),  
+            the value of the child (arbitrary object) and the start and end offsets of
+            the structure in the file.
             The value can either be a parser-specific object representing a structure
             or an integral type such as a list, string, integer, enum etc.
         """
@@ -111,7 +112,8 @@ class KaitaiParser(Parser):
     def get_children(self, parent: "KaitaiStruct") -> Tuple[str, Any]:
         if hasattr(parent, "SEQ_FIELDS"):
             for child in parent.SEQ_FIELDS:
-                yield (child, getattr(parent, child) )
+                debug_dict = getattr(parent, "_debug")
+                yield (child, getattr(parent, child), debug_dict[child]['start'], debug_dict[child]['end'] )
 
 
 class Model(object):

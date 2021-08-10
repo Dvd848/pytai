@@ -2,11 +2,13 @@
 import tkinter as tk
 from tkinter import ttk
 
-from typing import Dict, Callable
-from collections import namedtuple
+from typing import Dict, Callable, Tuple
 
 from .bars import *
 from .events import *
+
+TAG_OFFSET_PREFIX = "_offset_"
+TAG_OFFSET_SEPARATOR = "-"
 
 class TreeItem():
     """Wrapper for tree GUI item."""
@@ -42,9 +44,30 @@ class TreeItem():
 
         return ".".join(reversed(path)).replace(".[", "[")
 
+    @property
+    def range(self) -> Tuple[int, int]:
+        """Return the range of the structure as offsets in the file.
+        
+        Offsets are returned as tuple(start_offset, end_offset).
+
+        If no range was entered for this structure, returns (None, None).
+        """
+        range_tag = None
+        for tag in self._item["tags"]:
+            if tag.startswith(TAG_OFFSET_PREFIX):
+                range_tag = tag.replace(TAG_OFFSET_PREFIX, "")
+                break
+        
+        if range_tag == None:
+            return (None, None)
+
+        return tuple(map(int, range_tag.split(TAG_OFFSET_SEPARATOR)))
+
 
 class TreeAreaView():
     """Implements the view for the key area."""
+
+    
     
     def __init__(self, parent, address_bar: AddressBar, callbacks: Dict[Events, Callable[..., None]]):
         """Instantiate the class.
@@ -102,10 +125,11 @@ class TreeAreaView():
     def _item_selected(self, event) -> None:
         """Handle an event where the user selects a key."""
         selected_item = self.selected_item
-        self.callbacks[Events.STRUCTURE_SELECTED](selected_item.path)
+
+        self.callbacks[Events.STRUCTURE_SELECTED](selected_item.path, *selected_item.range)
         self.address_bar.set_address(selected_item.path)
         
-    def add_item(self, parent_handle: str, name: str, extra_info: str) -> str:
+    def add_item(self, parent_handle: str, name: str, extra_info: str, start_offset: int, end_offset: int) -> str:
         """Add an item to the structure tree.
         
         Args:
@@ -116,9 +140,18 @@ class TreeAreaView():
                 Name of the current item.
             extra_info:
                 Extra information for the entry.
+            start_offset:
+                Start offset of structure in file.
+            end_offset:
+                End offset of structure in file.
         
         Returns:
             Handle to this item, to be used for child items.
         """
-        handle = self.tree.insert(parent_handle, 'end', text = name, open = True, values = (extra_info,))
+        if start_offset is not None and end_offset is not None:
+            tags = (f"{TAG_OFFSET_PREFIX}{start_offset}{TAG_OFFSET_SEPARATOR}{end_offset}",)
+        else:
+            tags = tuple()
+
+        handle = self.tree.insert(parent_handle, 'end', text = name, open = True, values = (extra_info,), tags = tags)
         return handle

@@ -8,6 +8,7 @@ from .events import *
 from ..utils import *
 
 TAG_JUSTIFY_RIGHT = 'justify_right'
+TAG_HIGHLIGHT = 'highlight'
 
 class HexViewWidget(tk.Frame):
 
@@ -23,8 +24,12 @@ class HexViewWidget(tk.Frame):
         self.textbox_hex = tk.Text(self, width = 47, padx = 10)
         self.textbox_hex.pack(side=tk.LEFT, fill=tk.Y, expand=False)
 
+        self.textbox_hex.tag_config(TAG_HIGHLIGHT, background='yellow')
+
         self.textbox_ascii = tk.Text(self, width = 17, padx = 10)
         self.textbox_ascii.pack(side=tk.LEFT, fill=tk.Y, expand=False)
+
+        self.textbox_ascii.tag_config(TAG_HIGHLIGHT, background='yellow')
 
         self.textboxes = [self.textbox_address, self.textbox_hex, self.textbox_ascii]
 
@@ -124,8 +129,38 @@ class HexAreaView():
             self.hex_widget.textbox_ascii.insert(tk.END, f"{ascii_format}\n")
 
         self.hex_widget.textbox_address.tag_add(TAG_JUSTIFY_RIGHT, 1.0, tk.END)
-        
+
         self.hex_widget.textbox_address.config(state = tk.DISABLED)
         self.hex_widget.textbox_hex.config(state = tk.DISABLED)
         self.hex_widget.textbox_ascii.config(state = tk.DISABLED)
 
+    def mark_range(self, start_offset: int, end_offset: int) -> None:
+        """Highlight a range between the given offsets.
+        
+        Args:
+            start_offset:
+                Offset to highlight from (absolute index of byte in file)
+            end_offset:
+                Offset to highlight to (absolute index of byte in file)
+        """
+        self.hex_widget.textbox_hex.tag_remove(TAG_HIGHLIGHT, "1.0", tk.END)
+        self.hex_widget.textbox_ascii.tag_remove(TAG_HIGHLIGHT, "1.0", tk.END)
+
+        if start_offset is not None and end_offset is not None:
+
+            def offset_to_line_column(chars_per_byte: int, offset: int, adjust_column: int = 0):
+                line = (offset // self.BYTES_PER_ROW) + 1 # Line is 1-based
+                column = ((offset % self.BYTES_PER_ROW) * chars_per_byte)
+                return f"{line}.{column + adjust_column}"
+
+            # Mark in hex view:
+            chars_per_byte = 3 # 2 characters for hex representation + space
+            self.hex_widget.textbox_hex.tag_add(TAG_HIGHLIGHT, 
+                                                offset_to_line_column(chars_per_byte, start_offset), 
+                                                offset_to_line_column(chars_per_byte, end_offset, -1)) # Remove trailing space
+
+            # Mark in ASCII view:
+            chars_per_byte = 1
+            self.hex_widget.textbox_ascii.tag_add(TAG_HIGHLIGHT, 
+                                                offset_to_line_column(chars_per_byte, start_offset), 
+                                                offset_to_line_column(chars_per_byte, end_offset))

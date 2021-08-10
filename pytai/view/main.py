@@ -98,7 +98,9 @@ class View(tk.Tk):
         """
         messagebox.showerror("Error", msg)
 
-    def add_tree_item(self, parent_handle: str, name: str, extra_info: str) -> str:
+    # TODO: These are just wrapper functions, redundant?
+
+    def add_tree_item(self, parent_handle: str, name: str, extra_info: str, start_offset: int, end_offset: int) -> str:
         """Add an item to the structure tree.
         
         Args:
@@ -109,11 +111,15 @@ class View(tk.Tk):
                 Name of the current item.
             extra_info:
                 Extra information for the entry.
-        
+            start_offset:
+                Start offset of structure in file.
+            end_offset:
+                End offset of structure in file.
+
         Returns:
             Handle to this item, to be used for child items.
         """
-        return self.tree_view.add_item(parent_handle, name, extra_info)
+        return self.tree_view.add_item(parent_handle, name, extra_info, start_offset, end_offset)
 
     def populate_hex_view(self, byte_arr: bytes) -> None:
         """Populate the hex view with the content of the file.
@@ -123,3 +129,16 @@ class View(tk.Tk):
                 The contents of the file, as a binary array.
         """
         self.hex_view.populate_hex_view(byte_arr)
+
+    def mark_range(self, start_offset: int, end_offset: int) -> None:
+        """Highlight a range between the given offsets.
+        
+        Args:
+            start_offset:
+                Offset to highlight from (absolute index of byte in file)
+            end_offset:
+                Offset to highlight to (absolute index of byte in file)
+        """
+        if start_offset is not None and end_offset is not None:
+            self.set_status(f"Range: {hex(start_offset)}-{hex(end_offset - 1)}")
+        self.hex_view.mark_range(start_offset, end_offset)
