@@ -134,14 +134,16 @@ class HexAreaView():
         self.hex_widget.textbox_hex.config(state = tk.DISABLED)
         self.hex_widget.textbox_ascii.config(state = tk.DISABLED)
 
-    def mark_range(self, start_offset: int, end_offset: int) -> None:
-        """Highlight a range between the given offsets.
+    def mark_range(self, start_offset: int, end_offset: int, jump_to_selection: bool = True) -> None:
+        """Highlight a range between the given offsets, and optionally jump to it.
         
         Args:
             start_offset:
                 Offset to highlight from (absolute index of byte in file)
             end_offset:
                 Offset to highlight to (absolute index of byte in file)
+            jump_to_selection:
+                True to jump to the highlighted selection, False otherwise
         """
         self.hex_widget.textbox_hex.tag_remove(TAG_HIGHLIGHT, "1.0", tk.END)
         self.hex_widget.textbox_ascii.tag_remove(TAG_HIGHLIGHT, "1.0", tk.END)
@@ -153,11 +155,15 @@ class HexAreaView():
                 column = ((offset % self.BYTES_PER_ROW) * chars_per_byte)
                 return f"{line}.{column + adjust_column}"
 
+
             # Mark in hex view:
             chars_per_byte = 3 # 2 characters for hex representation + space
             self.hex_widget.textbox_hex.tag_add(TAG_HIGHLIGHT, 
                                                 offset_to_line_column(chars_per_byte, start_offset), 
                                                 offset_to_line_column(chars_per_byte, end_offset, -1)) # Remove trailing space
+
+            if jump_to_selection:
+                self.hex_widget.textbox_hex.see(offset_to_line_column(chars_per_byte, start_offset))
 
             # Mark in ASCII view:
             chars_per_byte = 1
