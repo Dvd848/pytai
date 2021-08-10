@@ -1,3 +1,4 @@
+from enum import Enum
 import sys
 import importlib
 import inspect
@@ -39,7 +40,17 @@ class Parser(object):
         """
         raise NotImplementedError("Inheriting classes must implement this method")
 
-    
+    def get_item_description(self, item: Any) -> str:
+        if isinstance(item, (bytes, bytearray)):
+            return f"Byte Array (Length: {len(item)})"
+        elif isinstance(item, str):
+            return item
+        elif isinstance(item, int):
+            return f"{item} ({hex(item)})"
+        elif isinstance(item, Enum):
+            return item.name
+        else:
+            return ""
 
 class KaitaiParser(Parser):
 

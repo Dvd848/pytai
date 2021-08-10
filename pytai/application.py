@@ -50,7 +50,7 @@ class Application():
  
         while queue:
             node_attr = queue.pop(0)
-            handle = self.view.add_tree_item(node_attr.parent, node_attr.name)
+            handle = self.view.add_tree_item(node_attr.parent, node_attr.name, parser.get_item_description(node_attr.value))
  
             if isinstance(node_attr.value, list):
                 for i, child in enumerate(node_attr.value):

@@ -57,7 +57,7 @@ class View(tk.Tk):
         self.tree_view = TreeAreaView(self.pw, self.address_bar, self.callbacks)
         self.hex_view = HexAreaView(self.pw, self.callbacks)
 
-        self.pw.add(self.tree_view.widget, width = 400)
+        self.pw.add(self.tree_view.widget, width = 700)
         self.pw.add(self.hex_view.widget)
         self.pw.pack(fill = tk.BOTH, expand = True) 
         self.pw.configure(sashrelief = tk.RAISED)
@@ -98,7 +98,7 @@ class View(tk.Tk):
         """
         messagebox.showerror("Error", msg)
 
-    def add_tree_item(self, parent_handle: str, name: str) -> str:
+    def add_tree_item(self, parent_handle: str, name: str, extra_info: str) -> str:
         """Add an item to the structure tree.
         
         Args:
@@ -107,8 +107,10 @@ class View(tk.Tk):
                 return value of add_item() (or '' for the root)
             name:
                 Name of the current item.
+            extra_info:
+                Extra information for the entry.
         
         Returns:
             Handle to this item, to be used for child items.
         """
-        return self.tree_view.add_item(parent_handle, name)
+        return self.tree_view.add_item(parent_handle, name, extra_info)

@@ -3,6 +3,7 @@ import tkinter as tk
 from tkinter import ttk
 
 from typing import Dict, Callable
+from collections import namedtuple
 
 from .bars import *
 from .events import *
@@ -65,7 +66,16 @@ class TreeAreaView():
 
         self.wrapper = ttk.Frame(parent)
 
-        self.tree = ttk.Treeview(self.wrapper, show = 'tree', selectmode = 'browse')
+        ColumnAttr = namedtuple("ColumnAttr", "name width")
+
+        columns = (ColumnAttr('Name', 400), ColumnAttr('Extra Info', 300))
+
+        self.tree = ttk.Treeview(self.wrapper, selectmode = 'browse', columns = columns)
+
+        for i, column in enumerate(columns):
+            self.tree.heading(f"#{i}", text = column.name, anchor = tk.W)
+            self.tree.column(f"#{i}", minwidth = 100, stretch = tk.NO, width = column.width, anchor = tk.W)
+
         self.tree.pack(side = tk.LEFT, fill = tk.BOTH, expand=True)
         self.tree.bind('<<TreeviewSelect>>', self._item_selected)
         #self.tree.tag_configure(TAG, foreground = 'gray')
@@ -97,7 +107,7 @@ class TreeAreaView():
         self.callbacks[Events.STRUCTURE_SELECTED](selected_item.path)
         self.address_bar.set_address(selected_item.path)
         
-    def add_item(self, parent_handle: str, name: str) -> str:
+    def add_item(self, parent_handle: str, name: str, extra_info: str) -> str:
         """Add an item to the structure tree.
         
         Args:
@@ -106,9 +116,11 @@ class TreeAreaView():
                 return value of add_item() (or '' for the root)
             name:
                 Name of the current item.
+            extra_info:
+                Extra information for the entry.
         
         Returns:
             Handle to this item, to be used for child items.
         """
-        handle = self.tree.insert(parent_handle, 'end', text = name, open = True)
+        handle = self.tree.insert(parent_handle, 'end', text = name, open = True, values = (extra_info,))
         return handle
