@@ -140,5 +140,6 @@ class View(tk.Tk):
                 Offset to highlight to (absolute index of byte in file)
         """
         if start_offset is not None and end_offset is not None:
-            self.set_status(f"Range: {hex(start_offset)}-{hex(end_offset - 1)}")
+            length = end_offset - start_offset
+            self.set_status(f"Range: {hex(start_offset)}-{hex(end_offset - 1)} | Length: {length} ({hex(length)}) bytes")
         self.hex_view.mark_range(start_offset, end_offset)
