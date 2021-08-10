@@ -6,6 +6,8 @@ from typing import Union
 from . import view as v
 from . import model as m
 
+from . import utils
+
 class Application():
     def __init__(self, *args, **kwargs):
 
@@ -20,13 +22,24 @@ class Application():
         self.model = m.Model()
 
         # TODO: Currently hardcoded
-        self.populate_structure_tree(Path(__file__).resolve().parent / "tmp" / "test.png")
+        self.populate_view(Path(__file__).resolve().parent / "tmp" / "test.png")
 
     def run(self) -> None:
         """Run the application."""
         self.view.mainloop()
 
-    def populate_structure_tree(self, path_file: Union[str, Path]) -> None:
+    def populate_view(self, path_file: Union[str, Path]) -> None:
+        """Populates the View for the given file.
+        
+        Args:
+            path_file:
+                Path to the file to be parsed.
+        """
+        self._populate_structure_tree(path_file)
+        with utils.memory_map(path_file) as f:
+            self.view.populate_hex_view(f)
+
+    def _populate_structure_tree(self, path_file: Union[str, Path]) -> None:
         """Populates the View's structure tree for the given file.
         
         Args:
@@ -66,7 +79,7 @@ class Application():
         """Callback for an event where the user refreshes the view."""
         self.view.reset()
         self.view.set_status("Refreshing...")
-        self.populate_structure_tree(self.current_file_path)
+        self.populate_view(self.current_file_path)
 
     def cb_structure_selected(self, path: str) -> None:
         """Callback for an event where the user selects a structure from the tree."""

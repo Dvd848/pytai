@@ -57,8 +57,8 @@ class View(tk.Tk):
         self.tree_view = TreeAreaView(self.pw, self.address_bar, self.callbacks)
         self.hex_view = HexAreaView(self.pw, self.callbacks)
 
-        self.pw.add(self.tree_view.widget, width = 400)
-        self.pw.add(self.hex_view.widget)
+        self.pw.add(self.tree_view.widget, minsize = 200)
+        self.pw.add(self.hex_view.widget, minsize = 740)
         self.pw.pack(fill = tk.BOTH, expand = True) 
         self.pw.configure(sashrelief = tk.RAISED)
 
@@ -114,3 +114,12 @@ class View(tk.Tk):
             Handle to this item, to be used for child items.
         """
         return self.tree_view.add_item(parent_handle, name, extra_info)
+
+    def populate_hex_view(self, byte_arr: bytes) -> None:
+        """Populate the hex view with the content of the file.
+
+        Args:
+            byte_arr:
+                The contents of the file, as a binary array.
+        """
+        self.hex_view.populate_hex_view(byte_arr)
