@@ -11,4 +11,7 @@ class Events(enum.Enum):
     
     # Application needs to display error
     SHOW_ERROR         = enum.auto()
+
+    # User selects item from structure tree
+    STRUCTURE_SELECTED = enum.auto()
     

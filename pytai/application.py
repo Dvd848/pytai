@@ -1,5 +1,6 @@
 from pathlib import Path
 from collections import namedtuple
+from pytai.view.events import Events
 from typing import Union
 
 from . import view as v
@@ -12,6 +13,7 @@ class Application():
         #  of events from the view
         callbacks = {
             v.Events.REFRESH:             self.cb_refresh,
+            v.Events.STRUCTURE_SELECTED:  self.cb_structure_selected,
         }
 
         self.view = v.View(title = "PyTai", callbacks = callbacks)
@@ -57,8 +59,16 @@ class Application():
                 for name, value in parser.get_children(node_attr.value):
                     queue.append( NodeAttributes(handle, name, value) )
 
+        self.view.set_status("Loaded")
+
 
     def cb_refresh(self) -> None:
         """Callback for an event where the user refreshes the view."""
+        self.view.reset()
         self.view.set_status("Refreshing...")
         self.populate_structure_tree(self.current_file_path)
+
+    def cb_structure_selected(self, path: str) -> None:
+        """Callback for an event where the user selects a structure from the tree."""
+        # TODO: 
+        pass

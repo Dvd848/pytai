@@ -39,7 +39,7 @@ class TreeItem():
             path.append(tree_item["text"])
             current_item = parent
 
-        return ".".join(reversed(path))
+        return ".".join(reversed(path)).replace(".[", "[")
 
 
 class TreeAreaView():
@@ -79,6 +79,7 @@ class TreeAreaView():
     def reset(self) -> None:
         """Reset the key area to its initial state."""
         self.tree.delete(*self.tree.get_children())
+        self.address_bar.set_address('')
 
     @property
     def widget(self) -> ttk.Treeview:
@@ -93,6 +94,8 @@ class TreeAreaView():
     def _item_selected(self, event) -> None:
         """Handle an event where the user selects a key."""
         selected_item = self.selected_item
+        self.callbacks[Events.STRUCTURE_SELECTED](selected_item.path)
+        self.address_bar.set_address(selected_item.path)
         
     def add_item(self, parent_handle: str, name: str) -> str:
         """Add an item to the structure tree.
