@@ -1,0 +1,1 @@
+Files generated from the matching `*.ksy` files, as retrieved from the [kaitai_struct_formats](https://github.com/kaitai-io/kaitai_struct_formats) repository.

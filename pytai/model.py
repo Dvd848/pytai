@@ -6,7 +6,7 @@ import inspect
 from pathlib import Path
 from typing import Union, Any, Tuple
 
-#from .common import *
+from .common import *
 
 class Parser(object):
     def __init__(self) -> None:
@@ -55,55 +55,55 @@ class Parser(object):
 
 class KaitaiParser(Parser):
 
-    def __init__(self, path_ksy: Union[str, Path], disable_cache: bool = False) -> None:
+    def __init__(self, format: str) -> None:
         """Create a Kaitai Parser.
         
         Args:
-            disable_cache:
-                If True, will always try to generate the parser from scratch using KSC
+            format:
+                Format of the file.
+                Must match a *.py file under "SUBFOLDER_FORMATS/SUBFOLDER_FORMATS".
         """
         super().__init__()
 
-        self.disable_cache = disable_cache
+        try:
+            import kaitaistruct
+        except ImportError:
+            sys.path.append(str(KAITAI_DIR.resolve()))
+            #import kaitaistruct
+            self.kaitaistruct = importlib.import_module("kaitaistruct")
+            
+        self._load_parser(format)
 
-        # Create autogen folder and add it to path
-        script_dir = Path(__file__).resolve().parent
-        autogen_dir = script_dir / "tmp" / "autogen"
-        autogen_dir.mkdir(parents = True, exist_ok = True)
-        sys.path.append(str(autogen_dir.resolve()))
-
-        importlib.import_module('kaitaistruct')
-
-        self._load_parser(path_ksy)
-
-    def _load_parser(self, path_ksy: Union[str, Path]) -> None:
-        """Load and return a Kaitai parser matching the given Kaitai Struct language definition (*.ksy).
-
-        Will first try to load a previously-generated parser (unless disable_cache was defined during init).
-        Otherwise will try to compile the parser using KSC and the given *.ksy file.
+    def _load_parser(self, format: str) -> None:
+        """Load and return a Kaitai parser matching the given Kaitai Struct language definition.
         
         Args:
-            path_ksy: 
-                Path to Kaitai Struct language (*.ksy) file.
+            format:
+                Format of the file.
+                Must match a *.py file under "SUBFOLDER_FORMATS/SUBFOLDER_FORMATS".
         """
         try:
-            if self.disable_cache:
-                raise RuntimeError("Cache disabled")
-
-            parser_module = importlib.import_module(Path(path_ksy).stem)
+            #parser_module = importlib.import_module(f'..{SUBFOLDER_KAITAI}.{SUBFOLDER_FORMATS}.{format}', __name__)
+            format_dir = str(KAITAI_FORMAT_DIR.resolve())
+            if format_dir not in sys.path:
+                sys.path.append(format_dir)
+            parser_module = importlib.import_module(format)
             module_classes = [m[0] for m in inspect.getmembers(parser_module, inspect.isclass) if m[1].__module__ == parser_module.__name__]
             if len(module_classes) != 1:
                 raise RuntimeError("Can't determine class name using introspection")
             main_class_name: str = module_classes[0]
         except (ImportError, RuntimeError):
-            raise # TODO: Use KSC
+            raise # TODO
 
         self.parser = getattr(parser_module, main_class_name)
+        self.format = format
 
     def parse(self, path_file: Union[str, Path]) -> "KaitaiStruct":
         try:
             parsed_file = self.parser.from_file(path_file)
             parsed_file._read()
+        except self.kaitaistruct.ValidationNotEqualError as e:
+            raise PyTaiException(f"Can't parse file as '{self.format}': {str(e)}") from e
         except Exception:
             raise
 
@@ -129,20 +129,21 @@ class Model(object):
         """Return a parser to parse the required files.
 
         Keyword Args:
-            path_ksy:
-                Path to Kaitai Structure definition (*.ksy file).
+            kaitai_format:
+                Path to a compiled Kaitai Structure definition 
+                (*.py generated from *.ksy file).
                 Given this parameter, the returned parser will be 
                 a KaitaiParser instance.
 
         Returns:
             The appropriate parser based on the keyword args.       
         """
-        if "path_ksy" in kwargs:
+        if "kaitai_format" in kwargs:
             try:
-                parser = self.parsers[kwargs["path_ksy"]]
+                parser = self.parsers[kwargs["kaitai_format"]]
             except KeyError:
-                parser = KaitaiParser(kwargs["path_ksy"])
-                self.parsers[kwargs["path_ksy"]] = parser
+                parser = KaitaiParser(kwargs["kaitai_format"])
+                self.parsers[kwargs["kaitai_format"]] = parser
             
             return parser
         
