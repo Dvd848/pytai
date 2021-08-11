@@ -9,6 +9,7 @@ from .events import *
 
 TAG_OFFSET_PREFIX = "_offset_"
 TAG_OFFSET_SEPARATOR = "-"
+TAG_METAVAR = "metavar"
 
 class TreeItem():
     """Wrapper for tree GUI item."""
@@ -32,7 +33,11 @@ class TreeItem():
 
     @property
     def path(self) -> str:
-        """Full path up to this item."""
+        """Full path up to this item. For metavars, path is returned as empty string."""
+
+        if TAG_METAVAR in self._item["tags"]:
+            return ""
+
         path = []
         path.append(self._item["text"])
         current_item: str = self._id
@@ -67,8 +72,6 @@ class TreeItem():
 class TreeAreaView():
     """Implements the view for the key area."""
 
-    
-    
     def __init__(self, parent, address_bar: AddressBar, callbacks: Dict[Events, Callable[..., None]]):
         """Instantiate the class.
         
@@ -99,12 +102,14 @@ class TreeAreaView():
 
         self.tree.pack(side = tk.LEFT, fill = tk.BOTH, expand=True)
         self.tree.bind('<<TreeviewSelect>>', self._item_selected)
-        #self.tree.tag_configure(TAG, foreground = 'gray')
+        self.tree.tag_configure(TAG_METAVAR, foreground = 'gray')
 
         self.vsb = ttk.Scrollbar(self.wrapper, orient = tk.VERTICAL, command = self.tree.yview)
         self.vsb.pack(side = tk.RIGHT, fill = tk.Y)
 
         self.tree.configure(yscrollcommand = self.vsb.set)
+
+        self.fix_tkinter_color_tags()
 
 
     def reset(self) -> None:
@@ -129,7 +134,7 @@ class TreeAreaView():
         self.callbacks[Events.STRUCTURE_SELECTED](selected_item.path, *selected_item.range)
         self.address_bar.set_address(selected_item.path)
         
-    def add_item(self, parent_handle: str, name: str, extra_info: str, start_offset: int, end_offset: int) -> str:
+    def add_item(self, parent_handle: str, name: str, extra_info: str, start_offset: int, end_offset: int, is_metavar: bool) -> str:
         """Add an item to the structure tree.
         
         Args:
@@ -144,14 +149,37 @@ class TreeAreaView():
                 Start offset of structure in file.
             end_offset:
                 End offset of structure in file.
+            is_metavar:
+                True if this is a metavar (user friendly representation of a value located elsewhere).
         
         Returns:
             Handle to this item, to be used for child items.
         """
-        if start_offset is not None and end_offset is not None:
-            tags = (f"{TAG_OFFSET_PREFIX}{start_offset}{TAG_OFFSET_SEPARATOR}{end_offset}",)
-        else:
-            tags = tuple()
 
-        handle = self.tree.insert(parent_handle, 'end', text = name, open = True, values = (extra_info,), tags = tags)
+        tags = []
+        if start_offset is not None and end_offset is not None:
+            tags.append(f"{TAG_OFFSET_PREFIX}{start_offset}{TAG_OFFSET_SEPARATOR}{end_offset}")
+        
+        if is_metavar:
+            tags.append(TAG_METAVAR)
+            name = f"[{name} (Inferred)]"
+
+        handle = self.tree.insert(parent_handle, 'end', text = name, open = True, values = (extra_info,), tags = tuple(tags))
         return handle
+
+    def fix_tkinter_color_tags(self) -> None:
+        """A W/A to allow tkinter to display a TreeView's foreground/background."""
+        def fixed_map(option):
+            # Fix for setting text colour for Tkinter 8.6.9
+            # From: https://core.tcl.tk/tk/info/509cafafae
+            #
+            # Returns the style map for 'option' with any styles starting with
+            # ('!disabled', '!selected', ...) filtered out.
+
+            # style.map() returns an empty list for missing options, so this
+            # should be future-safe.
+            return [elm for elm in style.map('Treeview', query_opt=option) if
+            elm[:2] != ('!disabled', '!selected')]
+
+        style = ttk.Style()
+        style.map('Treeview', foreground = fixed_map('foreground'), background = fixed_map('background'))

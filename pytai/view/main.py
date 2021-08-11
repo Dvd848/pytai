@@ -100,7 +100,7 @@ class View(tk.Tk):
 
     # TODO: These are just wrapper functions, redundant?
 
-    def add_tree_item(self, parent_handle: str, name: str, extra_info: str, start_offset: int, end_offset: int) -> str:
+    def add_tree_item(self, parent_handle: str, name: str, extra_info: str, start_offset: int, end_offset: int, is_metavar: bool) -> str:
         """Add an item to the structure tree.
         
         Args:
@@ -115,11 +115,13 @@ class View(tk.Tk):
                 Start offset of structure in file.
             end_offset:
                 End offset of structure in file.
+            is_metavar:
+                True if this is a metavar (user friendly representation of a value located elsewhere).
 
         Returns:
             Handle to this item, to be used for child items.
         """
-        return self.tree_view.add_item(parent_handle, name, extra_info, start_offset, end_offset)
+        return self.tree_view.add_item(parent_handle, name, extra_info, start_offset, end_offset, is_metavar)
 
     def populate_hex_view(self, byte_arr: bytes) -> None:
         """Populate the hex view with the content of the file.

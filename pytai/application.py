@@ -71,19 +71,19 @@ class Application():
             # be relative (i.e. the first sibling has an offset of 0 and the parent has an offset larger than zero).
             # This is done using "invalidate_offsets" and is propagated to all siblings and children.
 
-            NodeAttributes = namedtuple("NodeAttributes", "parent name value start_offset end_offset invalidate_offsets")
+            NodeAttributes = namedtuple("NodeAttributes", "parent name value start_offset end_offset is_metavar invalidate_offsets")
 
             # Build the structure tree by iterating the parsed file (BFS)
 
             queue = []
     
-            queue.append(NodeAttributes('', 'root', parsed_file, 0, None, False))
+            queue.append(NodeAttributes('', 'root', parsed_file, 0, None, False, False))
     
             while queue:
                 node_attr = queue.pop(0)
                 handle = self.view.add_tree_item(node_attr.parent, node_attr.name, 
                                                 parser.get_item_description(node_attr.value), 
-                                                node_attr.start_offset, node_attr.end_offset)
+                                                node_attr.start_offset, node_attr.end_offset, node_attr.is_metavar)
     
                 invalidate_offsets = node_attr.invalidate_offsets
                 
@@ -91,14 +91,14 @@ class Application():
                     for i, (child, start_offset, end_offset) in enumerate(node_attr.value):
                         if invalidate_offsets:
                             start_offset = end_offset = None
-                        queue.append( NodeAttributes(handle, f"[{i}]", child, start_offset, end_offset, invalidate_offsets) )
+                        queue.append( NodeAttributes(handle, f"[{i}]", child, start_offset, end_offset, False, invalidate_offsets) )
                 else:
-                    for name, value, start_offset, end_offset in parser.get_children(node_attr.value):
+                    for name, value, start_offset, end_offset, is_metavar in parser.get_children(node_attr.value):
                         if (node_attr.start_offset != 0 and start_offset == 0):
                             invalidate_offsets = True
                         if invalidate_offsets:
                             start_offset = end_offset = None
-                        queue.append( NodeAttributes(handle, name, value, start_offset, end_offset, invalidate_offsets) )
+                        queue.append( NodeAttributes(handle, name, value, start_offset, end_offset, is_metavar, invalidate_offsets) )
 
             self.view.set_status("Loaded")
         except PyTaiException as e:

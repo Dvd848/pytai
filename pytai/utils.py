@@ -2,6 +2,7 @@ import mmap
 import os
 from collections.abc import Iterable
 from typing import Generator, List
+import inspect
 
 def memory_map(filename: str, access=mmap.ACCESS_READ) -> mmap.mmap:
     """Map a file to the memory using mmap.
@@ -35,3 +36,12 @@ def chunker(seq: Iterable, size: int) -> Generator[List, None, None]:
         Generator for chunks of the requested size.
     """
     return (seq[pos:pos + size] for pos in range(0, len(seq), size))
+
+
+def getproperties(obj):
+    """Generator for properties of an object."""
+    t = obj.__class__
+    for tp in inspect.getmro(t):
+        for name, value in vars(tp).items():
+            if isinstance(value, property):
+                yield name, getattr(obj, name)

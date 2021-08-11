@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Union, Any, Tuple
 
 from .common import *
+from . import utils
 
 class Parser(object):
     def __init__(self) -> None:
@@ -25,7 +26,7 @@ class Parser(object):
         """
         raise NotImplementedError("Inheriting classes must implement this method")
 
-    def get_children(self, parent: Any) -> Tuple[str, Any, int, int]:
+    def get_children(self, parent: Any) -> Tuple[str, Any, int, int, bool]:
         """An iterator over the name and value of the children of the given parent.
         
         Args:
@@ -34,10 +35,14 @@ class Parser(object):
 
         Returns:
             A generator serving tuples containing the name of the child (str),  
-            the value of the child (arbitrary object) and the start and end offsets of
-            the structure in the file.
+            the value of the child (arbitrary object), the start and end offsets of
+            the structure in the file and whether the child is actually in the file or 
+            an inferred metavar. An inferred metavar is a variable that does not exist
+            as-is in the file, but is somehow transformmed from an existing variable to 
+            provide a user-friendly representation of the existing variable.
             The value can either be a parser-specific object representing a structure
             or an integral type such as a list, string, integer, enum etc.
+            Format: tuple(name, value, start_offset, end_offset, is_metavar)
         """
         raise NotImplementedError("Inheriting classes must implement this method")
 
@@ -109,7 +114,7 @@ class KaitaiParser(Parser):
 
         return parsed_file
 
-    def get_children(self, parent: "KaitaiStruct") -> Tuple[str, Any, int, int]:
+    def get_children(self, parent: "KaitaiStruct") -> Tuple[str, Any, int, int, bool]:
         if hasattr(parent, "SEQ_FIELDS"):
             for child in parent.SEQ_FIELDS:
                 debug_dict = getattr(parent, "_debug")
@@ -117,7 +122,13 @@ class KaitaiParser(Parser):
                 if isinstance(value, list):
                     value = ((v, debug_dict[child]['arr'][i]['start'], debug_dict[child]['arr'][i]['end']) for i, v in enumerate(value))
                 
-                yield (child, value, debug_dict[child]['start'], debug_dict[child]['end'] )
+                yield (child, value, debug_dict[child]['start'], debug_dict[child]['end'], False)
+
+        for name, value in utils.getproperties(parent):
+            if value is not None:
+                yield (name, value, None, None, True)
+        
+
 
 
 class Model(object):
