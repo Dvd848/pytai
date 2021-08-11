@@ -125,6 +125,8 @@ class KaitaiParser(Parser):
     def get_children(self, parent: "KaitaiStruct") -> Parser.ChildAttr:
         if hasattr(parent, "SEQ_FIELDS"):
             for child in parent.SEQ_FIELDS:
+                if not hasattr(parent, child):
+                    continue
                 debug_dict = getattr(parent, "_debug")
                 value = getattr(parent, child)
                 is_array = False
