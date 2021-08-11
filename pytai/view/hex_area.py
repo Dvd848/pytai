@@ -9,6 +9,7 @@ from ..utils import *
 
 TAG_JUSTIFY_RIGHT = 'justify_right'
 TAG_HIGHLIGHT = 'highlight'
+TAG_SELECTION = 'selection'
 
 class HexViewWidget(tk.Frame):
 
@@ -22,6 +23,8 @@ class HexAreaView():
 
     # Bytes to show per row in hex view
     BYTES_PER_ROW = 16
+    REPR_CHARS_PER_BYTE_HEX = 3 # Two chars for hex representation + one space
+    REPR_CHARS_PER_BYTE_ASCII = 1
 
     def __init__(self, parent, callbacks: Dict[Events, Callable[..., None]]):
         """Instantiate the class.
@@ -48,12 +51,13 @@ class HexAreaView():
         self.textbox_hex = tk.Text(self.main_frame, width = 47, padx = 10, wrap = tk.NONE)
         self.textbox_hex.pack(side=tk.LEFT, fill=tk.Y, expand=False)
 
-        self.textbox_hex.tag_config(TAG_HIGHLIGHT, background='yellow')
+        self.textbox_hex.tag_config(TAG_HIGHLIGHT, background='gold3')
 
         self.textbox_ascii = tk.Text(self.main_frame, width = 17, padx = 10, wrap = tk.NONE)
         self.textbox_ascii.pack(side=tk.LEFT, fill=tk.Y, expand=False)
 
-        self.textbox_ascii.tag_config(TAG_HIGHLIGHT, background='yellow')
+        self.textbox_ascii.tag_config(TAG_HIGHLIGHT, background='gold3')
+        self.textbox_ascii.tag_config(TAG_SELECTION, background='lightgray')
 
         self.textboxes = [self.textbox_address, self.textbox_hex, self.textbox_ascii]
 
@@ -61,21 +65,36 @@ class HexAreaView():
         self.scrollbar.pack(side=tk.RIGHT, fill=tk.Y, expand = False)
 
         # Change the settings to make the scrolling work
-        self.scrollbar['command'] = self.on_scrollbar
+        self.scrollbar['command'] = self._on_scrollbar
         for textbox in self.textboxes:
-            textbox['yscrollcommand'] = self.on_textscroll
+            textbox['yscrollcommand'] = self._on_textscroll
 
         self.main_frame.pack(fill=tk.BOTH, expand=True, side = tk.RIGHT)
 
-    def on_scrollbar(self, *args):
+        self.textbox_hex.bind("<<Selection>>", self._on_hex_selection)
+
+    def _on_scrollbar(self, *args) -> None:
         """Scroll all text widgets when the scrollbar is moved."""
         for textbox in self.textboxes:
             textbox.yview(*args)
 
-    def on_textscroll(self, *args):
+    def _on_textscroll(self, *args) -> None:
         """Move the scrollbar and scroll text widgets when the mousewheel is moved on a text widget."""
         self.scrollbar.set(*args)
-        self.on_scrollbar('moveto', args[0])
+        self._on_scrollbar('moveto', args[0])
+
+    def _on_hex_selection(self, event) -> None:
+        """Highlight ASCII view upon selection of HEX view."""
+        self.textbox_ascii.tag_remove(TAG_SELECTION, "1.0", tk.END)
+        try:
+            hex_start_line, hex_start_char = map(int, self.textbox_hex.index(tk.SEL_FIRST).split("."))
+            hex_end_line,   hex_end_char   = map(int, self.textbox_hex.index(tk.SEL_LAST).split("."))
+            ascii_start = f"{hex_start_line}.{hex_start_char // self.REPR_CHARS_PER_BYTE_HEX}"
+            ascii_end   = f"{hex_end_line}.{( (hex_end_char - 1) // self.REPR_CHARS_PER_BYTE_HEX) + 1}"
+            self.textbox_ascii.tag_add(TAG_SELECTION, ascii_start, ascii_end)
+        except Exception:
+            pass
+        
 
     def reset(self):
         """Reset the text widgets to the original state."""
@@ -150,16 +169,14 @@ class HexAreaView():
 
 
             # Mark in hex view:
-            chars_per_byte = 3 # 2 characters for hex representation + space
             self.textbox_hex.tag_add(TAG_HIGHLIGHT, 
-                                                offset_to_line_column(chars_per_byte, start_offset), 
-                                                offset_to_line_column(chars_per_byte, end_offset, -1)) # Remove trailing space
+                                                offset_to_line_column(self.REPR_CHARS_PER_BYTE_HEX, start_offset), 
+                                                offset_to_line_column(self.REPR_CHARS_PER_BYTE_HEX, end_offset, -1)) # Remove trailing space
 
             if jump_to_selection:
-                self.textbox_hex.see(offset_to_line_column(chars_per_byte, start_offset))
+                self.textbox_hex.see(offset_to_line_column(self.REPR_CHARS_PER_BYTE_HEX, start_offset))
 
             # Mark in ASCII view:
-            chars_per_byte = 1
             self.textbox_ascii.tag_add(TAG_HIGHLIGHT, 
-                                                offset_to_line_column(chars_per_byte, start_offset), 
-                                                offset_to_line_column(chars_per_byte, end_offset))
+                                                offset_to_line_column(self.REPR_CHARS_PER_BYTE_ASCII, start_offset), 
+                                                offset_to_line_column(self.REPR_CHARS_PER_BYTE_ASCII, end_offset))
