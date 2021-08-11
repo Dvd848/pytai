@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
-from tkinter.constants import N
-from typing import Dict, Callable
+
+from typing import Dict, Callable, Optional
 
 from .events import *
 
@@ -10,6 +10,7 @@ from ..utils import *
 TAG_JUSTIFY_RIGHT = 'justify_right'
 TAG_HIGHLIGHT = 'highlight'
 TAG_SELECTION = 'selection'
+TAG_GOTO = 'goto'
 
 class HexViewWidget(tk.Frame):
 
@@ -52,6 +53,7 @@ class HexAreaView():
         self.textbox_hex.pack(side=tk.LEFT, fill=tk.Y, expand=False)
 
         self.textbox_hex.tag_config(TAG_HIGHLIGHT, background='gold3')
+        self.textbox_hex.tag_config(TAG_GOTO, background='lightcyan')
 
         self.textbox_ascii = tk.Text(self.main_frame, width = 17, padx = 10, wrap = tk.NONE)
         self.textbox_ascii.pack(side=tk.LEFT, fill=tk.Y, expand=False)
@@ -146,7 +148,26 @@ class HexAreaView():
         self.textbox_hex.config(state = tk.DISABLED)
         self.textbox_ascii.config(state = tk.DISABLED)
 
-    def mark_range(self, start_offset: int, end_offset: int, jump_to_selection: bool = True) -> None:
+    @classmethod
+    def _offset_to_line_column(cls, chars_per_byte: int, offset: int, adjust_column: int = 0) -> str:
+        """Translate an offset in a text box to tkinter line.column notation.
+        
+        Args:
+            chars_per_byte:
+                Number of characters in the text box needed to represent a single byte.
+            offset:
+                Offset to translate from.
+            adjust_column:
+                Can be used to adjust the column value after the initial calculation.
+        
+        Returns:
+            Offset in tkinter line.column notation.
+        """
+        line = (offset // cls.BYTES_PER_ROW) + 1 # Line is 1-based
+        column = ((offset % cls.BYTES_PER_ROW) * chars_per_byte)
+        return f"{line}.{column + adjust_column}"
+
+    def mark_range(self, start_offset: int, end_offset: int) -> None:
         """Highlight a range between the given offsets, and optionally jump to it.
         
         Args:
@@ -154,29 +175,38 @@ class HexAreaView():
                 Offset to highlight from (absolute index of byte in file)
             end_offset:
                 Offset to highlight to (absolute index of byte in file)
-            jump_to_selection:
-                True to jump to the highlighted selection, False otherwise
         """
         self.textbox_hex.tag_remove(TAG_HIGHLIGHT, "1.0", tk.END)
         self.textbox_ascii.tag_remove(TAG_HIGHLIGHT, "1.0", tk.END)
 
         if start_offset is not None and end_offset is not None:
-
-            def offset_to_line_column(chars_per_byte: int, offset: int, adjust_column: int = 0):
-                line = (offset // self.BYTES_PER_ROW) + 1 # Line is 1-based
-                column = ((offset % self.BYTES_PER_ROW) * chars_per_byte)
-                return f"{line}.{column + adjust_column}"
-
-
             # Mark in hex view:
             self.textbox_hex.tag_add(TAG_HIGHLIGHT, 
-                                                offset_to_line_column(self.REPR_CHARS_PER_BYTE_HEX, start_offset), 
-                                                offset_to_line_column(self.REPR_CHARS_PER_BYTE_HEX, end_offset, -1)) # Remove trailing space
-
-            if jump_to_selection:
-                self.textbox_hex.see(offset_to_line_column(self.REPR_CHARS_PER_BYTE_HEX, start_offset))
+                                     self._offset_to_line_column(self.REPR_CHARS_PER_BYTE_HEX, start_offset), 
+                                     self._offset_to_line_column(self.REPR_CHARS_PER_BYTE_HEX, end_offset, -1)) # Remove trailing space
 
             # Mark in ASCII view:
             self.textbox_ascii.tag_add(TAG_HIGHLIGHT, 
-                                                offset_to_line_column(self.REPR_CHARS_PER_BYTE_ASCII, start_offset), 
-                                                offset_to_line_column(self.REPR_CHARS_PER_BYTE_ASCII, end_offset))
+                                       self._offset_to_line_column(self.REPR_CHARS_PER_BYTE_ASCII, start_offset), 
+                                       self._offset_to_line_column(self.REPR_CHARS_PER_BYTE_ASCII, end_offset))
+
+    def make_visible(self, offset: Optional[int], highlight: bool = False) -> None:
+        """Jump to a given offset in the HEX viewer.
+        
+        Args:
+            offset:
+                The offset to jump to.
+            highlight:
+                In addition, highlight the location.
+        """
+        self.textbox_hex.tag_remove(TAG_GOTO, "1.0", tk.END)
+
+        if offset is None:
+            return
+
+        location = self._offset_to_line_column(self.REPR_CHARS_PER_BYTE_HEX, offset)
+        self.textbox_hex.see(location)
+
+        if highlight:
+            self.textbox_hex.tag_add(TAG_GOTO, location, f"{location}+2c")
+        

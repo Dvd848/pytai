@@ -1,5 +1,6 @@
 from pathlib import Path
 from collections import namedtuple
+from pytai.view.events import Events
 from typing import Union, Dict
 import inspect
 
@@ -18,6 +19,7 @@ class Application():
         callbacks = {
             v.Events.REFRESH:             self.cb_refresh,
             v.Events.STRUCTURE_SELECTED:  self.cb_structure_selected,
+            v.Events.GOTO:                self.cb_goto,
         }
 
         self.view = v.View(title = "PyTai", callbacks = callbacks)
@@ -120,3 +122,9 @@ class Application():
     def cb_structure_selected(self, path: str, start_offset: int, end_offset: int) -> None:
         """Callback for an event where the user selects a structure from the tree."""
         self.view.mark_range(start_offset, end_offset)
+        self.view.make_visible(start_offset)
+
+    def cb_goto(self, offset: int) -> None:
+        """Callback for an event where the user wants to jump to a given offset."""
+        self.view.make_visible(offset, highlight = True)
+        self.view.set_status(f"Jumping to offset {hex(offset)} ({offset})")

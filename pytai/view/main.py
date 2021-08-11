@@ -1,7 +1,7 @@
 import tkinter as tk
 #import importlib.resources
 
-from tkinter import messagebox
+from tkinter import messagebox, simpledialog
 from typing import Dict, Callable
 
 from .menus import *
@@ -40,7 +40,8 @@ class View(tk.Tk):
         
 
         self.menubar = MenuBar(self.root, {
-            MenuBar.Events.REFRESH:                 self.refresh
+            MenuBar.Events.REFRESH:                 self.refresh,
+            MenuBar.Events.GOTO:                    self.show_goto,
         })
         self.root.config(menu = self.menubar)
         
@@ -63,6 +64,7 @@ class View(tk.Tk):
         self.pw.configure(sashrelief = tk.RAISED)
 
         self.root.bind('<F5>', self.refresh)
+        self.root.bind('<Control-g>', self.show_goto)
 
         self.reset()
 
@@ -78,6 +80,19 @@ class View(tk.Tk):
     def refresh(self, event) -> None:
         """Handle a user refresh request."""
         self.callbacks[Events.REFRESH]()
+
+    def show_goto(self, event) -> None:
+        """Show the 'goto' diaglog to jump to an arbitrary offset."""
+        answer = simpledialog.askstring("Go to...", "Enter offset (prefix with '0x' for hex)",
+                                         parent = self.root)
+        if answer is None:
+            return
+
+        try:
+            offset = int(answer, 0)
+            self.callbacks[Events.GOTO](offset)
+        except ValueError as e:
+            self.display_error(f"Unable to jump to offset {answer}:\n({str(e)})")
 
     def set_status(self, status: str) -> None:
         """Set the given status in the status bar.
@@ -131,6 +146,17 @@ class View(tk.Tk):
                 The contents of the file, as a binary array.
         """
         self.hex_view.populate_hex_view(byte_arr)
+
+    def make_visible(self, offset: int, highlight: bool = False) -> None:
+        """Jump to a given offset in the HEX viewer.
+        
+        Args:
+            offset:
+                The offset to jump to.
+            highlight:
+                In addition, highlight the location.
+        """
+        self.hex_view.make_visible(offset, highlight)
 
     def mark_range(self, start_offset: int, end_offset: int) -> None:
         """Highlight a range between the given offsets.

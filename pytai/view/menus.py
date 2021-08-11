@@ -27,6 +27,9 @@ class MenuBar(tk.Menu):
         # User wants to refresh the view
         REFRESH                 = enum.auto()
 
+        # User wants to jump to offset
+        GOTO                    = enum.auto()
+
     def __init__(self, parent, callbacks: Dict[Events, Callable[..., None]]):
         """Instantiate the class.
         
@@ -45,6 +48,10 @@ class MenuBar(tk.Menu):
         filemenu = tk.Menu(self, tearoff=0)
         filemenu.add_command(label="Exit", command=parent.quit)
         self.add_cascade(label="File", menu=filemenu)
+
+        searchmenu = tk.Menu(self, tearoff=0)
+        searchmenu.add_command(label="Go to...", command=lambda: self.callbacks[self.Events.GOTO](None), accelerator="Ctrl+G")
+        self.add_cascade(label="Search", menu=searchmenu)
 
         viewmenu = tk.Menu(self, tearoff=0)
         viewmenu.add_command(label="Refresh", command=lambda: self.callbacks[self.Events.REFRESH](None), accelerator="F5")

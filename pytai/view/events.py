@@ -14,4 +14,7 @@ class Events(enum.Enum):
 
     # User selects item from structure tree
     STRUCTURE_SELECTED = enum.auto()
+
+    # User wants to jump to offset
+    GOTO               = enum.auto()
     
