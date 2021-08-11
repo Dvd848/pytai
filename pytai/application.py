@@ -62,13 +62,22 @@ class Application():
             parser = self.model.get_parser(**format)
             parsed_file = parser.parse(self.current_file_path)
 
-            NodeAttributes = namedtuple("NodeAttributes", "parent name value start_offset end_offset")
+            # W/A for Kaitai struct behavior:
+            # In some cases (e.g. if of the structures within a Kaitai struct is imported), Kaitai will populate
+            # the debug offsets with a relative value to the internal struct instead of an absolute value from the start
+            # of the external structure.
+            # We rely on the offset to highlight the selected bytes in the hex view, and can't use relative offsets.
+            # Therefore, as a W/A, we're currently disabling offsets for any children and siblings that appear to
+            # be relative (i.e. the first sibling has an offset of 0 and the parent has an offset larger than zero).
+            # This is done using "invalidate_offsets" and is propagated to all siblings and children.
+
+            NodeAttributes = namedtuple("NodeAttributes", "parent name value start_offset end_offset invalidate_offsets")
 
             # Build the structure tree by iterating the parsed file (BFS)
 
             queue = []
     
-            queue.append(NodeAttributes('', 'root', parsed_file, None, None))
+            queue.append(NodeAttributes('', 'root', parsed_file, 0, None, False))
     
             while queue:
                 node_attr = queue.pop(0)
@@ -76,13 +85,20 @@ class Application():
                                                 parser.get_item_description(node_attr.value), 
                                                 node_attr.start_offset, node_attr.end_offset)
     
-                # TODO: Find a better way
-                if inspect.isgenerator(node_attr.value):
+                invalidate_offsets = node_attr.invalidate_offsets
+                
+                if inspect.isgenerator(node_attr.value): # TODO: Find a better way
                     for i, (child, start_offset, end_offset) in enumerate(node_attr.value):
-                        queue.append( NodeAttributes(handle, f"[{i}]", child, start_offset, end_offset) )
+                        if invalidate_offsets:
+                            start_offset = end_offset = None
+                        queue.append( NodeAttributes(handle, f"[{i}]", child, start_offset, end_offset, invalidate_offsets) )
                 else:
                     for name, value, start_offset, end_offset in parser.get_children(node_attr.value):
-                        queue.append( NodeAttributes(handle, name, value, start_offset, end_offset) )
+                        if (node_attr.start_offset != 0 and start_offset == 0):
+                            invalidate_offsets = True
+                        if invalidate_offsets:
+                            start_offset = end_offset = None
+                        queue.append( NodeAttributes(handle, name, value, start_offset, end_offset, invalidate_offsets) )
 
             self.view.set_status("Loaded")
         except PyTaiException as e:

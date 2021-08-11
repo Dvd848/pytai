@@ -141,5 +141,15 @@ class View(tk.Tk):
         """
         if start_offset is not None and end_offset is not None:
             length = end_offset - start_offset
-            self.set_status(f"Range: {hex(start_offset)}-{hex(end_offset - 1)} | Length: {length} ({hex(length)}) bytes")
+            
+            status = []
+            if length > 0:
+                # end offset is exclusive, but we want to show inclusive range
+                status.append(f"Range: {hex(start_offset)}-{hex(end_offset - 1)}")
+
+            status.append(f"Length: {length} ({hex(length)}) bytes")
+
+            self.set_status(" | ".join(status))
+        else:
+            self.set_status("")
         self.hex_view.mark_range(start_offset, end_offset)
