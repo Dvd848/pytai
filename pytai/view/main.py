@@ -66,16 +66,17 @@ class View(tk.Tk):
         self.root.bind('<F5>', self.refresh)
         self.root.bind('<Control-g>', self.show_goto)
 
+        # Delegate a few interface functions directly to internal implementation
+        self.add_tree_item = self.tree_view.add_item
+        self.populate_hex_view = self.hex_view.populate_hex_view
+        self.make_visible = self.hex_view.make_visible
+
         self.reset()
 
     def reset(self) -> None:
         """Reset the view to its initial state."""
-        self.reset_details()
-        self.tree_view.reset()
-
-    def reset_details(self) -> None:
-        """Reset the details area to its initial state."""
         self.hex_view.reset()
+        self.tree_view.reset()
 
     def refresh(self, event) -> None:
         """Handle a user refresh request."""
@@ -112,51 +113,6 @@ class View(tk.Tk):
                 Error message to display.
         """
         messagebox.showerror("Error", msg)
-
-    # TODO: These are just wrapper functions, redundant?
-
-    def add_tree_item(self, parent_handle: str, name: str, extra_info: str, start_offset: int, end_offset: int, is_metavar: bool) -> str:
-        """Add an item to the structure tree.
-        
-        Args:
-            parent_handle:
-                Handle to the parent of the current item, based on a previous
-                return value of add_item() (or '' for the root)
-            name:
-                Name of the current item.
-            extra_info:
-                Extra information for the entry.
-            start_offset:
-                Start offset of structure in file.
-            end_offset:
-                End offset of structure in file.
-            is_metavar:
-                True if this is a metavar (user friendly representation of a value located elsewhere).
-
-        Returns:
-            Handle to this item, to be used for child items.
-        """
-        return self.tree_view.add_item(parent_handle, name, extra_info, start_offset, end_offset, is_metavar)
-
-    def populate_hex_view(self, byte_arr: bytes) -> None:
-        """Populate the hex view with the content of the file.
-
-        Args:
-            byte_arr:
-                The contents of the file, as a binary array.
-        """
-        self.hex_view.populate_hex_view(byte_arr)
-
-    def make_visible(self, offset: int, highlight: bool = False) -> None:
-        """Jump to a given offset in the HEX viewer.
-        
-        Args:
-            offset:
-                The offset to jump to.
-            highlight:
-                In addition, highlight the location.
-        """
-        self.hex_view.make_visible(offset, highlight)
 
     def mark_range(self, start_offset: int, end_offset: int) -> None:
         """Highlight a range between the given offsets.
