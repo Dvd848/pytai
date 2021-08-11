@@ -5,13 +5,19 @@ import inspect
 
 from pathlib import Path
 from typing import Union, Any, Tuple
+from collections import namedtuple
 
 from .common import *
 from . import utils
 
+
 class Parser(object):
+    ChildAttr = namedtuple("ParserChildAttr", "name value start_offset end_offset is_metavar is_array")
+    ArrayAttr = namedtuple("ArrayAttr", "value start_offset end_offset")
+
     def __init__(self) -> None:
         pass
+    
 
     def parse(self, path_file: Union[str, Path]) -> Any:
         """Parse the given file.
@@ -26,7 +32,7 @@ class Parser(object):
         """
         raise NotImplementedError("Inheriting classes must implement this method")
 
-    def get_children(self, parent: Any) -> Tuple[str, Any, int, int, bool]:
+    def get_children(self, parent: Any) -> "Parser.ChildAttr":
         """An iterator over the name and value of the children of the given parent.
         
         Args:
@@ -34,15 +40,17 @@ class Parser(object):
                 An object as returned by parse() or get_children()
 
         Returns:
-            A generator serving tuples containing the name of the child (str),  
-            the value of the child (arbitrary object), the start and end offsets of
-            the structure in the file and whether the child is actually in the file or 
-            an inferred metavar. An inferred metavar is a variable that does not exist
-            as-is in the file, but is somehow transformmed from an existing variable to 
-            provide a user-friendly representation of the existing variable.
-            The value can either be a parser-specific object representing a structure
-            or an integral type such as a list, string, integer, enum etc.
-            Format: tuple(name, value, start_offset, end_offset, is_metavar)
+            A generator serving tuples containing the:
+             * Name of the child (str)
+             * Value of the child (arbitrary object)
+               The value can either be a parser-specific object representing a structure
+               or an integral type such as a list, string, integer, enum etc.
+             * Start and end offsets of the structure in the file
+             * Whether the child is actually in the file or an inferred metavar. 
+               An inferred metavar is a variable that does not exist as-is in the file, 
+               but is somehow transformmed from an existing variable to provide a 
+               user-friendly representation of the existing variable.
+             * Whether the value is an array of values, each with their own offsets
         """
         raise NotImplementedError("Inheriting classes must implement this method")
 
@@ -114,19 +122,22 @@ class KaitaiParser(Parser):
 
         return parsed_file
 
-    def get_children(self, parent: "KaitaiStruct") -> Tuple[str, Any, int, int, bool]:
+    def get_children(self, parent: "KaitaiStruct") -> Parser.ChildAttr:
         if hasattr(parent, "SEQ_FIELDS"):
             for child in parent.SEQ_FIELDS:
                 debug_dict = getattr(parent, "_debug")
                 value = getattr(parent, child)
-                if isinstance(value, list):
-                    value = ((v, debug_dict[child]['arr'][i]['start'], debug_dict[child]['arr'][i]['end']) for i, v in enumerate(value))
+                is_array = False
+                if 'arr' in debug_dict[child]:
+                    value = [Parser.ArrayAttr(v, debug_dict[child]['arr'][i]['start'], debug_dict[child]['arr'][i]['end']) for i, v in enumerate(value)]
+                    is_array = True
                 
-                yield (child, value, debug_dict[child]['start'], debug_dict[child]['end'], False)
+                yield Parser.ChildAttr(name = child, value = value, start_offset = debug_dict[child]['start'], 
+                                       end_offset = debug_dict[child]['end'], is_metavar = False, is_array = is_array)
 
         for name, value in utils.getproperties(parent):
             if value is not None:
-                yield (name, value, None, None, True)
+                yield Parser.ChildAttr(name = name, value = value, start_offset = None, end_offset = None, is_metavar = True, is_array = False)
         
 
 
