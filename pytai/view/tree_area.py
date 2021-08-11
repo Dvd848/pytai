@@ -91,7 +91,7 @@ class TreeAreaView():
 
         columns = ['Name', 'Extra Info']
 
-        self.tree = ttk.Treeview(self.wrapper, selectmode = 'browse', columns = columns)
+        self.tree = ttk.Treeview(self.wrapper, selectmode = 'browse', columns = len(columns))
 
         for i, column in enumerate(columns):
             self.tree.heading(f"#{i}", text = column, anchor = tk.W)
