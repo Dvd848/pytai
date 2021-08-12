@@ -1,7 +1,7 @@
 #!/bin/bash
 
-kaitai_struct_formats_path=./tmp2/kaitai_struct_formats
-output_path=../kaitai/formats/
+kaitai_struct_formats_path=./tmp/kaitai_struct_formats
+output_path=../pytai/kaitai/formats/
 
 rm -rf $kaitai_struct_formats_path
 mkdir -p $kaitai_struct_formats_path

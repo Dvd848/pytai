@@ -1,13 +1,15 @@
 import argparse
-
+import importlib.resources
+from pathlib import Path
 
 from pytai.application import Application
 from pytai.common import *
 
 def kaitai_formats():
     res = []
-    for file in KAITAI_FORMAT_DIR.glob('*.py'):
-        if not file.stem.startswith("__"):
+    for filename in importlib.resources.contents(f"pytai.{SUBFOLDER_KAITAI}.{SUBFOLDER_FORMATS}"):
+        file = Path(filename)
+        if file.suffix == ".py" and not file.stem.startswith("__"):
             res.append(file.stem)
     return res
 

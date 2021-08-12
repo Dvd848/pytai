@@ -96,11 +96,10 @@ class KaitaiParser(Parser):
                 Must match a *.py file under "SUBFOLDER_FORMATS/SUBFOLDER_FORMATS".
         """
         try:
-            #parser_module = importlib.import_module(f'..{SUBFOLDER_KAITAI}.{SUBFOLDER_FORMATS}.{format}', __name__)
             format_dir = str(KAITAI_FORMAT_DIR.resolve())
             if format_dir not in sys.path:
                 sys.path.append(format_dir)
-            parser_module = importlib.import_module(format)
+            parser_module = importlib.import_module(f'..{SUBFOLDER_KAITAI}.{SUBFOLDER_FORMATS}.{format}', __name__)
             module_classes = [m[0] for m in inspect.getmembers(parser_module, inspect.isclass) if m[1].__module__ == parser_module.__name__]
             if len(module_classes) != 1:
                 raise RuntimeError("Can't determine class name using introspection")
