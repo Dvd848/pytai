@@ -24,7 +24,7 @@ License:
     SOFTWARE.
 """
 import tkinter as tk
-#import importlib.resources
+import importlib.resources
 
 from tkinter import messagebox, simpledialog
 from typing import Dict, Callable
@@ -60,9 +60,8 @@ class View(tk.Tk):
         self.geometry('1280x720')
 
         
-        #with importlib.resources.path(f"{__package__}.assets", "icon.ico") as icon_path:
-        #    self.iconbitmap(default = icon_path)
-        
+        with importlib.resources.path(f"{__package__}.assets", "pytai.ico") as icon_path:
+            self.iconbitmap(default = icon_path)
 
         self.menubar = MenuBar(self.root, {
             MenuBar.Events.REFRESH:                 self.refresh,
