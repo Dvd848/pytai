@@ -45,6 +45,8 @@ TAG_HIGHLIGHT = 'highlight'
 TAG_SELECTION = 'selection'
 TAG_GOTO = 'goto'
 
+TAGS = [TAG_JUSTIFY_RIGHT, TAG_HIGHLIGHT, TAG_SELECTION, TAG_GOTO]
+
 class HexViewWidget(tk.Frame):
 
     def __init__(self, parent, **kwargs):
@@ -134,7 +136,10 @@ class HexAreaView():
     def reset(self):
         """Reset the text widgets to the original state."""
         for textbox in self.textboxes:
+            textbox.config(state = tk.NORMAL)
             textbox.delete('1.0', tk.END)
+            for tag in TAGS:
+                textbox.tag_remove(tag, "1.0", tk.END)
 
     @property
     def widget(self) -> tk.Frame:
