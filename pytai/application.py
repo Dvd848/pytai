@@ -22,7 +22,7 @@ class Application():
             v.Events.GOTO:                self.cb_goto,
         }
 
-        self.view = v.View(title = "PyTai", callbacks = callbacks)
+        self.view = v.View(title = "pytai", callbacks = callbacks)
         self.model = m.Model()
 
         self.populate_view(file, format)

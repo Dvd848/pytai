@@ -63,5 +63,5 @@ class MenuBar(tk.Menu):
 
     def show_about(self):
         """Show the "About" window."""
-        messagebox.showinfo("About", "PyTai: A Kaitai Struct Visualizer and HEX Viewer GUI in Python\nhttps://github.com/Dvd848/pytai\n\n"
+        messagebox.showinfo("About", "pytai: A Kaitai Struct Visualizer and HEX Viewer GUI in Python\nhttps://github.com/Dvd848/pytai\n\n"
                                      "Based on structure parsers provided by the Kaitai project\nhttps://kaitai.io/")
