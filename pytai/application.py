@@ -56,7 +56,7 @@ class Application():
         self.populate_view(file, format)
 
     def run(self) -> None:
-        """Run the application."""
+        """Runs the application."""
         self.view.mainloop()
 
     def populate_view(self, path_file: Union[str, Path], format: Dict[str, str]) -> None:
@@ -87,6 +87,8 @@ class Application():
 
         self.current_file_path = path_file
         self.format = format
+
+        parsed_file = None
 
         try:
             parser = self.model.get_parser(**format)
@@ -139,6 +141,9 @@ class Application():
             self.view.display_error(str(e))
         except Exception:
             raise
+        finally:
+            if parsed_file is not None:
+                parsed_file.close()
 
 
     def cb_refresh(self) -> None:

@@ -140,4 +140,4 @@ cython_debug/
 # Other
 .vscode
 *.pyz
-*/tmp/*
+**/tmp/*

@@ -116,7 +116,7 @@ class KaitaiParser(Parser):
         Args:
             format:
                 Format of the file.
-                Must match a *.py file under "SUBFOLDER_FORMATS/SUBFOLDER_FORMATS".
+                Must match a *.py file under "SUBFOLDER_KAITAI/SUBFOLDER_FORMATS".
         """
         try:
             format_dir = str(KAITAI_FORMAT_DIR.resolve())
@@ -177,7 +177,7 @@ class Model(object):
         Keyword Args:
             kaitai_format:
                 Path to a compiled Kaitai Structure definition 
-                (*.py generated from *.ksy file).
+                (*.py generated from *.ksy file), relative to KAITAI_FORMAT_DIR.
                 Given this parameter, the returned parser will be 
                 a KaitaiParser instance.
 
