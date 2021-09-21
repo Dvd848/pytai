@@ -61,6 +61,7 @@ These are members that are inferred from the binary contents (usually a user-fri
 * [Kaitai Struct: Visualizer](https://github.com/kaitai-io/kaitai_struct_visualizer): Text-based visualizer written in Ruby
 * [Kaitai Web IDE](https://ide.kaitai.io/): A browser-based visualizer
 * [Kaitai Struct: Visualization GUI Tool](https://github.com/kaitai-io/kaitai_struct_gui): GUI visualizer written in Java
+* [Binary Ninja UI Plugin](https://github.com/Vector35/kaitai): A GUI plugin for Binary Ninja
 * [Kaitai Struct VSCode](https://marketplace.visualstudio.com/items?itemName=fudgepops.kaitai-struct-vscode): Extension for [VS Code](https://code.visualstudio.com/)
 * [Hobbits](https://github.com/Mahlet-Inc/hobbits): Multi-platform GUI for bit-based analysis, processing, and visualization
 
