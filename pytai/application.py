@@ -99,42 +99,55 @@ class Application():
             # the debug offsets with a relative value to the internal struct instead of an absolute value from the start
             # of the external structure.
             # We rely on the offset to highlight the selected bytes in the hex view, and can't use relative offsets.
-            # Therefore, as a W/A, we're currently disabling offsets for any children and siblings that appear to
-            # be relative (i.e. the first sibling has an offset of 0 and the parent has an offset larger than zero).
-            # This is done using "invalidate_offsets" and is propagated to all siblings and children.
+            # Therefore, as a W/A, we're currently maintaining an "add_offset" variable to transform a relative offset into
+            # an absolute one.
 
-            NodeAttributes = namedtuple("NodeAttributes", "parent name value start_offset end_offset is_metavar is_array invalidate_offsets")
+            NodeAttributes = namedtuple("NodeAttributes", "parent name value start_offset end_offset is_metavar is_array add_offset")
 
             # Build the structure tree by iterating the parsed file (BFS)
 
             queue = []
     
-            queue.append(NodeAttributes(parent = '', name = 'root', value = parsed_file, start_offset = 0, end_offset = None, 
-                                        is_metavar = False, is_array = False, invalidate_offsets = False))
+            queue.append(NodeAttributes(parent = '', name = 'root', value = parsed_file, start_offset = 0, end_offset = 0, 
+                                        is_metavar = False, is_array = False, add_offset = 0))
     
             while queue:
                 node_attr = queue.pop(0)
-                handle = self.view.add_tree_item(node_attr.parent, node_attr.name, 
-                                                parser.get_item_description(node_attr.value), 
-                                                node_attr.start_offset, node_attr.end_offset, node_attr.is_metavar)
-    
-                invalidate_offsets = node_attr.invalidate_offsets
+
+                handle = self.view.add_tree_item(node_attr.parent, name = node_attr.name, 
+                                                extra_info = parser.get_item_description(node_attr.value), 
+                                                start_offset = node_attr.start_offset, end_offset = node_attr.end_offset, 
+                                                is_metavar = node_attr.is_metavar)
                 
                 if node_attr.is_array:
                     for i, (arr_attr) in enumerate(node_attr.value):
+
+                        start_offset = arr_attr.start_offset
+                        end_offset = arr_attr.end_offset
+                        if node_attr.start_offset is not None:
+                            start_offset += node_attr.add_offset
+                            end_offset += node_attr.add_offset
+
                         queue.append( NodeAttributes(parent = handle, name = f"[{i}]", value = arr_attr.value, 
-                                                     start_offset = arr_attr.start_offset if not invalidate_offsets else None, 
-                                                     end_offset = arr_attr.end_offset if not invalidate_offsets else None, 
+                                                     start_offset = start_offset, 
+                                                     end_offset = end_offset, 
                                                      is_metavar = False, is_array = False, 
-                                                     invalidate_offsets = invalidate_offsets) )
+                                                     add_offset = node_attr.add_offset) )
                 else:
                     for child_attr in parser.get_children(node_attr.value):
-                        if (node_attr.start_offset != 0 and child_attr.start_offset == 0):
-                            invalidate_offsets = True
+
+                        start_offset = child_attr.start_offset
+                        end_offset = child_attr.end_offset
+                        if child_attr.start_offset is not None:
+                            start_offset += node_attr.add_offset
+                            end_offset += node_attr.add_offset
+
                         queue.append( NodeAttributes(parent = handle, name = child_attr.name, value = child_attr.value, 
-                                                     start_offset = child_attr.start_offset if not invalidate_offsets else None, 
-                                                     end_offset = child_attr.end_offset if not invalidate_offsets else None, 
-                                                     is_metavar = child_attr.is_metavar, is_array = child_attr.is_array, invalidate_offsets = invalidate_offsets) )
+                                                     start_offset = start_offset, 
+                                                     end_offset = end_offset, 
+                                                     is_metavar = child_attr.is_metavar, 
+                                                     is_array = child_attr.is_array, 
+                                                     add_offset = start_offset if child_attr.relative_offset else node_attr.add_offset) )
 
             self.view.set_status("Loaded")
         except PyTaiException as e:

@@ -96,13 +96,14 @@ class MockView(MagicMock):
     def __init__(self, *args, **kwargs):
         super().__init__()
 
-    def add_tree_item(self, parent_handle: Union[ET.Element, str], name: str, extra_info: str, start_offset: int, end_offset: int, is_metavar: bool) -> ET.ElementTree:
+    def add_tree_item(self, parent_handle: Union[ET.Element, str], **kwargs) -> ET.ElementTree:
         """Build an XML tree using the provided input."""
         if parent_handle == "":
             self.root = ET.Element("root")
             return self.root
-        return ET.SubElement(parent_handle, "node", name = str(name), extra_info = str(extra_info), 
-                      start_offset = str(start_offset), end_offset = str(end_offset), is_metavar = str(is_metavar))
+        d = {k: str(v) for k, v in kwargs.items()}
+
+        return ET.SubElement(parent_handle, "node", **d)
 
 
 def KaitaiToXml(parser: "KaitaiParser", path: str) -> ET.ElementTree:
@@ -206,15 +207,12 @@ class TestOffsets(unittest.TestCase):
             except RuntimeError as e:
                 self.fail(str(e))
     
-    @unittest.skip
     def test_png(self):
         self.generic_test("png")
 
-    @unittest.skip
     def test_bmp(self):
         self.generic_test("bmp")
 
-    @unittest.skip
     def test_zip(self):
         self.generic_test("zip")
 
