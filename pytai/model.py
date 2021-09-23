@@ -101,12 +101,7 @@ class KaitaiParser(Parser):
         """
         super().__init__()
 
-        try:
-            import kaitaistruct
-        except ImportError:
-            sys.path.append(str(KAITAI_DIR.resolve()))
-            #import kaitaistruct
-            self.kaitaistruct = importlib.import_module("kaitaistruct")
+        self.kaitaistruct = importlib.import_module(f"..{SUBFOLDER_KAITAI}.kaitaistruct", __name__)
             
         self._load_parser(format)
 
@@ -122,6 +117,7 @@ class KaitaiParser(Parser):
             format_dir = str(KAITAI_FORMAT_DIR.resolve())
             if format_dir not in sys.path:
                 sys.path.append(format_dir)
+            sys.modules['kaitaistruct'] = self.kaitaistruct
             parser_module = importlib.import_module(f'..{SUBFOLDER_KAITAI}.{SUBFOLDER_FORMATS}.{format}', __name__)
             module_classes = [m[0] for m in inspect.getmembers(parser_module, inspect.isclass) if m[1].__module__ == parser_module.__name__]
             if len(module_classes) != 1:
