@@ -88,4 +88,4 @@ The supported formats were taken from the [Kaitai Struct format gallery repo](ht
 
  * No ability to interactively edit files (not a HEX editor, just a viewer).
  * Currently no special optimizations implemented in order to handle very large files.
- * Structure offsets are based on output from Kaitai. In some cases, Kaitai produces relative offsets for internal structures, while the tool requires absolute offsets in order to match an element to the HEX view. Currently,  the GUI does not mark the location of elements which have received a relative offset from Kaitai.
+ * Structure offsets are based on output from Kaitai. Kaitai doesn't fully support bit-field offsets, and therefore the GUI cannot accurately mark bit-field members.
