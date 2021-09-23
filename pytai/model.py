@@ -29,13 +29,14 @@ import inspect
 from pathlib import Path
 from typing import Union, Any, Tuple
 from collections import namedtuple
+from io import BytesIO
 
 from .common import *
 from . import utils
 
 
 class Parser(object):
-    ChildAttr = namedtuple("ParserChildAttr", "name value start_offset end_offset is_metavar is_array")
+    ChildAttr = namedtuple("ParserChildAttr", "name value start_offset end_offset is_metavar is_array relative_offset")
     ArrayAttr = namedtuple("ArrayAttr", "value start_offset end_offset")
 
     def __init__(self) -> None:
@@ -74,6 +75,7 @@ class Parser(object):
                but is somehow transformmed from an existing variable to provide a 
                user-friendly representation of the existing variable.
              * Whether the value is an array of values, each with their own offsets
+             * Whether the childred on this element have relative offsets
         """
         raise NotImplementedError("Inheriting classes must implement this method")
 
@@ -104,6 +106,8 @@ class KaitaiParser(Parser):
         self.kaitaistruct = importlib.import_module(f"..{SUBFOLDER_KAITAI}.kaitaistruct", __name__)
             
         self._load_parser(format)
+
+        self.streams = set()
 
     def _load_parser(self, format: str) -> None:
         """Load and return a Kaitai parser matching the given Kaitai Struct language definition.
@@ -147,17 +151,22 @@ class KaitaiParser(Parser):
                     continue
                 debug_dict = getattr(parent, "_debug")
                 value = getattr(parent, child)
+                relative_offset = False
+                if hasattr(value, "_io") and hasattr(value._io, "_io") and isinstance(value._io._io, BytesIO):
+                    if value._io._io not in self.streams:
+                        self.streams.add(value._io._io) # TODO: Need to make sure streams isn't reused for reparsing. Have caller send it?
+                        relative_offset = True
                 is_array = False
                 if 'arr' in debug_dict[child]:
                     value = [Parser.ArrayAttr(v, debug_dict[child]['arr'][i]['start'], debug_dict[child]['arr'][i]['end']) for i, v in enumerate(value)]
                     is_array = True
                 
                 yield Parser.ChildAttr(name = child, value = value, start_offset = debug_dict[child]['start'], 
-                                       end_offset = debug_dict[child]['end'], is_metavar = False, is_array = is_array)
+                                       end_offset = debug_dict[child]['end'], is_metavar = False, is_array = is_array, relative_offset = relative_offset)
 
         for name, value in utils.getproperties(parent):
             if value is not None:
-                yield Parser.ChildAttr(name = name, value = value, start_offset = None, end_offset = None, is_metavar = True, is_array = False)
+                yield Parser.ChildAttr(name = name, value = value, start_offset = None, end_offset = None, is_metavar = True, is_array = False, relative_offset = False)
         
 
 
