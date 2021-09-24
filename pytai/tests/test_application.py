@@ -1,95 +1,46 @@
+"""Unit tests for the pytai application.
+
+License:
+    MIT License
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+"""
 import unittest
 import xml.etree.ElementTree as ET
 
-from typing import Union, Any, List
-from xml.dom import minidom
+from typing import Union
+
 from unittest.mock import patch, MagicMock
 from pathlib import Path
 
-from .. import application
+try:
+    from .. import application
+    from .xml_utils import *
+except ImportError:
+    if __name__ == "__main__":
+        import sys
+        sys.exit(f'This script needs to be run from the root folder:\n'
+                 f'python -m pytai.tests.{Path(sys.argv[0]).stem}\n' 
+                 f'python -m unittest pytai.tests.{Path(sys.argv[0]).stem}')
+    else:
+        raise
 
-class XmlUtils():
-    """Various XML Utilities."""
-
-    @classmethod
-    def xml_compare(cls, x1: ET.Element, x2: ET.Element, excludes = None):
-        """Compares two xml eTrees.
-
-        Based on https://stackoverflow.com/questions/24492895/
-
-        Args:
-            x1: 
-                The first (sub)tree.
-            x2: 
-                The second (sub)tree.
-            excludes: 
-                List of string of attributes to exclude from comparison, or None.
-        
-        Returns:
-            True if both XML trees match, raises exception otherwise.
-        """
-
-        if excludes is None:
-            excludes = []
-
-        if x1.tag != x2.tag:
-            raise RuntimeError(f'Tags do not match: "{x1.tag}" and "{x2.tag}"')
-
-        for name, value in x1.attrib.items():
-            if not name in excludes:
-                if x2.attrib.get(name) != value:
-                    raise RuntimeError(f'Attributes do not match: {name}={value}, {name}={x2.attrib.get(name)}')
-
-        for name in x2.attrib.keys():
-            if not name in excludes:
-                if name not in x1.attrib:
-                    raise RuntimeError(f'x2 has an attribute x1 is missing: {name}')
-
-        if not cls.text_compare(x1.text, x2.text):
-            raise RuntimeError(f'text: {x1.text} != {x2.text}')
-
-        if not cls.text_compare(x1.tail, x2.tail):
-            raise RuntimeError(f'tail: {x1.tail} != {x2.tail}')
-
-        cl1 = list(x1)
-        cl2 = list(x2)
-        if len(cl1) != len(cl2):
-            raise RuntimeError(f'children length differs, {len(cl1)} != {len(cl2)}')
-
-        i = 0
-        for c1, c2 in zip(cl1, cl2):
-            i += 1
-            if not c1.tag in excludes:
-                if not cls.xml_compare(c1, c2, excludes):
-                    raise RuntimeError(f'children {i} do not match: {c1.tag}')
-
-        return True
-
-    @staticmethod
-    def text_compare(t1, t2):
-        """Compare two text strings, ignoring wrapping whitespaces.
-
-        Args:
-            t1:
-                First text.
-            t2:
-                Second text.
-        
-        Returns:
-            True if they are equal, False otherwise.
-        """
-        if not t1 and not t2:
-            return True
-        
-        #if t1 == '*' or t2 == '*':
-        #    return True
-
-        return (t1 or '').strip() == (t2 or '').strip()
-
-    @staticmethod
-    def xml_to_str(root: ET.ElementTree) -> str:
-        """Pretty print an XML tree."""
-        return minidom.parseString(ET.tostring(root).decode()).toprettyxml(indent="   ")
 
 class MockView(MagicMock):
     """Mock class to mock the application's View"""
@@ -104,76 +55,6 @@ class MockView(MagicMock):
         d = {k: str(v) for k, v in kwargs.items()}
 
         return ET.SubElement(parent_handle, "node", **d)
-
-
-def KaitaiToXml(parser: "KaitaiParser", path: str) -> ET.ElementTree:
-    """Transform a KaitaiStruct object to an XML tree.
-    
-    Args:
-        parser: 
-            A KaitaiParser instance matching the parsed file.
-        
-        path:
-            Path to file to be converted to XML via the parser.
-
-    Returns:
-        XML representation of the file structure.
-
-    """
-
-    root = ET.Element("root")
-
-    def recurse(parent_object: Union[List["KaitaiStruct"], "KaitaiStruct"], parent_node: ET.Element, is_array: bool, add_offset: int):
-        """Recursive function to built the XML tree.
-
-        Args:
-            parent_object:
-                A KaitaiStruct from which the child nodes will be extracted (if is_array is False),
-                or a list of KaitaiStructs (if is_array is True).
-
-            parent_node:
-                An XML node representing the parent of child nodes.
-
-            is_array:
-                True if parent_object is a list, false otherwise.
-
-            add_offset:
-                Offset to add to start and end offsets.
-                Needed since Kaitai sometimes returns relative offsets and sometimes absolute offsets.
-        
-        """
-        if is_array:
-            for i, (arr_attr) in enumerate(parent_object):
-                start_offset = arr_attr.start_offset
-                end_offset = arr_attr.end_offset
-                if arr_attr.start_offset is not None:
-                    start_offset += add_offset
-                    end_offset += add_offset
-                current_node = ET.SubElement(parent_node, "node", name = f"[{i}]", 
-                                             extra_info = parser.get_item_description(arr_attr.value), 
-                                             start_offset = str(start_offset), 
-                                             end_offset = str(end_offset),
-                                             is_metavar = str(False))
-                recurse(arr_attr.value, current_node, False, add_offset)
-        else:
-            for child_attr in parser.get_children(parent_object):
-                start_offset = child_attr.start_offset
-                end_offset = child_attr.end_offset
-                if child_attr.start_offset is not None:
-                    start_offset += add_offset
-                    end_offset += add_offset
-
-                current_node = ET.SubElement(parent_node, "node", name = child_attr.name, 
-                                             extra_info = parser.get_item_description(child_attr.value),
-                                             start_offset = str(start_offset), 
-                                             end_offset = str(end_offset),
-                                             is_metavar = str(child_attr.is_metavar))
-                recurse(child_attr.value, current_node, child_attr.is_array, start_offset if child_attr.relative_offset else add_offset)
-
-    parsed_file = parser.parse(path)
-    recurse(parsed_file, root, False, 0)
-    parsed_file.close()
-    return root
 
 class TestOffsets(unittest.TestCase):
     @classmethod
@@ -193,17 +74,12 @@ class TestOffsets(unittest.TestCase):
             app = application.Application(file = path, format = format)
 
             with open(self.tmp_path / "actual_output.xml", "w") as o:
-                o.write(XmlUtils.xml_to_str(app.view.root))
+                o.write(xml_to_str(app.view.root))
 
-            parser = app.model.get_parser(**format)
-            
-            expected_xml = KaitaiToXml(parser, path)
-            
-            with open(self.tmp_path / "expected_output.xml", "w") as o:
-                o.write(XmlUtils.xml_to_str(expected_xml))
+            expected_xml = xml_from_file(self.get_resource_path(f"{file_type}.xml"))
 
             try:
-                XmlUtils.xml_compare(app.view.root, expected_xml)
+                xml_compare(app.view.root, expected_xml)
             except RuntimeError as e:
                 self.fail(str(e))
     
@@ -216,9 +92,5 @@ class TestOffsets(unittest.TestCase):
     def test_zip(self):
         self.generic_test("zip")
 
-
-# From root folder:
-#   python -m unittest pytai.tests.test_application
-#   python -m pytai.tests.test_application
 if __name__ == "__main__":
     unittest.main()

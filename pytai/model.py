@@ -27,7 +27,7 @@ import importlib
 import inspect
 
 from pathlib import Path
-from typing import Union, Any, Tuple
+from typing import Union, Any
 from collections import namedtuple
 from io import BytesIO
 

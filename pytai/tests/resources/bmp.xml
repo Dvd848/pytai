@@ -1,0 +1,106 @@
+<?xml version="1.0" ?>
+<root>
+   <node name="file_hdr" extra_info="" start_offset="0" end_offset="14" is_metavar="False">
+      <node name="file_type" extra_info="Byte Array (Length: 2)" start_offset="0" end_offset="2" is_metavar="False"/>
+      <node name="len_file" extra_info="130 (0x82)" start_offset="2" end_offset="6" is_metavar="False"/>
+      <node name="reserved1" extra_info="0 (0x0)" start_offset="6" end_offset="8" is_metavar="False"/>
+      <node name="reserved2" extra_info="0 (0x0)" start_offset="8" end_offset="10" is_metavar="False"/>
+      <node name="ofs_bitmap" extra_info="122 (0x7a)" start_offset="10" end_offset="14" is_metavar="False"/>
+   </node>
+   <node name="dib_info" extra_info="" start_offset="14" end_offset="122" is_metavar="False">
+      <node name="len_header" extra_info="108 (0x6c)" start_offset="14" end_offset="18" is_metavar="False"/>
+      <node name="header" extra_info="" start_offset="18" end_offset="122" is_metavar="False">
+         <node name="image_width" extra_info="2 (0x2)" start_offset="18" end_offset="22" is_metavar="False"/>
+         <node name="image_height_raw" extra_info="1 (0x1)" start_offset="22" end_offset="26" is_metavar="False"/>
+         <node name="num_planes" extra_info="1 (0x1)" start_offset="26" end_offset="28" is_metavar="False"/>
+         <node name="bits_per_pixel" extra_info="24 (0x18)" start_offset="28" end_offset="30" is_metavar="False"/>
+         <node name="bitmap_info_ext" extra_info="" start_offset="30" end_offset="54" is_metavar="False">
+            <node name="compression" extra_info="rgb" start_offset="30" end_offset="34" is_metavar="False"/>
+            <node name="len_image" extra_info="8 (0x8)" start_offset="34" end_offset="38" is_metavar="False"/>
+            <node name="x_resolution" extra_info="11811 (0x2e23)" start_offset="38" end_offset="42" is_metavar="False"/>
+            <node name="y_resolution" extra_info="11811 (0x2e23)" start_offset="42" end_offset="46" is_metavar="False"/>
+            <node name="num_colors_used" extra_info="0 (0x0)" start_offset="46" end_offset="50" is_metavar="False"/>
+            <node name="num_colors_important" extra_info="0 (0x0)" start_offset="50" end_offset="54" is_metavar="False"/>
+         </node>
+         <node name="color_mask" extra_info="" start_offset="54" end_offset="70" is_metavar="False">
+            <node name="red_mask" extra_info="1934772034 (0x73524742)" start_offset="54" end_offset="58" is_metavar="False"/>
+            <node name="green_mask" extra_info="0 (0x0)" start_offset="58" end_offset="62" is_metavar="False"/>
+            <node name="blue_mask" extra_info="0 (0x0)" start_offset="62" end_offset="66" is_metavar="False"/>
+            <node name="alpha_mask" extra_info="0 (0x0)" start_offset="66" end_offset="70" is_metavar="False"/>
+         </node>
+         <node name="bitmap_v4_ext" extra_info="" start_offset="70" end_offset="122" is_metavar="False">
+            <node name="color_space_type" extra_info="calibrated_rgb" start_offset="70" end_offset="74" is_metavar="False"/>
+            <node name="endpoint_red" extra_info="" start_offset="74" end_offset="86" is_metavar="False">
+               <node name="x" extra_info="" start_offset="74" end_offset="78" is_metavar="False">
+                  <node name="raw" extra_info="0 (0x0)" start_offset="74" end_offset="78" is_metavar="False"/>
+                  <node name="value" extra_info="" start_offset="None" end_offset="None" is_metavar="True"/>
+               </node>
+               <node name="y" extra_info="" start_offset="78" end_offset="82" is_metavar="False">
+                  <node name="raw" extra_info="0 (0x0)" start_offset="78" end_offset="82" is_metavar="False"/>
+                  <node name="value" extra_info="" start_offset="None" end_offset="None" is_metavar="True"/>
+               </node>
+               <node name="z" extra_info="" start_offset="82" end_offset="86" is_metavar="False">
+                  <node name="raw" extra_info="0 (0x0)" start_offset="82" end_offset="86" is_metavar="False"/>
+                  <node name="value" extra_info="" start_offset="None" end_offset="None" is_metavar="True"/>
+               </node>
+            </node>
+            <node name="endpoint_green" extra_info="" start_offset="86" end_offset="98" is_metavar="False">
+               <node name="x" extra_info="" start_offset="86" end_offset="90" is_metavar="False">
+                  <node name="raw" extra_info="0 (0x0)" start_offset="86" end_offset="90" is_metavar="False"/>
+                  <node name="value" extra_info="" start_offset="None" end_offset="None" is_metavar="True"/>
+               </node>
+               <node name="y" extra_info="" start_offset="90" end_offset="94" is_metavar="False">
+                  <node name="raw" extra_info="0 (0x0)" start_offset="90" end_offset="94" is_metavar="False"/>
+                  <node name="value" extra_info="" start_offset="None" end_offset="None" is_metavar="True"/>
+               </node>
+               <node name="z" extra_info="" start_offset="94" end_offset="98" is_metavar="False">
+                  <node name="raw" extra_info="0 (0x0)" start_offset="94" end_offset="98" is_metavar="False"/>
+                  <node name="value" extra_info="" start_offset="None" end_offset="None" is_metavar="True"/>
+               </node>
+            </node>
+            <node name="endpoint_blue" extra_info="" start_offset="98" end_offset="110" is_metavar="False">
+               <node name="x" extra_info="" start_offset="98" end_offset="102" is_metavar="False">
+                  <node name="raw" extra_info="0 (0x0)" start_offset="98" end_offset="102" is_metavar="False"/>
+                  <node name="value" extra_info="" start_offset="None" end_offset="None" is_metavar="True"/>
+               </node>
+               <node name="y" extra_info="" start_offset="102" end_offset="106" is_metavar="False">
+                  <node name="raw" extra_info="0 (0x0)" start_offset="102" end_offset="106" is_metavar="False"/>
+                  <node name="value" extra_info="" start_offset="None" end_offset="None" is_metavar="True"/>
+               </node>
+               <node name="z" extra_info="" start_offset="106" end_offset="110" is_metavar="False">
+                  <node name="raw" extra_info="2 (0x2)" start_offset="106" end_offset="110" is_metavar="False"/>
+                  <node name="value" extra_info="" start_offset="None" end_offset="None" is_metavar="True"/>
+               </node>
+            </node>
+            <node name="gamma_red" extra_info="" start_offset="110" end_offset="114" is_metavar="False">
+               <node name="raw" extra_info="0 (0x0)" start_offset="110" end_offset="114" is_metavar="False"/>
+               <node name="value" extra_info="" start_offset="None" end_offset="None" is_metavar="True"/>
+            </node>
+            <node name="gamma_blue" extra_info="" start_offset="114" end_offset="118" is_metavar="False">
+               <node name="raw" extra_info="0 (0x0)" start_offset="114" end_offset="118" is_metavar="False"/>
+               <node name="value" extra_info="" start_offset="None" end_offset="None" is_metavar="True"/>
+            </node>
+            <node name="gamma_green" extra_info="" start_offset="118" end_offset="122" is_metavar="False">
+               <node name="raw" extra_info="0 (0x0)" start_offset="118" end_offset="122" is_metavar="False"/>
+               <node name="value" extra_info="" start_offset="None" end_offset="None" is_metavar="True"/>
+            </node>
+         </node>
+         <node name="extends_bitmap_v4" extra_info="True (0x1)" start_offset="None" end_offset="None" is_metavar="True"/>
+         <node name="extends_os2_2x_bitmap" extra_info="False (0x0)" start_offset="None" end_offset="None" is_metavar="True"/>
+         <node name="uses_fixed_palette" extra_info="False (0x0)" start_offset="None" end_offset="None" is_metavar="True"/>
+         <node name="extends_bitmap_info" extra_info="True (0x1)" start_offset="None" end_offset="None" is_metavar="True"/>
+         <node name="image_height" extra_info="1 (0x1)" start_offset="None" end_offset="None" is_metavar="True"/>
+         <node name="is_core_header" extra_info="False (0x0)" start_offset="None" end_offset="None" is_metavar="True"/>
+         <node name="extends_bitmap_v5" extra_info="False (0x0)" start_offset="None" end_offset="None" is_metavar="True"/>
+         <node name="is_color_mask_here" extra_info="True (0x1)" start_offset="None" end_offset="None" is_metavar="True"/>
+         <node name="bottom_up" extra_info="True (0x1)" start_offset="None" end_offset="None" is_metavar="True"/>
+      </node>
+      <node name="is_color_mask_given" extra_info="False (0x0)" start_offset="None" end_offset="None" is_metavar="True"/>
+      <node name="color_mask_blue" extra_info="255 (0xff)" start_offset="None" end_offset="None" is_metavar="True"/>
+      <node name="color_mask_alpha" extra_info="0 (0x0)" start_offset="None" end_offset="None" is_metavar="True"/>
+      <node name="color_mask_green" extra_info="65280 (0xff00)" start_offset="None" end_offset="None" is_metavar="True"/>
+      <node name="is_color_mask_here" extra_info="False (0x0)" start_offset="None" end_offset="None" is_metavar="True"/>
+      <node name="color_mask_red" extra_info="16711680 (0xff0000)" start_offset="None" end_offset="None" is_metavar="True"/>
+   </node>
+   <node name="bitmap" extra_info="" start_offset="122" end_offset="130" is_metavar="False"/>
+</root>

@@ -1,0 +1,62 @@
+<?xml version="1.0" ?>
+<root>
+   <node name="magic" extra_info="Byte Array (Length: 8)" start_offset="0" end_offset="8" is_metavar="False"/>
+   <node name="ihdr_len" extra_info="13 (0xd)" start_offset="8" end_offset="12" is_metavar="False"/>
+   <node name="ihdr_type" extra_info="Byte Array (Length: 4)" start_offset="12" end_offset="16" is_metavar="False"/>
+   <node name="ihdr" extra_info="" start_offset="16" end_offset="29" is_metavar="False">
+      <node name="width" extra_info="2 (0x2)" start_offset="16" end_offset="20" is_metavar="False"/>
+      <node name="height" extra_info="1 (0x1)" start_offset="20" end_offset="24" is_metavar="False"/>
+      <node name="bit_depth" extra_info="8 (0x8)" start_offset="24" end_offset="25" is_metavar="False"/>
+      <node name="color_type" extra_info="truecolor" start_offset="25" end_offset="26" is_metavar="False"/>
+      <node name="compression_method" extra_info="0 (0x0)" start_offset="26" end_offset="27" is_metavar="False"/>
+      <node name="filter_method" extra_info="0 (0x0)" start_offset="27" end_offset="28" is_metavar="False"/>
+      <node name="interlace_method" extra_info="0 (0x0)" start_offset="28" end_offset="29" is_metavar="False"/>
+   </node>
+   <node name="ihdr_crc" extra_info="Byte Array (Length: 4)" start_offset="29" end_offset="33" is_metavar="False"/>
+   <node name="chunks" extra_info="" start_offset="33" end_offset="149" is_metavar="False">
+      <node name="[0]" extra_info="" start_offset="33" end_offset="54" is_metavar="False">
+         <node name="len" extra_info="9 (0x9)" start_offset="33" end_offset="37" is_metavar="False"/>
+         <node name="type" extra_info="pHYs" start_offset="37" end_offset="41" is_metavar="False"/>
+         <node name="body" extra_info="" start_offset="41" end_offset="50" is_metavar="False">
+            <node name="pixels_per_unit_x" extra_info="11811 (0x2e23)" start_offset="41" end_offset="45" is_metavar="False"/>
+            <node name="pixels_per_unit_y" extra_info="11811 (0x2e23)" start_offset="45" end_offset="49" is_metavar="False"/>
+            <node name="unit" extra_info="meter" start_offset="49" end_offset="50" is_metavar="False"/>
+         </node>
+         <node name="crc" extra_info="Byte Array (Length: 4)" start_offset="50" end_offset="54" is_metavar="False"/>
+      </node>
+      <node name="[1]" extra_info="" start_offset="54" end_offset="73" is_metavar="False">
+         <node name="len" extra_info="7 (0x7)" start_offset="54" end_offset="58" is_metavar="False"/>
+         <node name="type" extra_info="tIME" start_offset="58" end_offset="62" is_metavar="False"/>
+         <node name="body" extra_info="" start_offset="62" end_offset="69" is_metavar="False">
+            <node name="year" extra_info="2021 (0x7e5)" start_offset="62" end_offset="64" is_metavar="False"/>
+            <node name="month" extra_info="9 (0x9)" start_offset="64" end_offset="65" is_metavar="False"/>
+            <node name="day" extra_info="21 (0x15)" start_offset="65" end_offset="66" is_metavar="False"/>
+            <node name="hour" extra_info="9 (0x9)" start_offset="66" end_offset="67" is_metavar="False"/>
+            <node name="minute" extra_info="36 (0x24)" start_offset="67" end_offset="68" is_metavar="False"/>
+            <node name="second" extra_info="18 (0x12)" start_offset="68" end_offset="69" is_metavar="False"/>
+         </node>
+         <node name="crc" extra_info="Byte Array (Length: 4)" start_offset="69" end_offset="73" is_metavar="False"/>
+      </node>
+      <node name="[2]" extra_info="" start_offset="73" end_offset="110" is_metavar="False">
+         <node name="len" extra_info="25 (0x19)" start_offset="73" end_offset="77" is_metavar="False"/>
+         <node name="type" extra_info="tEXt" start_offset="77" end_offset="81" is_metavar="False"/>
+         <node name="body" extra_info="" start_offset="81" end_offset="106" is_metavar="False">
+            <node name="keyword" extra_info="Comment" start_offset="81" end_offset="89" is_metavar="False"/>
+            <node name="text" extra_info="Created with GIMP" start_offset="89" end_offset="106" is_metavar="False"/>
+         </node>
+         <node name="crc" extra_info="Byte Array (Length: 4)" start_offset="106" end_offset="110" is_metavar="False"/>
+      </node>
+      <node name="[3]" extra_info="" start_offset="110" end_offset="137" is_metavar="False">
+         <node name="len" extra_info="15 (0xf)" start_offset="110" end_offset="114" is_metavar="False"/>
+         <node name="type" extra_info="IDAT" start_offset="114" end_offset="118" is_metavar="False"/>
+         <node name="body" extra_info="Byte Array (Length: 15)" start_offset="118" end_offset="133" is_metavar="False"/>
+         <node name="crc" extra_info="Byte Array (Length: 4)" start_offset="133" end_offset="137" is_metavar="False"/>
+      </node>
+      <node name="[4]" extra_info="" start_offset="137" end_offset="149" is_metavar="False">
+         <node name="len" extra_info="0 (0x0)" start_offset="137" end_offset="141" is_metavar="False"/>
+         <node name="type" extra_info="IEND" start_offset="141" end_offset="145" is_metavar="False"/>
+         <node name="body" extra_info="Byte Array (Length: 0)" start_offset="145" end_offset="145" is_metavar="False"/>
+         <node name="crc" extra_info="Byte Array (Length: 4)" start_offset="145" end_offset="149" is_metavar="False"/>
+      </node>
+   </node>
+</root>

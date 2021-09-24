@@ -1,0 +1,189 @@
+<?xml version="1.0" ?>
+<root>
+   <node name="sections" extra_info="" start_offset="0" end_offset="162" is_metavar="False">
+      <node name="[0]" extra_info="" start_offset="0" end_offset="50" is_metavar="False">
+         <node name="magic" extra_info="Byte Array (Length: 2)" start_offset="0" end_offset="2" is_metavar="False"/>
+         <node name="section_type" extra_info="1027 (0x403)" start_offset="2" end_offset="4" is_metavar="False"/>
+         <node name="body" extra_info="" start_offset="4" end_offset="50" is_metavar="False">
+            <node name="header" extra_info="" start_offset="4" end_offset="38" is_metavar="False">
+               <node name="version" extra_info="10 (0xa)" start_offset="4" end_offset="6" is_metavar="False"/>
+               <node name="flags" extra_info="" start_offset="6" end_offset="8" is_metavar="False">
+                  <node name="file_encrypted" extra_info="False (0x0)" start_offset="6" end_offset="7" is_metavar="False"/>
+                  <node name="comp_options_raw" extra_info="0 (0x0)" start_offset="7" end_offset="7" is_metavar="False"/>
+                  <node name="has_data_descriptor" extra_info="False (0x0)" start_offset="7" end_offset="7" is_metavar="False"/>
+                  <node name="reserved_1" extra_info="False (0x0)" start_offset="7" end_offset="7" is_metavar="False"/>
+                  <node name="comp_patched_data" extra_info="False (0x0)" start_offset="7" end_offset="7" is_metavar="False"/>
+                  <node name="strong_encrypt" extra_info="False (0x0)" start_offset="7" end_offset="7" is_metavar="False"/>
+                  <node name="reserved_2" extra_info="0 (0x0)" start_offset="7" end_offset="8" is_metavar="False"/>
+                  <node name="lang_encoding" extra_info="False (0x0)" start_offset="8" end_offset="8" is_metavar="False"/>
+                  <node name="reserved_3" extra_info="False (0x0)" start_offset="8" end_offset="8" is_metavar="False"/>
+                  <node name="mask_header_values" extra_info="False (0x0)" start_offset="8" end_offset="8" is_metavar="False"/>
+                  <node name="reserved_4" extra_info="0 (0x0)" start_offset="8" end_offset="8" is_metavar="False"/>
+               </node>
+               <node name="compression_method" extra_info="none" start_offset="8" end_offset="10" is_metavar="False"/>
+               <node name="file_mod_time" extra_info="" start_offset="10" end_offset="14" is_metavar="False">
+                  <node name="time" extra_info="" start_offset="10" end_offset="12" is_metavar="False">
+                     <node name="second_div_2" extra_info="25 (0x19)" start_offset="10" end_offset="11" is_metavar="False"/>
+                     <node name="minute" extra_info="31 (0x1f)" start_offset="11" end_offset="12" is_metavar="False"/>
+                     <node name="hour" extra_info="12 (0xc)" start_offset="12" end_offset="12" is_metavar="False"/>
+                     <node name="second" extra_info="50 (0x32)" start_offset="None" end_offset="None" is_metavar="True"/>
+                     <node name="padded_second" extra_info="50" start_offset="None" end_offset="None" is_metavar="True"/>
+                     <node name="padded_minute" extra_info="31" start_offset="None" end_offset="None" is_metavar="True"/>
+                     <node name="padded_hour" extra_info="12" start_offset="None" end_offset="None" is_metavar="True"/>
+                  </node>
+                  <node name="date" extra_info="" start_offset="12" end_offset="14" is_metavar="False">
+                     <node name="day" extra_info="21 (0x15)" start_offset="12" end_offset="13" is_metavar="False"/>
+                     <node name="month" extra_info="9 (0x9)" start_offset="13" end_offset="14" is_metavar="False"/>
+                     <node name="year_minus_1980" extra_info="41 (0x29)" start_offset="14" end_offset="14" is_metavar="False"/>
+                     <node name="year" extra_info="2021 (0x7e5)" start_offset="None" end_offset="None" is_metavar="True"/>
+                     <node name="padded_day" extra_info="21" start_offset="None" end_offset="None" is_metavar="True"/>
+                     <node name="padded_month" extra_info="09" start_offset="None" end_offset="None" is_metavar="True"/>
+                     <node name="padded_year" extra_info="2021" start_offset="None" end_offset="None" is_metavar="True"/>
+                  </node>
+               </node>
+               <node name="crc32" extra_info="472456355 (0x1c291ca3)" start_offset="14" end_offset="18" is_metavar="False"/>
+               <node name="len_body_compressed" extra_info="12 (0xc)" start_offset="18" end_offset="22" is_metavar="False"/>
+               <node name="len_body_uncompressed" extra_info="12 (0xc)" start_offset="22" end_offset="26" is_metavar="False"/>
+               <node name="len_file_name" extra_info="8 (0x8)" start_offset="26" end_offset="28" is_metavar="False"/>
+               <node name="len_extra" extra_info="0 (0x0)" start_offset="28" end_offset="30" is_metavar="False"/>
+               <node name="file_name" extra_info="test.txt" start_offset="30" end_offset="38" is_metavar="False"/>
+               <node name="extra" extra_info="" start_offset="38" end_offset="38" is_metavar="False">
+                  <node name="entries" extra_info="" start_offset="38" end_offset="38" is_metavar="False"/>
+               </node>
+            </node>
+            <node name="body" extra_info="Byte Array (Length: 12)" start_offset="38" end_offset="50" is_metavar="False"/>
+         </node>
+      </node>
+      <node name="[1]" extra_info="" start_offset="50" end_offset="140" is_metavar="False">
+         <node name="magic" extra_info="Byte Array (Length: 2)" start_offset="50" end_offset="52" is_metavar="False"/>
+         <node name="section_type" extra_info="513 (0x201)" start_offset="52" end_offset="54" is_metavar="False"/>
+         <node name="body" extra_info="" start_offset="54" end_offset="140" is_metavar="False">
+            <node name="version_made_by" extra_info="63 (0x3f)" start_offset="54" end_offset="56" is_metavar="False"/>
+            <node name="version_needed_to_extract" extra_info="10 (0xa)" start_offset="56" end_offset="58" is_metavar="False"/>
+            <node name="flags" extra_info="0 (0x0)" start_offset="58" end_offset="60" is_metavar="False"/>
+            <node name="compression_method" extra_info="none" start_offset="60" end_offset="62" is_metavar="False"/>
+            <node name="file_mod_time" extra_info="" start_offset="62" end_offset="66" is_metavar="False">
+               <node name="time" extra_info="" start_offset="62" end_offset="64" is_metavar="False">
+                  <node name="second_div_2" extra_info="25 (0x19)" start_offset="62" end_offset="63" is_metavar="False"/>
+                  <node name="minute" extra_info="31 (0x1f)" start_offset="63" end_offset="64" is_metavar="False"/>
+                  <node name="hour" extra_info="12 (0xc)" start_offset="64" end_offset="64" is_metavar="False"/>
+                  <node name="second" extra_info="50 (0x32)" start_offset="None" end_offset="None" is_metavar="True"/>
+                  <node name="padded_second" extra_info="50" start_offset="None" end_offset="None" is_metavar="True"/>
+                  <node name="padded_minute" extra_info="31" start_offset="None" end_offset="None" is_metavar="True"/>
+                  <node name="padded_hour" extra_info="12" start_offset="None" end_offset="None" is_metavar="True"/>
+               </node>
+               <node name="date" extra_info="" start_offset="64" end_offset="66" is_metavar="False">
+                  <node name="day" extra_info="21 (0x15)" start_offset="64" end_offset="65" is_metavar="False"/>
+                  <node name="month" extra_info="9 (0x9)" start_offset="65" end_offset="66" is_metavar="False"/>
+                  <node name="year_minus_1980" extra_info="41 (0x29)" start_offset="66" end_offset="66" is_metavar="False"/>
+                  <node name="year" extra_info="2021 (0x7e5)" start_offset="None" end_offset="None" is_metavar="True"/>
+                  <node name="padded_day" extra_info="21" start_offset="None" end_offset="None" is_metavar="True"/>
+                  <node name="padded_month" extra_info="09" start_offset="None" end_offset="None" is_metavar="True"/>
+                  <node name="padded_year" extra_info="2021" start_offset="None" end_offset="None" is_metavar="True"/>
+               </node>
+            </node>
+            <node name="crc32" extra_info="472456355 (0x1c291ca3)" start_offset="66" end_offset="70" is_metavar="False"/>
+            <node name="len_body_compressed" extra_info="12 (0xc)" start_offset="70" end_offset="74" is_metavar="False"/>
+            <node name="len_body_uncompressed" extra_info="12 (0xc)" start_offset="74" end_offset="78" is_metavar="False"/>
+            <node name="len_file_name" extra_info="8 (0x8)" start_offset="78" end_offset="80" is_metavar="False"/>
+            <node name="len_extra" extra_info="36 (0x24)" start_offset="80" end_offset="82" is_metavar="False"/>
+            <node name="len_comment" extra_info="0 (0x0)" start_offset="82" end_offset="84" is_metavar="False"/>
+            <node name="disk_number_start" extra_info="0 (0x0)" start_offset="84" end_offset="86" is_metavar="False"/>
+            <node name="int_file_attr" extra_info="0 (0x0)" start_offset="86" end_offset="88" is_metavar="False"/>
+            <node name="ext_file_attr" extra_info="32 (0x20)" start_offset="88" end_offset="92" is_metavar="False"/>
+            <node name="ofs_local_header" extra_info="0 (0x0)" start_offset="92" end_offset="96" is_metavar="False"/>
+            <node name="file_name" extra_info="test.txt" start_offset="96" end_offset="104" is_metavar="False"/>
+            <node name="extra" extra_info="" start_offset="104" end_offset="140" is_metavar="False">
+               <node name="entries" extra_info="" start_offset="104" end_offset="140" is_metavar="False">
+                  <node name="[0]" extra_info="" start_offset="104" end_offset="140" is_metavar="False">
+                     <node name="code" extra_info="ntfs" start_offset="104" end_offset="106" is_metavar="False"/>
+                     <node name="len_body" extra_info="32 (0x20)" start_offset="106" end_offset="108" is_metavar="False"/>
+                     <node name="body" extra_info="" start_offset="108" end_offset="140" is_metavar="False">
+                        <node name="reserved" extra_info="0 (0x0)" start_offset="108" end_offset="112" is_metavar="False"/>
+                        <node name="attributes" extra_info="" start_offset="112" end_offset="140" is_metavar="False">
+                           <node name="[0]" extra_info="" start_offset="112" end_offset="140" is_metavar="False">
+                              <node name="tag" extra_info="1 (0x1)" start_offset="112" end_offset="114" is_metavar="False"/>
+                              <node name="len_body" extra_info="24 (0x18)" start_offset="114" end_offset="116" is_metavar="False"/>
+                              <node name="body" extra_info="" start_offset="116" end_offset="140" is_metavar="False">
+                                 <node name="last_mod_time" extra_info="132766903091840644 (0x1d7aecb80b7c684)" start_offset="116" end_offset="124" is_metavar="False"/>
+                                 <node name="last_access_time" extra_info="132766903408611161 (0x1d7aecb93994f59)" start_offset="124" end_offset="132" is_metavar="False"/>
+                                 <node name="creation_time" extra_info="132766902931763036 (0x1d7aecb772d2f5c)" start_offset="132" end_offset="140" is_metavar="False"/>
+                              </node>
+                           </node>
+                        </node>
+                     </node>
+                  </node>
+               </node>
+            </node>
+            <node name="comment" extra_info="" start_offset="140" end_offset="140" is_metavar="False"/>
+            <node name="local_header" extra_info="" start_offset="None" end_offset="None" is_metavar="True">
+               <node name="magic" extra_info="Byte Array (Length: 2)" start_offset="0" end_offset="2" is_metavar="False"/>
+               <node name="section_type" extra_info="1027 (0x403)" start_offset="2" end_offset="4" is_metavar="False"/>
+               <node name="body" extra_info="" start_offset="4" end_offset="50" is_metavar="False">
+                  <node name="header" extra_info="" start_offset="4" end_offset="38" is_metavar="False">
+                     <node name="version" extra_info="10 (0xa)" start_offset="4" end_offset="6" is_metavar="False"/>
+                     <node name="flags" extra_info="" start_offset="6" end_offset="8" is_metavar="False">
+                        <node name="file_encrypted" extra_info="False (0x0)" start_offset="6" end_offset="7" is_metavar="False"/>
+                        <node name="comp_options_raw" extra_info="0 (0x0)" start_offset="7" end_offset="7" is_metavar="False"/>
+                        <node name="has_data_descriptor" extra_info="False (0x0)" start_offset="7" end_offset="7" is_metavar="False"/>
+                        <node name="reserved_1" extra_info="False (0x0)" start_offset="7" end_offset="7" is_metavar="False"/>
+                        <node name="comp_patched_data" extra_info="False (0x0)" start_offset="7" end_offset="7" is_metavar="False"/>
+                        <node name="strong_encrypt" extra_info="False (0x0)" start_offset="7" end_offset="7" is_metavar="False"/>
+                        <node name="reserved_2" extra_info="0 (0x0)" start_offset="7" end_offset="8" is_metavar="False"/>
+                        <node name="lang_encoding" extra_info="False (0x0)" start_offset="8" end_offset="8" is_metavar="False"/>
+                        <node name="reserved_3" extra_info="False (0x0)" start_offset="8" end_offset="8" is_metavar="False"/>
+                        <node name="mask_header_values" extra_info="False (0x0)" start_offset="8" end_offset="8" is_metavar="False"/>
+                        <node name="reserved_4" extra_info="0 (0x0)" start_offset="8" end_offset="8" is_metavar="False"/>
+                     </node>
+                     <node name="compression_method" extra_info="none" start_offset="8" end_offset="10" is_metavar="False"/>
+                     <node name="file_mod_time" extra_info="" start_offset="10" end_offset="14" is_metavar="False">
+                        <node name="time" extra_info="" start_offset="10" end_offset="12" is_metavar="False">
+                           <node name="second_div_2" extra_info="25 (0x19)" start_offset="10" end_offset="11" is_metavar="False"/>
+                           <node name="minute" extra_info="31 (0x1f)" start_offset="11" end_offset="12" is_metavar="False"/>
+                           <node name="hour" extra_info="12 (0xc)" start_offset="12" end_offset="12" is_metavar="False"/>
+                           <node name="second" extra_info="50 (0x32)" start_offset="None" end_offset="None" is_metavar="True"/>
+                           <node name="padded_second" extra_info="50" start_offset="None" end_offset="None" is_metavar="True"/>
+                           <node name="padded_minute" extra_info="31" start_offset="None" end_offset="None" is_metavar="True"/>
+                           <node name="padded_hour" extra_info="12" start_offset="None" end_offset="None" is_metavar="True"/>
+                        </node>
+                        <node name="date" extra_info="" start_offset="12" end_offset="14" is_metavar="False">
+                           <node name="day" extra_info="21 (0x15)" start_offset="12" end_offset="13" is_metavar="False"/>
+                           <node name="month" extra_info="9 (0x9)" start_offset="13" end_offset="14" is_metavar="False"/>
+                           <node name="year_minus_1980" extra_info="41 (0x29)" start_offset="14" end_offset="14" is_metavar="False"/>
+                           <node name="year" extra_info="2021 (0x7e5)" start_offset="None" end_offset="None" is_metavar="True"/>
+                           <node name="padded_day" extra_info="21" start_offset="None" end_offset="None" is_metavar="True"/>
+                           <node name="padded_month" extra_info="09" start_offset="None" end_offset="None" is_metavar="True"/>
+                           <node name="padded_year" extra_info="2021" start_offset="None" end_offset="None" is_metavar="True"/>
+                        </node>
+                     </node>
+                     <node name="crc32" extra_info="472456355 (0x1c291ca3)" start_offset="14" end_offset="18" is_metavar="False"/>
+                     <node name="len_body_compressed" extra_info="12 (0xc)" start_offset="18" end_offset="22" is_metavar="False"/>
+                     <node name="len_body_uncompressed" extra_info="12 (0xc)" start_offset="22" end_offset="26" is_metavar="False"/>
+                     <node name="len_file_name" extra_info="8 (0x8)" start_offset="26" end_offset="28" is_metavar="False"/>
+                     <node name="len_extra" extra_info="0 (0x0)" start_offset="28" end_offset="30" is_metavar="False"/>
+                     <node name="file_name" extra_info="test.txt" start_offset="30" end_offset="38" is_metavar="False"/>
+                     <node name="extra" extra_info="" start_offset="38" end_offset="38" is_metavar="False">
+                        <node name="entries" extra_info="" start_offset="38" end_offset="38" is_metavar="False"/>
+                     </node>
+                  </node>
+                  <node name="body" extra_info="Byte Array (Length: 12)" start_offset="38" end_offset="50" is_metavar="False"/>
+               </node>
+            </node>
+         </node>
+      </node>
+      <node name="[2]" extra_info="" start_offset="140" end_offset="162" is_metavar="False">
+         <node name="magic" extra_info="Byte Array (Length: 2)" start_offset="140" end_offset="142" is_metavar="False"/>
+         <node name="section_type" extra_info="1541 (0x605)" start_offset="142" end_offset="144" is_metavar="False"/>
+         <node name="body" extra_info="" start_offset="144" end_offset="162" is_metavar="False">
+            <node name="disk_of_end_of_central_dir" extra_info="0 (0x0)" start_offset="144" end_offset="146" is_metavar="False"/>
+            <node name="disk_of_central_dir" extra_info="0 (0x0)" start_offset="146" end_offset="148" is_metavar="False"/>
+            <node name="num_central_dir_entries_on_disk" extra_info="1 (0x1)" start_offset="148" end_offset="150" is_metavar="False"/>
+            <node name="num_central_dir_entries_total" extra_info="1 (0x1)" start_offset="150" end_offset="152" is_metavar="False"/>
+            <node name="len_central_dir" extra_info="90 (0x5a)" start_offset="152" end_offset="156" is_metavar="False"/>
+            <node name="ofs_central_dir" extra_info="50 (0x32)" start_offset="156" end_offset="160" is_metavar="False"/>
+            <node name="len_comment" extra_info="0 (0x0)" start_offset="160" end_offset="162" is_metavar="False"/>
+            <node name="comment" extra_info="" start_offset="162" end_offset="162" is_metavar="False"/>
+         </node>
+      </node>
+   </node>
+</root>
