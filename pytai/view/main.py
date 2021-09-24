@@ -59,9 +59,17 @@ class View(tk.Tk):
         self.resizable(width = True, height = True)
         self.geometry('1280x720')
 
-        
-        with importlib.resources.path(f"{__package__}.assets", "pytai.ico") as icon_path:
-            self.iconbitmap(default = icon_path)
+        try:
+            with importlib.resources.path(f"{__package__}.assets", "pytai.ico") as icon_path:
+                self.iconbitmap(default = icon_path)
+        except tk.TclError:
+            try:
+                with importlib.resources.path(f"{__package__}.assets", "pytai.gif") as icon_path:
+                    icon = tk.PhotoImage(file = icon_path)
+                    self.root.call('wm', 'iconphoto', self.root._w, icon)
+            except Exception:
+                pass
+
 
         self.menubar = MenuBar(self.root, {
             MenuBar.Events.REFRESH:                 self.refresh,
