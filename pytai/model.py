@@ -30,6 +30,7 @@ from pathlib import Path
 from typing import Union, Any
 from collections import namedtuple
 from io import BytesIO
+from contextlib import contextmanager
 
 from .common import *
 from . import utils
@@ -42,7 +43,7 @@ class Parser(object):
     def __init__(self) -> None:
         pass
     
-
+    @contextmanager
     def parse(self, path_file: Union[str, Path]) -> Any:
         """Parse the given file.
         
@@ -107,8 +108,6 @@ class KaitaiParser(Parser):
             
         self._load_parser(format)
 
-        self.streams = set()
-
     def _load_parser(self, format: str) -> None:
         """Load and return a Kaitai parser matching the given Kaitai Struct language definition.
         
@@ -127,22 +126,29 @@ class KaitaiParser(Parser):
             if len(module_classes) != 1:
                 raise RuntimeError("Can't determine class name using introspection")
             main_class_name: str = module_classes[0]
-        except (ImportError, RuntimeError):
-            raise # TODO
+        except (RuntimeError):
+            raise # TODO Is there any other way to determine class name?
 
         self.parser = getattr(parser_module, main_class_name)
         self.format = format
 
+    @contextmanager
     def parse(self, path_file: Union[str, Path]) -> "KaitaiStruct":
+        assert(not hasattr(self, "streams") or self.streams is None)
+        self.streams = set()
+        parsed_file = None
         try:
             parsed_file = self.parser.from_file(path_file)
             parsed_file._read()
+            yield parsed_file
         except self.kaitaistruct.ValidationNotEqualError as e:
             raise PyTaiException(f"Can't parse file as '{self.format}': {str(e)}") from e
         except Exception:
             raise
-
-        return parsed_file
+        finally:
+            self.streams = None # No need to save the streams anymore, clear up memory
+            if parsed_file is not None:
+                parsed_file.close()
 
     def get_children(self, parent: "KaitaiStruct") -> Parser.ChildAttr:
         if hasattr(parent, "SEQ_FIELDS"):
@@ -154,7 +160,7 @@ class KaitaiParser(Parser):
                 relative_offset = False
                 if hasattr(value, "_io") and hasattr(value._io, "_io") and isinstance(value._io._io, BytesIO):
                     if value._io._io not in self.streams:
-                        self.streams.add(value._io._io) # TODO: Need to make sure streams isn't reused for reparsing. Have caller send it?
+                        self.streams.add(value._io._io)
                         relative_offset = True
                 is_array = False
                 if 'arr' in debug_dict[child]:
@@ -168,8 +174,6 @@ class KaitaiParser(Parser):
             if value is not None:
                 yield Parser.ChildAttr(name = name, value = value, start_offset = None, end_offset = None, is_metavar = True, is_array = False, relative_offset = False)
         
-
-
 
 class Model(object):
 

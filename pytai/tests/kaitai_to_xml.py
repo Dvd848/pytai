@@ -102,9 +102,9 @@ def kaitai_to_xml(parser: "KaitaiParser", path: str) -> ET.ElementTree:
                                              is_metavar = str(child_attr.is_metavar))
                 recurse(child_attr.value, current_node, child_attr.is_array, start_offset if child_attr.relative_offset else add_offset)
 
-    parsed_file = parser.parse(path)
-    recurse(parsed_file, root, False, 0)
-    parsed_file.close()
+    with parser.parse(path) as parsed_file:
+        recurse(parent_object = parsed_file, parent_node = root, is_array = False, add_offset = 0)
+    
     return root
 
 def save_kaitai_to_xml(kaitai_format: str, input_path: Union[str, Path], output_path: Union[str, Path]) -> None:

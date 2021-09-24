@@ -88,76 +88,70 @@ class Application():
         self.current_file_path = path_file
         self.format = format
 
-        parsed_file = None
-
         try:
             parser = self.model.get_parser(**format)
-            parsed_file = parser.parse(self.current_file_path)
+            with parser.parse(self.current_file_path) as parsed_file:
 
-            # W/A for Kaitai struct behavior:
-            # In some cases (e.g. if of the structures within a Kaitai struct is imported), Kaitai will populate
-            # the debug offsets with a relative value to the internal struct instead of an absolute value from the start
-            # of the external structure.
-            # We rely on the offset to highlight the selected bytes in the hex view, and can't use relative offsets.
-            # Therefore, as a W/A, we're currently maintaining an "add_offset" variable to transform a relative offset into
-            # an absolute one.
+                # W/A for Kaitai struct behavior:
+                # In some cases (e.g. if of the structures within a Kaitai struct is imported), Kaitai will populate
+                # the debug offsets with a relative value to the internal struct instead of an absolute value from the start
+                # of the external structure.
+                # We rely on the offset to highlight the selected bytes in the hex view, and can't use relative offsets.
+                # Therefore, as a W/A, we're currently maintaining an "add_offset" variable to transform a relative offset into
+                # an absolute one.
 
-            NodeAttributes = namedtuple("NodeAttributes", "parent name value start_offset end_offset is_metavar is_array add_offset")
+                NodeAttributes = namedtuple("NodeAttributes", "parent name value start_offset end_offset is_metavar is_array add_offset")
 
-            # Build the structure tree by iterating the parsed file (BFS)
+                # Build the structure tree by iterating the parsed file (BFS)
 
-            queue = []
-    
-            queue.append(NodeAttributes(parent = '', name = 'root', value = parsed_file, start_offset = 0, end_offset = 0, 
-                                        is_metavar = False, is_array = False, add_offset = 0))
-    
-            while queue:
-                node_attr = queue.pop(0)
+                queue = []
+        
+                queue.append(NodeAttributes(parent = '', name = 'root', value = parsed_file, start_offset = 0, end_offset = 0, 
+                                            is_metavar = False, is_array = False, add_offset = 0))
+        
+                while queue:
+                    node_attr = queue.pop(0)
 
-                handle = self.view.add_tree_item(node_attr.parent, name = node_attr.name, 
-                                                extra_info = parser.get_item_description(node_attr.value), 
-                                                start_offset = node_attr.start_offset, end_offset = node_attr.end_offset, 
-                                                is_metavar = node_attr.is_metavar)
-                
-                if node_attr.is_array:
-                    for i, (arr_attr) in enumerate(node_attr.value):
+                    handle = self.view.add_tree_item(node_attr.parent, name = node_attr.name, 
+                                                    extra_info = parser.get_item_description(node_attr.value), 
+                                                    start_offset = node_attr.start_offset, end_offset = node_attr.end_offset, 
+                                                    is_metavar = node_attr.is_metavar)
+                    
+                    if node_attr.is_array:
+                        for i, (arr_attr) in enumerate(node_attr.value):
 
-                        start_offset = arr_attr.start_offset
-                        end_offset = arr_attr.end_offset
-                        if node_attr.start_offset is not None:
-                            start_offset += node_attr.add_offset
-                            end_offset += node_attr.add_offset
+                            start_offset = arr_attr.start_offset
+                            end_offset = arr_attr.end_offset
+                            if node_attr.start_offset is not None:
+                                start_offset += node_attr.add_offset
+                                end_offset += node_attr.add_offset
 
-                        queue.append( NodeAttributes(parent = handle, name = f"[{i}]", value = arr_attr.value, 
-                                                     start_offset = start_offset, 
-                                                     end_offset = end_offset, 
-                                                     is_metavar = False, is_array = False, 
-                                                     add_offset = node_attr.add_offset) )
-                else:
-                    for child_attr in parser.get_children(node_attr.value):
+                            queue.append( NodeAttributes(parent = handle, name = f"[{i}]", value = arr_attr.value, 
+                                                        start_offset = start_offset, 
+                                                        end_offset = end_offset, 
+                                                        is_metavar = False, is_array = False, 
+                                                        add_offset = node_attr.add_offset) )
+                    else:
+                        for child_attr in parser.get_children(node_attr.value):
 
-                        start_offset = child_attr.start_offset
-                        end_offset = child_attr.end_offset
-                        if child_attr.start_offset is not None:
-                            start_offset += node_attr.add_offset
-                            end_offset += node_attr.add_offset
+                            start_offset = child_attr.start_offset
+                            end_offset = child_attr.end_offset
+                            if child_attr.start_offset is not None:
+                                start_offset += node_attr.add_offset
+                                end_offset += node_attr.add_offset
 
-                        queue.append( NodeAttributes(parent = handle, name = child_attr.name, value = child_attr.value, 
-                                                     start_offset = start_offset, 
-                                                     end_offset = end_offset, 
-                                                     is_metavar = child_attr.is_metavar, 
-                                                     is_array = child_attr.is_array, 
-                                                     add_offset = start_offset if child_attr.relative_offset else node_attr.add_offset) )
+                            queue.append( NodeAttributes(parent = handle, name = child_attr.name, value = child_attr.value, 
+                                                        start_offset = start_offset, 
+                                                        end_offset = end_offset, 
+                                                        is_metavar = child_attr.is_metavar, 
+                                                        is_array = child_attr.is_array, 
+                                                        add_offset = start_offset if child_attr.relative_offset else node_attr.add_offset) )
 
-            self.view.set_status("Loaded")
+                self.view.set_status("Loaded")
         except PyTaiException as e:
             self.view.display_error(str(e))
         except Exception:
             raise
-        finally:
-            if parsed_file is not None:
-                parsed_file.close()
-
 
     def cb_refresh(self) -> None:
         """Callback for an event where the user refreshes the view."""
