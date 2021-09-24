@@ -27,7 +27,7 @@ from pathlib import Path
 
 def filter(path: Path) -> bool:
     for part in path.parts:
-        if part.startswith(".") or part in ["__pycache__", "tmp"]:
+        if part.startswith(".") or part in ["__pycache__", "tmp", "tests", "docs"]:
             return False
 
     for pattern in ["*.pyc", "*.ini", "*.pyz"]:
