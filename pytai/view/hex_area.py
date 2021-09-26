@@ -79,18 +79,18 @@ class HexAreaView():
         self.main_frame = tk.Frame(parent, bg = 'white')
 
         # Create the widgets
-        self.textbox_address = tk.Text(self.main_frame, width = 17, padx = 10, wrap = tk.NONE)
+        self.textbox_address = tk.Text(self.main_frame, width = 17, padx = 10, wrap = tk.NONE, bd = 0)
         self.textbox_address.pack(side=tk.LEFT, fill=tk.Y, expand=False)
 
         self.textbox_address.tag_configure(TAG_JUSTIFY_RIGHT, justify = tk.RIGHT)
 
-        self.textbox_hex = tk.Text(self.main_frame, width = 47, padx = 10, wrap = tk.NONE)
+        self.textbox_hex = tk.Text(self.main_frame, width = 47, padx = 10, wrap = tk.NONE, bd = 0)
         self.textbox_hex.pack(side=tk.LEFT, fill=tk.Y, expand=False)
 
         self.textbox_hex.tag_config(TAG_HIGHLIGHT, background='gold3')
         self.textbox_hex.tag_config(TAG_GOTO, background='lightcyan')
 
-        self.textbox_ascii = tk.Text(self.main_frame, width = 17, padx = 10, wrap = tk.NONE)
+        self.textbox_ascii = tk.Text(self.main_frame, width = 17, padx = 10, wrap = tk.NONE, bd = 0)
         self.textbox_ascii.pack(side=tk.LEFT, fill=tk.Y, expand=False)
 
         self.textbox_ascii.tag_config(TAG_HIGHLIGHT, background='gold3')
