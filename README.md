@@ -10,7 +10,7 @@ Given a binary file with a supported format, `pytai` can be used to browse the s
 
 ```console
 $ python3 ./pytai.pyz -h                 
-usage: pytai.pyz [-h] -f FILE -kf FORMAT
+usage: pytai.pyz [-h] [-f FILE] [-kf FORMAT]
 
 pytai: A Python-based Kaitai Struct Visualizer and HEX Viewer
 
@@ -18,21 +18,35 @@ optional arguments:
   -h, --help            show this help message and exit
   -f FILE, --file FILE  Path to binary file
   -kf FORMAT, --kaitai-format FORMAT
-                        Kaitai Format to use when parsing the file. Current formats found under "kaitai/formats" are: aix_utmp, allegro_dat, andes_firmware, android_asus_bootldr, android_dto, android_img, android_opengl_shaders_cache,
-                        android_super, apm_partition_table, apple_single_double, au, avi, bcd, bitcoin_transaction, blender_blend, bmp, broadcom_trx, bson, btrfs_stream, bytes_with_io, code_6502, compressed_resource, cpio_old_le,
-                        cramfs, creative_voice_file, dbf, dex, dicom, dime_message, dns_packet, doom_wad, dos_datetime, dos_mz, ds_store, dune_2_pak, edid, efivar_signature_list, elf, ethernet_frame, exif, ext2, fallout2_dat,
-                        fallout_dat, ftl_dat, genmidi_op2, gettext_mo, gif, gimp_brush, glibc_utmp, gltf_binary, google_protobuf, gpt_partition_table, gran_turismo_vol, gzip, hashcat_restore, hccap, hccapx, heaps_pak,
-                        heroes_of_might_and_magic_agg, heroes_of_might_and_magic_bmp, icmp_packet, ico, id3v1_1, id3v2_3, id3v2_4, ines, ipv4_packet, ipv6_packet, iso9660, java_class, jpeg, luks, lvm2, lzh, mach_o, mac_os_resource_snd,
-                        magicavoxel_vox, mbr_partition_table, microsoft_cfb, microsoft_network_monitor_v2, microsoft_pe, minecraft_nbt, monomakh_sapr_chg, mozilla_mar, msgpack, nitf, ogg, openpgp_message, packet_ppi, pcap, pcf_font,
-                        pcx, pcx_dcx, phar_without_stub, php_serialized_value, png, protocol_body, psx_tim, python_pickle, python_pyc_27, quake_mdl, quake_pak, quicktime_mov, rar, regf, renderware_binary_stream, resource_fork, riff,
-                        rtcp_payload, rtpdump, rtp_packet, ruby_marshal, saints_row_2_vpp_pc, shapefile_index, shapefile_main, sqlite3, ssh_public_key, standard_midi_file, stl, sudoers_ts, swf, systemd_journal, tcp_segment, tga,
-                        tls_client_hello, tr_dos_image, tsm, ttf, udp_datagram, uefi_te, uimage, utf8_string, vdi, vfat, vlq_base128_be, vlq_base128_le, vmware_vmdk, vp8_ivf, warcraft_2_pud, wav, websocket, windows_evt_log,
-                        windows_lnk_file, windows_minidump, windows_resource_file, windows_shell_items, windows_systemtime, wmf, xwd, zip, zx_spectrum_tap
+                        Kaitai Format to use when parsing the file. Current formats found under "kaitai/formats" are:
+                        aix_utmp, allegro_dat, andes_firmware, android_asus_bootldr, android_dto, android_img,
+                        android_opengl_shaders_cache, android_super, apm_partition_table, apple_single_double, au,
+                        avi, bcd, bitcoin_transaction, blender_blend, bmp, broadcom_trx, bson, btrfs_stream,
+                        bytes_with_io, code_6502, compressed_resource, cpio_old_le, cramfs, creative_voice_file, dbf,
+                        dex, dicom, dime_message, dns_packet, doom_wad, dos_datetime, dos_mz, ds_store, dune_2_pak,
+                        edid, efivar_signature_list, elf, ethernet_frame, exif, ext2, fallout2_dat, fallout_dat,
+                        ftl_dat, genmidi_op2, gettext_mo, gif, gimp_brush, glibc_utmp, gltf_binary, google_protobuf,
+                        gpt_partition_table, gran_turismo_vol, gzip, hashcat_restore, hccap, hccapx, heaps_pak,
+                        heroes_of_might_and_magic_agg, heroes_of_might_and_magic_bmp, icmp_packet, ico, id3v1_1,
+                        id3v2_3, id3v2_4, ines, ipv4_packet, ipv6_packet, iso9660, java_class, jpeg, luks, lvm2, lzh,
+                        mach_o, mac_os_resource_snd, magicavoxel_vox, mbr_partition_table, microsoft_cfb,
+                        microsoft_network_monitor_v2, microsoft_pe, minecraft_nbt, monomakh_sapr_chg, mozilla_mar,
+                        msgpack, nitf, ogg, openpgp_message, packet_ppi, pcap, pcf_font, pcx, pcx_dcx,
+                        phar_without_stub, php_serialized_value, png, protocol_body, psx_tim, python_pickle,
+                        python_pyc_27, quake_mdl, quake_pak, quicktime_mov, rar, regf, renderware_binary_stream,
+                        resource_fork, riff, rtcp_payload, rtpdump, rtp_packet, ruby_marshal, saints_row_2_vpp_pc,
+                        shapefile_index, shapefile_main, sqlite3, ssh_public_key, standard_midi_file, stl, sudoers_ts,
+                        swf, systemd_journal, tcp_segment, tga, tls_client_hello, tr_dos_image, tsm, ttf,
+                        udp_datagram, uefi_te, uimage, utf8_string, vdi, vfat, vlq_base128_be, vlq_base128_le,
+                        vmware_vmdk, vp8_ivf, warcraft_2_pud, wav, websocket, windows_evt_log, windows_lnk_file,
+                        windows_minidump, windows_resource_file, windows_shell_items, windows_systemtime, wmf, xwd,
+                        zip, zx_spectrum_tap
 ```
 
 Examples:
 
 ```console
+$ python3 ./pytai.pyz
 $ python3 ./pytai.pyz -f ../../image.png -kf png
 $ python3 ./pytai.pyz -f ../../archive.zip -kf zip
 $ python3 __main__.py -f ../../program.exe -kf dos_mz
