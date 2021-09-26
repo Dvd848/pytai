@@ -26,15 +26,16 @@ License:
 import tkinter as tk
 import importlib.resources
 
-from tkinter import messagebox, simpledialog
+from tkinter import messagebox, simpledialog, filedialog
 from typing import Dict, Callable
 
 from .menus import *
 from .tree_area import *
 from .hex_area import *
 from .events import *
+from .widgets import *
 
-#from ..common import *
+from ..common import *
 
 class View(tk.Tk):
     """ The application 'View' Model."""
@@ -74,6 +75,7 @@ class View(tk.Tk):
         self.menubar = MenuBar(self.root, {
             MenuBar.Events.REFRESH:                 self.refresh,
             MenuBar.Events.GOTO:                    self.show_goto,
+            MenuBar.Events.OPEN:                    self.show_open,
         })
         self.root.config(menu = self.menubar)
         
@@ -97,6 +99,7 @@ class View(tk.Tk):
 
         self.root.bind('<F5>', self.refresh)
         self.root.bind('<Control-g>', self.show_goto)
+        self.root.bind('<Control-o>', self.show_open)
 
         # Delegate a few interface functions directly to internal implementation
         self.add_tree_item = self.tree_view.add_item
@@ -126,6 +129,11 @@ class View(tk.Tk):
             self.callbacks[Events.GOTO](offset)
         except ValueError as e:
             self.display_error(f"Unable to jump to offset {answer}:\n({str(e)})")
+
+    def show_open(self, event) -> None:
+        cwd = self.callbacks[Events.GET_CWD]
+        OpenFileWindow(self.root, cwd, self.callbacks[Events.OPEN])
+
 
     def set_status(self, status: str) -> None:
         """Set the given status in the status bar.
@@ -169,3 +177,125 @@ class View(tk.Tk):
         else:
             self.set_status("")
         self.hex_view.mark_range(start_offset, end_offset)
+
+
+class OpenFileWindow():
+    """Window for selecting the file to view."""
+    
+    def __init__(self, parent, cwd: str, open_file_callback: Callable[[str, str], None]):
+        """Instantiate the class.
+        
+        Args:
+            parent:
+                Parent tk class.
+                
+            open_file_callback:
+                Callback to be called once the user selects the file to open
+        """
+        self.parent = parent
+
+        self.cwd = cwd
+        self.open_file_callback = open_file_callback
+
+        self.window = tk.Toplevel(self.parent)
+        self.window.title(f"Open file...") 
+        self.window.geometry(f"400x300") 
+        #self.window.attributes('-toolwindow', True)
+        self.window.resizable(0, 0)
+        self.window.transient(self.parent)
+        self.window.grab_set()
+
+        label_file_explorer = tk.Label(self.window,
+                                       text = "File: ",
+                                       anchor=tk.W)
+
+        self.entry_file_name = tk.Entry(self.window, width = 40)
+
+        button_explore = tk.Button(self.window,
+                        text = "Browse...",
+                        command = self.browseFiles)
+
+        label_file_explorer.grid(row = 0, column = 0, padx = 5, pady = 20, sticky = tk.W)
+        self.entry_file_name.grid(row = 0, column = 1, padx = 5, pady = 20)
+        button_explore.grid(row = 0, column = 2, padx = 5, pady = 20)
+
+        label_format = tk.Label(self.window,
+                                text = "Format: ",
+                                anchor=tk.W)
+
+        self.search_var = tk.StringVar()
+        self.filter_str = "Filter..."
+        self.entry_format = EntryWithPlaceholder(self.window, placeholder = self.filter_str, textvariable = self.search_var, width = 40)
+
+        lbox_frame = tk.Frame(self.window)
+        lbox_scrollbar = tk.Scrollbar(lbox_frame)
+        self.lbox = tk.Listbox(lbox_frame, width = 37, height = 10)
+        self.lbox.config(yscrollcommand= lbox_scrollbar.set)
+        self.search_var.trace("w", lambda name, index, mode: self.update_list())
+
+        lbox_scrollbar.pack(side = tk.RIGHT, fill = tk.BOTH)
+        self.lbox.pack(side = tk.LEFT, fill = tk.BOTH)
+         
+        label_format.grid(row = 1, column = 0, padx = 5, pady = 0, sticky = tk.W)
+        self.entry_format.grid(row = 1, column = 1, padx = 10, pady = 0)
+        lbox_frame.grid(row = 2, column = 1, padx = 10, pady = 0)
+        
+        self.update_list()
+
+        button_ok = tk.Button(self.window,
+                        text = "OK",
+                        command = self.submit, width = 7)
+        button_cancel = tk.Button(self.window,
+                        text = "Cancel",
+                        command = self.cancel, width = 7)
+
+        button_ok.grid(row = 3, column = 1, padx = 5, pady = 12, sticky = tk.E)
+        button_cancel.grid(row = 3, column = 2, padx = 5, pady = 12, sticky = tk.W)
+
+        self.window.bind('<Return>', self.submit)
+        self.window.bind('<Escape>', self.cancel)
+        self.window.focus_force()
+
+    def browseFiles(self):
+        filename = filedialog.askopenfilename(initialdir = str(self.cwd),
+                                              title = "Select a File",
+                                              filetypes = [("all files", "*.*")])
+        self.entry_file_name.delete(0, tk.END)
+        self.entry_file_name.insert(0, filename)
+      
+    def update_list(self):
+        search_term = self.search_var.get()
+
+        lbox_list = kaitai_formats()
+         
+        self.lbox.delete(0, tk.END)
+     
+        if search_term == self.filter_str:
+            for item in lbox_list:
+                self.lbox.insert(tk.END, item)
+        else:
+            for item in lbox_list:
+                if search_term.lower() in item.lower():
+                    self.lbox.insert(tk.END, item)
+
+    def submit(self, event = None) -> None:
+        try:
+            file_path = self.entry_file_name.get()
+            if file_path.strip() == "":
+                raise RuntimeError("Please select file to open")
+
+            lbox_selection = self.lbox.curselection()
+            if len(lbox_selection) == 0:
+                raise RuntimeError("Please select format")
+
+            format = self.lbox.get(lbox_selection)
+
+            self.open_file_callback(file_path, {"kaitai_format": format})
+            self.window.destroy()
+        except Exception as e:
+            messagebox.showerror("Error", str(e))
+        
+
+    def cancel(self, event = None) -> None:
+        """Cancel the operation."""
+        self.window.destroy()

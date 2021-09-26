@@ -1,6 +1,4 @@
-"""The 'View' Module of the application: The GUI Events.
-
-This file contains the different GUI events that can be triggered by the user/application.
+"""Various widgets.
 
 License:
     MIT License
@@ -23,28 +21,36 @@ License:
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 """
-import enum
 
-class Events(enum.Enum):
-        
-    # User refreshes the view
-    REFRESH            = enum.auto()
+
+import tkinter as tk
+
+class EntryWithPlaceholder(tk.Entry):
+    """Entry with place holder.
     
-    # Application needs to set the status bar
-    SET_STATUS         = enum.auto()
-    
-    # Application needs to display error
-    SHOW_ERROR         = enum.auto()
+    Source: https://stackoverflow.com/questions/27820178/
+    """
+    def __init__(self, master=None, placeholder="PLACEHOLDER", color='grey', *args, **kwargs):
+        super().__init__(master, *args, **kwargs)
 
-    # User selects item from structure tree
-    STRUCTURE_SELECTED = enum.auto()
+        self.placeholder = placeholder
+        self.placeholder_color = color
+        self.default_fg_color = self['fg']
 
-    # User wants to jump to offset
-    GOTO               = enum.auto()
+        self.bind("<FocusIn>", self.foc_in)
+        self.bind("<FocusOut>", self.foc_out)
 
-    # User wants to open file
-    OPEN               = enum.auto()
+        self.put_placeholder()
 
-    # Get current working directory
-    GET_CWD            = enum.auto()
-    
+    def put_placeholder(self):
+        self.insert(0, self.placeholder)
+        self['fg'] = self.placeholder_color
+
+    def foc_in(self, *args):
+        if self['fg'] == self.placeholder_color:
+            self.delete('0', 'end')
+            self['fg'] = self.default_fg_color
+
+    def foc_out(self, *args):
+        if not self.get():
+            self.put_placeholder()

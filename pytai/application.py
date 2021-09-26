@@ -30,7 +30,7 @@ License:
 """
 from pathlib import Path
 from collections import namedtuple
-from typing import Union, Dict
+from typing import Union, Dict, Optional
 
 from . import view as v
 from . import model as m
@@ -40,7 +40,7 @@ from . import utils
 from .common import *
 
 class Application():
-    def __init__(self, file, format, *args, **kwargs):
+    def __init__(self, file: Optional[str], format: Dict[str, Optional[str]], *args, **kwargs):
 
         # These callbacks are used to notify the application
         #  of events from the view
@@ -48,12 +48,18 @@ class Application():
             v.Events.REFRESH:             self.cb_refresh,
             v.Events.STRUCTURE_SELECTED:  self.cb_structure_selected,
             v.Events.GOTO:                self.cb_goto,
+            v.Events.OPEN:                self.cb_open,
+            v.Events.GET_CWD:             self.cb_get_cwd,
         }
+
+        self.current_file_path = None
+        self.format = None
 
         self.view = v.View(title = "pytai", callbacks = callbacks)
         self.model = m.Model()
 
-        self.populate_view(file, format)
+        if (file is not None):
+            self.populate_view(file, format)
 
     def run(self) -> None:
         """Runs the application."""
@@ -157,7 +163,8 @@ class Application():
         """Callback for an event where the user refreshes the view."""
         self.view.reset()
         self.view.set_status("Refreshing...")
-        self.populate_view(self.current_file_path, self.format)
+        if self.current_file_path is not None:
+            self.populate_view(self.current_file_path, self.format)
 
     def cb_structure_selected(self, path: str, start_offset: int, end_offset: int) -> None:
         """Callback for an event where the user selects a structure from the tree."""
@@ -168,3 +175,19 @@ class Application():
         """Callback for an event where the user wants to jump to a given offset."""
         self.view.make_visible(offset, highlight = True)
         self.view.set_status(f"Jumping to offset {hex(offset)} ({offset})")
+
+    def cb_open(self, path: str, format: Dict[str, str]) -> None:
+        """Callback for an event where the user wants to open a new file."""
+        self.view.reset()
+        self.populate_view(path, format)
+        self.view.set_status(f"Opened {path}")
+
+    def cb_get_cwd(self) -> str:
+        """Callback for getting the current working directory.
+        The CWD is defined as the parent directory of the last file opened,
+        or the current directory if no file was previously opened.
+        """
+        if self.current_file_path is not None:
+            return Path(self.current_file_path).parent
+
+        return "."

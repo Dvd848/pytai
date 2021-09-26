@@ -22,6 +22,8 @@ License:
     SOFTWARE.
 """
 from pathlib import Path
+import importlib.resources
+from typing import List
 
 SUBFOLDER_KAITAI = "kaitai"
 SUBFOLDER_FORMATS = "formats"
@@ -31,3 +33,12 @@ KAITAI_FORMAT_DIR = KAITAI_DIR / SUBFOLDER_FORMATS
 
 class PyTaiException(Exception):
     pass
+
+def kaitai_formats() -> List[str]:
+    """Returns a list of supporeted Kaitai formats."""
+    res = []
+    for filename in importlib.resources.contents(f"pytai.{SUBFOLDER_KAITAI}.{SUBFOLDER_FORMATS}"):
+        file = Path(filename)
+        if file.suffix == ".py" and not file.stem.startswith("__"):
+            res.append(file.stem)
+    return res

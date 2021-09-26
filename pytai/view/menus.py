@@ -56,6 +56,9 @@ class MenuBar(tk.Menu):
         # User wants to jump to offset
         GOTO                    = enum.auto()
 
+        # User wants to open file
+        OPEN                    = enum.auto()
+
     def __init__(self, parent, callbacks: Dict[Events, Callable[..., None]]):
         """Instantiate the class.
         
@@ -72,6 +75,7 @@ class MenuBar(tk.Menu):
         self.callbacks = callbacks
 
         filemenu = tk.Menu(self, tearoff=0)
+        filemenu.add_command(label="Open...", command=lambda: self.callbacks[self.Events.OPEN](None), accelerator="Ctrl+O")
         filemenu.add_command(label="Exit", command=parent.quit)
         self.add_cascade(label="File", menu=filemenu)
 
