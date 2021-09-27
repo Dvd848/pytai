@@ -131,7 +131,7 @@ class View(tk.Tk):
             self.display_error(f"Unable to jump to offset {answer}:\n({str(e)})")
 
     def show_open(self, event) -> None:
-        cwd = self.callbacks[Events.GET_CWD]
+        cwd = self.callbacks[Events.GET_CWD]()
         OpenFileWindow(self.root, cwd, self.callbacks[Events.OPEN])
 
 
