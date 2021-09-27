@@ -199,7 +199,7 @@ class OpenFileWindow():
 
         self.window = tk.Toplevel(self.parent)
         self.window.title(f"Open file...") 
-        self.window.geometry(f"400x300") 
+        #self.window.geometry(f"400x300") 
         #self.window.attributes('-toolwindow', True)
         self.window.resizable(0, 0)
         self.window.transient(self.parent)
@@ -229,16 +229,16 @@ class OpenFileWindow():
 
         lbox_frame = tk.Frame(self.window)
         lbox_scrollbar = tk.Scrollbar(lbox_frame)
-        self.lbox = tk.Listbox(lbox_frame, width = 37, height = 10)
+        self.lbox = tk.Listbox(lbox_frame, height = 10)
         self.lbox.config(yscrollcommand= lbox_scrollbar.set)
         self.search_var.trace("w", lambda name, index, mode: self.update_list())
 
         lbox_scrollbar.pack(side = tk.RIGHT, fill = tk.BOTH)
-        self.lbox.pack(side = tk.LEFT, fill = tk.BOTH)
+        self.lbox.pack(side = tk.LEFT, fill = tk.BOTH, expand = 1)
          
         label_format.grid(row = 1, column = 0, padx = 5, pady = 0, sticky = tk.W)
         self.entry_format.grid(row = 1, column = 1, padx = 10, pady = 0)
-        lbox_frame.grid(row = 2, column = 1, padx = 10, pady = 0)
+        lbox_frame.grid(row = 2, column = 1, padx = 10, pady = 0, sticky='ew')
         
         self.update_list()
 
