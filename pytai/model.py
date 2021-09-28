@@ -172,7 +172,14 @@ class KaitaiParser(Parser):
 
         for name, value in utils.getproperties(parent):
             if value is not None:
-                yield Parser.ChildAttr(name = name, value = value, start_offset = None, end_offset = None, is_metavar = True, is_array = False, relative_offset = False)
+                start_offset = end_offset = None
+                try:
+                    debug_dict = getattr(parent, "_debug")
+                    start_offset = debug_dict[f"_m_{name}"]['start']
+                    end_offset = debug_dict[f"_m_{name}"]['end']
+                except Exception:
+                    pass
+                yield Parser.ChildAttr(name = name, value = value, start_offset = start_offset, end_offset = end_offset, is_metavar = True, is_array = False, relative_offset = False)
         
 
 class Model(object):

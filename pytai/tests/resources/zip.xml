@@ -116,7 +116,7 @@
                </node>
             </node>
             <node name="comment" extra_info="" start_offset="140" end_offset="140" is_metavar="False"/>
-            <node name="local_header" extra_info="" start_offset="None" end_offset="None" is_metavar="True">
+            <node name="local_header" extra_info="" start_offset="0" end_offset="50" is_metavar="True">
                <node name="magic" extra_info="Byte Array (Length: 2)" start_offset="0" end_offset="2" is_metavar="False"/>
                <node name="section_type" extra_info="1027 (0x403)" start_offset="2" end_offset="4" is_metavar="False"/>
                <node name="body" extra_info="" start_offset="4" end_offset="50" is_metavar="False">
