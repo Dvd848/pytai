@@ -47,13 +47,6 @@ TAG_GOTO = 'goto'
 
 TAGS = [TAG_JUSTIFY_RIGHT, TAG_HIGHLIGHT, TAG_SELECTION, TAG_GOTO]
 
-class HexViewWidget(tk.Frame):
-
-    def __init__(self, parent, **kwargs):
-        super().__init__(parent, bg = 'white')
-
-
-
 class HexAreaView():
     """Implements the view for the hex area."""
 
@@ -154,10 +147,13 @@ class HexAreaView():
                 Length of the file.
         """
         num_lines = num_bytes // self.BYTES_PER_ROW
+        if (num_bytes % self.BYTES_PER_ROW) != 0:
+            num_lines += 1
+
         chars_per_byte = 2
         format_pad_len = 8 * chars_per_byte
 
-        for i in range(num_lines + 1):
+        for i in range(num_lines):
             base_address = format(i * self.BYTES_PER_ROW, 'X').rjust(format_pad_len, '0')
             self.textbox_address.insert(tk.END, f"{base_address}\n")
 
@@ -180,9 +176,6 @@ class HexAreaView():
             ascii_format = "".join([chr(i) if 32 <= i <= 127 else "." for i in chunk])
             self.textbox_ascii.insert(tk.END, f"{ascii_format}\n")
 
-        self.textbox_address.tag_add(TAG_JUSTIFY_RIGHT, 1.0, tk.END)
-
-        self.textbox_address.config(state = tk.DISABLED)
         self.textbox_hex.config(state = tk.DISABLED)
         self.textbox_ascii.config(state = tk.DISABLED)
 
