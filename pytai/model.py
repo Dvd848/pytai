@@ -27,9 +27,8 @@ import importlib
 import inspect
 
 from pathlib import Path
-from typing import Union, Any
+from typing import Union, Any, Dict, Tuple
 from collections import namedtuple
-from io import BytesIO
 from contextlib import contextmanager
 
 from .common import *
@@ -134,8 +133,6 @@ class KaitaiParser(Parser):
 
     @contextmanager
     def parse(self, path_file: Union[str, Path]) -> "KaitaiStruct":
-        assert(not hasattr(self, "streams") or self.streams is None)
-        self.streams = set()
         parsed_file = None
         try:
             parsed_file = self.parser.from_file(path_file)
@@ -146,51 +143,93 @@ class KaitaiParser(Parser):
         except Exception:
             raise
         finally:
-            self.streams = None # No need to save the streams anymore, clear up memory
             if parsed_file is not None:
                 parsed_file.close()
 
-    def get_children(self, parent: "KaitaiStruct") -> Parser.ChildAttr:
-        is_relative = lambda x: isinstance(x, self.kaitaistruct.KaitaiStruct) and (x._parent is None or x._io != x._parent._io)
-        if hasattr(parent, "SEQ_FIELDS"):
-            for child in parent.SEQ_FIELDS:
-                if not hasattr(parent, child):
-                    continue
-                debug_dict = getattr(parent, "_debug")
-                value = getattr(parent, child)
-                relative_offset = False
+    def _has_relative_offset(self, obj: Any) -> bool:
+        """Returns true if the object has a relative offset in the Kaitai _debug dictionary, false otherwise."""
+        if not isinstance(obj, self.kaitaistruct.KaitaiStruct):
+            return False
+        return (obj._parent is None or obj._io != obj._parent._io)
+        
+    def _get_details(self, debug_dict: Dict[str, Dict[str, int]], parent: "KaitaiStruct", child_name: str, value: Any) -> Tuple[int, int, bool, bool, Any]:
+        """Extract some details about parent.child_name.
+        
+        Args:
+            debug_dict: 
+                Kaitai's _debug dictionary for the parent.
 
-                if is_relative(value):
-                        relative_offset = True
-                is_array = False
-                if 'arr' in debug_dict[child]:
-                    value = [Parser.ArrayAttr(v, debug_dict[child]['arr'][i]['start'], debug_dict[child]['arr'][i]['end'], is_relative(v)) for i, v in enumerate(value)]
-                    is_array = True
-                
-                yield Parser.ChildAttr(name = child, value = value, start_offset = debug_dict[child]['start'], 
-                                       end_offset = debug_dict[child]['end'], is_metavar = False, is_array = is_array, relative_offset = relative_offset)
+            parent:
+               KaitaiStruct parent object. 
+
+            child_name:
+                Name of child attribute.
+
+            value:
+                Value of child as received from Kaitai.
+
+        Returns:
+            A tuple containing the following information:
+                - Start offset: Start offset of the object as captured in the debug_dict.
+                - End offset: End offset of the object as captured in the debug_dict.
+                - Is array: True if the given object is in fact a list of objects.
+                - Relative offset: True if the object has relative offsets
+                - Value: Value of the object. For arrays, will be expanded to a list of ParserChildAttr, 
+                         otherwise same as value sent it
+            
+        """
+        start_offset = end_offset = None
+        is_array = False
+        relative_offset = False
+        
+        try:
+            start_offset = debug_dict[child_name]['start'] # Might not exist
+            end_offset = debug_dict[child_name]['end']     # Might not exist
+
+            real_value = getattr(parent, child_name)
+            relative_offset = self._has_relative_offset(real_value)
+            
+            if 'arr' in debug_dict[child_name]:
+                value = [Parser.ChildAttr(name = f"[{i}]",
+                                                value = v, 
+                                                start_offset = debug_dict[child_name]['arr'][i]['start'], 
+                                                end_offset = debug_dict[child_name]['arr'][i]['end'], 
+                                                is_metavar = False,
+                                                is_array = False,
+                                                relative_offset = self._has_relative_offset(v)) 
+                            for i, v in enumerate(value)]
+                is_array = True
+        except KeyError:
+            pass
+
+        return start_offset, end_offset, is_array, relative_offset, value
+
+    def get_children(self, parent: "KaitaiStruct") -> Parser.ChildAttr:
+        if not isinstance(parent, self.kaitaistruct.KaitaiStruct):
+            return
+
+        debug_dict = getattr(parent, "_debug")
+
+        for child in parent.SEQ_FIELDS:
+            if not hasattr(parent, child):
+                continue
+
+            start_offset, end_offset, is_array, relative_offset, value = self._get_details(debug_dict, parent, child, getattr(parent, child))
+
+            yield Parser.ChildAttr(name = child, value = value, start_offset = start_offset, 
+                                    end_offset = end_offset, is_metavar = False, 
+                                    is_array = is_array, relative_offset = relative_offset)
 
         for name, value in utils.getproperties(parent):
-            if value is not None:
-                start_offset = end_offset = None
-                is_array = False
-                relative_offset = False
-                try:
-                    debug_dict = getattr(parent, "_debug")
-                    start_offset = debug_dict[f"_m_{name}"]['start']
-                    end_offset = debug_dict[f"_m_{name}"]['end']
+            if value is None:
+                continue
 
-                    real_value = getattr(parent, f"_m_{name}")
-                    relative_offset = False
-                    if is_relative(real_value):
-                        relative_offset = True
-                    if 'arr' in debug_dict[f"_m_{name}"]:
-                        value = [Parser.ArrayAttr(v, debug_dict[f"_m_{name}"]['arr'][i]['start'], debug_dict[f"_m_{name}"]['arr'][i]['end'], is_relative(v)) for i, v in enumerate(value)]
-                        is_array = True
-                except Exception:
-                    pass
-                yield Parser.ChildAttr(name = name, value = value, start_offset = start_offset, end_offset = end_offset, is_metavar = True, is_array = is_array, relative_offset = relative_offset)
-        
+            start_offset, end_offset, is_array, relative_offset, value = self._get_details(debug_dict, parent, f"_m_{name}", value)
+
+            yield Parser.ChildAttr(name = name, value = value, start_offset = start_offset, 
+                                   end_offset = end_offset, is_metavar = True, 
+                                   is_array = is_array, relative_offset = relative_offset)
+    
 
 class Model(object):
 

@@ -75,32 +75,25 @@ def kaitai_to_xml(parser: "KaitaiParser", path: str) -> ET.ElementTree:
         
         """
         if is_array:
-            for i, (arr_attr) in enumerate(parent_object):
-                start_offset = arr_attr.start_offset
-                end_offset = arr_attr.end_offset
-                if arr_attr.start_offset is not None:
-                    start_offset += add_offset
-                    end_offset += add_offset
-                current_node = ET.SubElement(parent_node, "node", name = f"[{i}]", 
-                                             extra_info = parser.get_item_description(arr_attr.value), 
-                                             start_offset = str(start_offset), 
-                                             end_offset = str(end_offset),
-                                             is_metavar = str(False))
-                recurse(arr_attr.value, current_node, False, start_offset if arr_attr.relative_offset else add_offset)
+            values = parent_object
         else:
-            for child_attr in parser.get_children(parent_object):
-                start_offset = child_attr.start_offset
-                end_offset = child_attr.end_offset
-                if child_attr.start_offset is not None:
-                    start_offset += add_offset
-                    end_offset += add_offset
+            values = parser.get_children(parent_object)
 
-                current_node = ET.SubElement(parent_node, "node", name = child_attr.name, 
-                                             extra_info = parser.get_item_description(child_attr.value),
-                                             start_offset = str(start_offset), 
-                                             end_offset = str(end_offset),
-                                             is_metavar = str(child_attr.is_metavar))
-                recurse(child_attr.value, current_node, child_attr.is_array, start_offset if child_attr.relative_offset else add_offset)
+        for child_attr in values:
+            
+            start_offset = child_attr.start_offset
+            end_offset = child_attr.end_offset
+            if child_attr.start_offset is not None:
+                start_offset += add_offset
+                end_offset += add_offset
+
+            current_node = ET.SubElement(parent_node, "node", name = child_attr.name, 
+                                            extra_info = parser.get_item_description(child_attr.value), 
+                                            start_offset = str(start_offset), 
+                                            end_offset = str(end_offset),
+                                            is_metavar = str(child_attr.is_metavar))
+            recurse(child_attr.value, current_node, child_attr.is_array, start_offset if child_attr.relative_offset else add_offset)
+
 
     with parser.parse(path) as parsed_file:
         recurse(parent_object = parsed_file, parent_node = root, is_array = False, add_offset = 0)

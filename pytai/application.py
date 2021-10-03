@@ -124,34 +124,24 @@ class Application():
                                                     is_metavar = node_attr.is_metavar)
                     
                     if node_attr.is_array:
-                        for i, (arr_attr) in enumerate(node_attr.value):
-
-                            start_offset = arr_attr.start_offset
-                            end_offset = arr_attr.end_offset
-                            if node_attr.start_offset is not None:
-                                start_offset += node_attr.add_offset
-                                end_offset += node_attr.add_offset
-
-                            queue.append( NodeAttributes(parent = handle, name = f"[{i}]", value = arr_attr.value, 
-                                                        start_offset = start_offset, 
-                                                        end_offset = end_offset, 
-                                                        is_metavar = False, is_array = False, 
-                                                        add_offset = start_offset if arr_attr.relative_offset else node_attr.add_offset) )
+                        values = node_attr.value
                     else:
-                        for child_attr in parser.get_children(node_attr.value):
+                        values = parser.get_children(node_attr.value)
 
-                            start_offset = child_attr.start_offset
-                            end_offset = child_attr.end_offset
-                            if child_attr.start_offset is not None:
-                                start_offset += node_attr.add_offset
-                                end_offset += node_attr.add_offset
+                    for child_attr in values:
 
-                            queue.append( NodeAttributes(parent = handle, name = child_attr.name, value = child_attr.value, 
-                                                        start_offset = start_offset, 
-                                                        end_offset = end_offset, 
-                                                        is_metavar = child_attr.is_metavar, 
-                                                        is_array = child_attr.is_array, 
-                                                        add_offset = start_offset if child_attr.relative_offset else node_attr.add_offset) )
+                        start_offset = child_attr.start_offset
+                        end_offset = child_attr.end_offset
+                        if child_attr.start_offset is not None:
+                            start_offset += node_attr.add_offset
+                            end_offset += node_attr.add_offset
+
+                        queue.append( NodeAttributes(parent = handle, name = child_attr.name, value = child_attr.value, 
+                                                    start_offset = start_offset, 
+                                                    end_offset = end_offset, 
+                                                    is_metavar = child_attr.is_metavar, is_array = child_attr.is_array, 
+                                                    add_offset = start_offset if child_attr.relative_offset else node_attr.add_offset) )
+
 
                 self.view.set_status("Loaded")
         except PyTaiException as e:
