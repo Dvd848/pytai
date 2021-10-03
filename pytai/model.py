@@ -38,7 +38,7 @@ from . import utils
 
 class Parser(object):
     ChildAttr = namedtuple("ParserChildAttr", "name value start_offset end_offset is_metavar is_array relative_offset")
-    ArrayAttr = namedtuple("ArrayAttr", "value start_offset end_offset")
+    ArrayAttr = namedtuple("ArrayAttr", "value start_offset end_offset relative_offset")
 
     def __init__(self) -> None:
         pass
@@ -151,6 +151,7 @@ class KaitaiParser(Parser):
                 parsed_file.close()
 
     def get_children(self, parent: "KaitaiStruct") -> Parser.ChildAttr:
+        is_relative = lambda x: isinstance(x, self.kaitaistruct.KaitaiStruct) and (x._parent is None or x._io != x._parent._io)
         if hasattr(parent, "SEQ_FIELDS"):
             for child in parent.SEQ_FIELDS:
                 if not hasattr(parent, child):
@@ -158,13 +159,12 @@ class KaitaiParser(Parser):
                 debug_dict = getattr(parent, "_debug")
                 value = getattr(parent, child)
                 relative_offset = False
-                if hasattr(value, "_io") and hasattr(value._io, "_io") and isinstance(value._io._io, BytesIO):
-                    if value._io._io not in self.streams:
-                        self.streams.add(value._io._io)
+
+                if is_relative(value):
                         relative_offset = True
                 is_array = False
                 if 'arr' in debug_dict[child]:
-                    value = [Parser.ArrayAttr(v, debug_dict[child]['arr'][i]['start'], debug_dict[child]['arr'][i]['end']) for i, v in enumerate(value)]
+                    value = [Parser.ArrayAttr(v, debug_dict[child]['arr'][i]['start'], debug_dict[child]['arr'][i]['end'], is_relative(v)) for i, v in enumerate(value)]
                     is_array = True
                 
                 yield Parser.ChildAttr(name = child, value = value, start_offset = debug_dict[child]['start'], 
@@ -173,13 +173,23 @@ class KaitaiParser(Parser):
         for name, value in utils.getproperties(parent):
             if value is not None:
                 start_offset = end_offset = None
+                is_array = False
+                relative_offset = False
                 try:
                     debug_dict = getattr(parent, "_debug")
                     start_offset = debug_dict[f"_m_{name}"]['start']
                     end_offset = debug_dict[f"_m_{name}"]['end']
+
+                    real_value = getattr(parent, f"_m_{name}")
+                    relative_offset = False
+                    if is_relative(real_value):
+                        relative_offset = True
+                    if 'arr' in debug_dict[f"_m_{name}"]:
+                        value = [Parser.ArrayAttr(v, debug_dict[f"_m_{name}"]['arr'][i]['start'], debug_dict[f"_m_{name}"]['arr'][i]['end'], is_relative(v)) for i, v in enumerate(value)]
+                        is_array = True
                 except Exception:
                     pass
-                yield Parser.ChildAttr(name = name, value = value, start_offset = start_offset, end_offset = end_offset, is_metavar = True, is_array = False, relative_offset = False)
+                yield Parser.ChildAttr(name = name, value = value, start_offset = start_offset, end_offset = end_offset, is_metavar = True, is_array = is_array, relative_offset = relative_offset)
         
 
 class Model(object):

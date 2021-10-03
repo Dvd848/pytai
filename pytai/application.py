@@ -136,7 +136,7 @@ class Application():
                                                         start_offset = start_offset, 
                                                         end_offset = end_offset, 
                                                         is_metavar = False, is_array = False, 
-                                                        add_offset = node_attr.add_offset) )
+                                                        add_offset = start_offset if arr_attr.relative_offset else node_attr.add_offset) )
                     else:
                         for child_attr in parser.get_children(node_attr.value):
 

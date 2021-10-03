@@ -86,7 +86,7 @@ def kaitai_to_xml(parser: "KaitaiParser", path: str) -> ET.ElementTree:
                                              start_offset = str(start_offset), 
                                              end_offset = str(end_offset),
                                              is_metavar = str(False))
-                recurse(arr_attr.value, current_node, False, add_offset)
+                recurse(arr_attr.value, current_node, False, start_offset if arr_attr.relative_offset else add_offset)
         else:
             for child_attr in parser.get_children(parent_object):
                 start_offset = child_attr.start_offset

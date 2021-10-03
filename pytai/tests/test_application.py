@@ -92,5 +92,8 @@ class TestOffsets(unittest.TestCase):
     def test_zip(self):
         self.generic_test("zip")
 
+    def test_elf(self):
+        self.generic_test("elf")
+
 if __name__ == "__main__":
     unittest.main()
