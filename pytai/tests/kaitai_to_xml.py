@@ -55,7 +55,7 @@ def kaitai_to_xml(parser: "KaitaiParser", path: str) -> ET.ElementTree:
 
     root = ET.Element("root")
 
-    def recurse(parent_object: Union[List["KaitaiStruct"], "KaitaiStruct"], parent_node: ET.Element, is_array: bool, add_offset: int) -> None:
+    def recurse(parent_object: Union[List["KaitaiStruct"], "KaitaiStruct"], parent_node: ET.Element, is_array: bool) -> None:
         """Recursive function to built the XML tree.
 
         Args:
@@ -69,10 +69,6 @@ def kaitai_to_xml(parser: "KaitaiParser", path: str) -> ET.ElementTree:
             is_array:
                 True if parent_object is a list, false otherwise.
 
-            add_offset:
-                Offset to add to start and end offsets.
-                Needed since Kaitai sometimes returns relative offsets and sometimes absolute offsets.
-        
         """
         if is_array:
             values = parent_object
@@ -80,23 +76,18 @@ def kaitai_to_xml(parser: "KaitaiParser", path: str) -> ET.ElementTree:
             values = parser.get_children(parent_object)
 
         for child_attr in values:
-            
-            start_offset = child_attr.start_offset
-            end_offset = child_attr.end_offset
-            if child_attr.start_offset is not None:
-                start_offset += add_offset
-                end_offset += add_offset
+
 
             current_node = ET.SubElement(parent_node, "node", name = child_attr.name, 
                                             extra_info = parser.get_item_description(child_attr.value), 
-                                            start_offset = str(start_offset), 
-                                            end_offset = str(end_offset),
+                                            start_offset = str(child_attr.start_offset), 
+                                            end_offset = str(child_attr.end_offset),
                                             is_metavar = str(child_attr.is_metavar))
-            recurse(child_attr.value, current_node, child_attr.is_array, start_offset if child_attr.relative_offset else add_offset)
+            recurse(child_attr.value, current_node, child_attr.is_array)
 
 
     with parser.parse(path) as parsed_file:
-        recurse(parent_object = parsed_file, parent_node = root, is_array = False, add_offset = 0)
+        recurse(parent_object = parsed_file, parent_node = root, is_array = False)
     
     return root
 

@@ -36,8 +36,7 @@ from . import utils
 
 
 class Parser(object):
-    ChildAttr = namedtuple("ParserChildAttr", "name value start_offset end_offset is_metavar is_array relative_offset")
-    ArrayAttr = namedtuple("ArrayAttr", "value start_offset end_offset relative_offset")
+    ChildAttr = namedtuple("ParserChildAttr", "name value start_offset end_offset is_metavar is_array")
 
     def __init__(self) -> None:
         pass
@@ -75,7 +74,6 @@ class Parser(object):
                but is somehow transformmed from an existing variable to provide a 
                user-friendly representation of the existing variable.
              * Whether the value is an array of values, each with their own offsets
-             * Whether the childred on this element have relative offsets
         """
         raise NotImplementedError("Inheriting classes must implement this method")
 
@@ -120,7 +118,21 @@ class KaitaiParser(Parser):
             if format_dir not in sys.path:
                 sys.path.append(format_dir)
             sys.modules['kaitaistruct'] = self.kaitaistruct
+
+            class PseudoInt(int):
+                def __new__(cls, x, data, *args, **kwargs):
+                    instance = int.__new__(cls, x, *args, **kwargs)
+                    instance.data = data
+                    return instance
+
+            class KaitaiStreamWrapper(self.kaitaistruct.KaitaiStream):
+                def pos(self):
+                    return PseudoInt(super().pos(), self)
+            
+            self.kaitaistruct.KaitaiStream = KaitaiStreamWrapper
+
             parser_module = importlib.import_module(f'..{SUBFOLDER_KAITAI}.{SUBFOLDER_FORMATS}.{format}', __name__)
+
             module_classes = [m[0] for m in inspect.getmembers(parser_module, inspect.isclass) if m[1].__module__ == parser_module.__name__]
             if len(module_classes) != 1:
                 raise RuntimeError("Can't determine class name using introspection")
@@ -137,6 +149,7 @@ class KaitaiParser(Parser):
         try:
             parsed_file = self.parser.from_file(path_file)
             parsed_file._read()
+            parsed_file._io._base_offset = 0
             yield parsed_file
         except self.kaitaistruct.ValidationNotEqualError as e:
             raise PyTaiException(f"Can't parse file as '{self.format}': {str(e)}") from e
@@ -152,7 +165,7 @@ class KaitaiParser(Parser):
             return False
         return (obj._parent is None or obj._io != obj._parent._io)
         
-    def _get_details(self, debug_dict: Dict[str, Dict[str, int]], parent: "KaitaiStruct", child_name: str, value: Any) -> Tuple[int, int, bool, bool, Any]:
+    def _get_details(self, debug_dict: Dict[str, Dict[str, int]], parent: "KaitaiStruct", child_name: str, value: Any) -> Tuple[int, int, bool, Any]:
         """Extract some details about parent.child_name.
         
         Args:
@@ -173,36 +186,46 @@ class KaitaiParser(Parser):
                 - Start offset: Start offset of the object as captured in the debug_dict.
                 - End offset: End offset of the object as captured in the debug_dict.
                 - Is array: True if the given object is in fact a list of objects.
-                - Relative offset: True if the object has relative offsets
                 - Value: Value of the object. For arrays, will be expanded to a list of ParserChildAttr, 
                          otherwise same as value sent it
             
         """
         start_offset = end_offset = None
         is_array = False
-        relative_offset = False
         
         try:
-            start_offset = debug_dict[child_name]['start'] # Might not exist
-            end_offset = debug_dict[child_name]['end']     # Might not exist
+            base_offset = parent._io._base_offset
+            start_offset = debug_dict[child_name]['start'] + debug_dict[child_name]['start'].data._base_offset # Might not exist
+            end_offset = debug_dict[child_name]['end'] + debug_dict[child_name]['end'].data._base_offset     # Might not exist
 
             real_value = getattr(parent, child_name)
-            relative_offset = self._has_relative_offset(real_value)
+
+            if isinstance(real_value, self.kaitaistruct.KaitaiStruct) and not hasattr(real_value._io, "_base_offset"): 
+                if not self._has_relative_offset(real_value):
+                    real_value._io._base_offset = base_offset
+                else:
+                    real_value._io._base_offset = start_offset
             
             if 'arr' in debug_dict[child_name]:
-                value = [Parser.ChildAttr(name = f"[{i}]",
+                new_value = []
+                for i, v in enumerate(value):
+                    if isinstance(v, self.kaitaistruct.KaitaiStruct) and not hasattr(v._io, "_base_offset"):
+                        if not self._has_relative_offset(v):
+                            v._io._base_offset = base_offset
+                        else:
+                            v._io._base_offset = debug_dict[child_name]['arr'][i]['start'] + debug_dict[child_name]['start'].data._base_offset
+                    new_value.append(Parser.ChildAttr(name = f"[{i}]",
                                                 value = v, 
-                                                start_offset = debug_dict[child_name]['arr'][i]['start'], 
-                                                end_offset = debug_dict[child_name]['arr'][i]['end'], 
+                                                start_offset = debug_dict[child_name]['arr'][i]['start'] + debug_dict[child_name]['start'].data._base_offset, 
+                                                end_offset = debug_dict[child_name]['arr'][i]['end'] + debug_dict[child_name]['end'].data._base_offset, 
                                                 is_metavar = False,
-                                                is_array = False,
-                                                relative_offset = self._has_relative_offset(v)) 
-                            for i, v in enumerate(value)]
+                                                is_array = False))
+                value = new_value
                 is_array = True
         except KeyError:
             pass
 
-        return start_offset, end_offset, is_array, relative_offset, value
+        return start_offset, end_offset, is_array, value
 
     def get_children(self, parent: "KaitaiStruct") -> Parser.ChildAttr:
         if not isinstance(parent, self.kaitaistruct.KaitaiStruct):
@@ -214,22 +237,22 @@ class KaitaiParser(Parser):
             if not hasattr(parent, child):
                 continue
 
-            start_offset, end_offset, is_array, relative_offset, value = self._get_details(debug_dict, parent, child, getattr(parent, child))
+            start_offset, end_offset, is_array, value = self._get_details(debug_dict, parent, child, getattr(parent, child))
 
             yield Parser.ChildAttr(name = child, value = value, start_offset = start_offset, 
                                     end_offset = end_offset, is_metavar = False, 
-                                    is_array = is_array, relative_offset = relative_offset)
+                                    is_array = is_array)
 
         for name, value in utils.getproperties(parent):
             if value is None:
                 continue
-
-            start_offset, end_offset, is_array, relative_offset, value = self._get_details(debug_dict, parent, f"_m_{name}", value)
+            
+            start_offset, end_offset, is_array, value = self._get_details(debug_dict, parent, f"_m_{name}", value)
 
             yield Parser.ChildAttr(name = name, value = value, start_offset = start_offset, 
                                    end_offset = end_offset, is_metavar = True, 
-                                   is_array = is_array, relative_offset = relative_offset)
-    
+                                   is_array = is_array)
+
 
 class Model(object):
 
