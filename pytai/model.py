@@ -165,6 +165,14 @@ class KaitaiParser(Parser):
             return False
         return (obj._parent is None or obj._io != obj._parent._io)
         
+    def _add_base_offset(self, value: Any, start_offset: int, base_offset: int) -> None:
+        """Add the _base_offset attribute to a KaitaiStream based on whether the offset is relative or not."""
+        if isinstance(value, self.kaitaistruct.KaitaiStruct) and not hasattr(value._io, "_base_offset"): 
+            if not self._has_relative_offset(value):
+                value._io._base_offset = base_offset
+            else:
+                value._io._base_offset = start_offset
+
     def _get_details(self, debug_dict: Dict[str, Dict[str, int]], parent: "KaitaiStruct", child_name: str, value: Any) -> Tuple[int, int, bool, Any]:
         """Extract some details about parent.child_name.
         
@@ -187,7 +195,7 @@ class KaitaiParser(Parser):
                 - End offset: End offset of the object as captured in the debug_dict.
                 - Is array: True if the given object is in fact a list of objects.
                 - Value: Value of the object. For arrays, will be expanded to a list of ParserChildAttr, 
-                         otherwise same as value sent it
+                         otherwise same as value sent to it
             
         """
         start_offset = end_offset = None
@@ -195,25 +203,19 @@ class KaitaiParser(Parser):
         
         try:
             base_offset = parent._io._base_offset
-            start_offset = debug_dict[child_name]['start'] + debug_dict[child_name]['start'].data._base_offset # Might not exist
-            end_offset = debug_dict[child_name]['end'] + debug_dict[child_name]['end'].data._base_offset     # Might not exist
+
+            # Note: debug_dict[child_name] might not exist
+            start_offset = debug_dict[child_name]['start'] + debug_dict[child_name]['start'].data._base_offset 
+            end_offset = debug_dict[child_name]['end'] + debug_dict[child_name]['end'].data._base_offset       
 
             real_value = getattr(parent, child_name)
 
-            if isinstance(real_value, self.kaitaistruct.KaitaiStruct) and not hasattr(real_value._io, "_base_offset"): 
-                if not self._has_relative_offset(real_value):
-                    real_value._io._base_offset = base_offset
-                else:
-                    real_value._io._base_offset = start_offset
+            self._add_base_offset(real_value, start_offset, base_offset)
             
             if 'arr' in debug_dict[child_name]:
                 new_value = []
                 for i, v in enumerate(value):
-                    if isinstance(v, self.kaitaistruct.KaitaiStruct) and not hasattr(v._io, "_base_offset"):
-                        if not self._has_relative_offset(v):
-                            v._io._base_offset = base_offset
-                        else:
-                            v._io._base_offset = debug_dict[child_name]['arr'][i]['start'] + debug_dict[child_name]['start'].data._base_offset
+                    self._add_base_offset(v, debug_dict[child_name]['arr'][i]['start'] + debug_dict[child_name]['start'].data._base_offset, base_offset)
                     new_value.append(Parser.ChildAttr(name = f"[{i}]",
                                                 value = v, 
                                                 start_offset = debug_dict[child_name]['arr'][i]['start'] + debug_dict[child_name]['start'].data._base_offset, 
