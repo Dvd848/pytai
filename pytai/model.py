@@ -34,6 +34,19 @@ from contextlib import contextmanager
 from .common import *
 from . import utils
 
+class PytaiUnparsedAccessException(Exception):
+    """The parser tried to access an element that hasn't been parsed yet.
+    
+    This can happen when the file format defines cross-references between
+    structures, i.e. one structure contains an element that isn't relative to 
+    itself, but to another structure.
+
+    Upon catching such an exception, the caller can choose to raise a flag
+    and continue parsing the file. After proceeding with the parsing until the end,
+    the caller can restart the parsing (if the flag is raised) in hope that that 
+    the cross reference has been resolved (i.e. the referenced element has been parsed). 
+    The caller should set a limit to the amount of reparse attempts.
+    """
 
 class Parser(object):
     ChildAttr = namedtuple("ParserChildAttr", "name value start_offset end_offset is_metavar is_array")
@@ -226,6 +239,8 @@ class KaitaiParser(Parser):
                 is_array = True
         except KeyError:
             pass
+        except AttributeError:
+            raise PytaiUnparsedAccessException(f"Unparsed access during parsing of '{child_name}' ")
 
         return start_offset, end_offset, is_array, value
 

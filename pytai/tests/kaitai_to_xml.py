@@ -52,8 +52,7 @@ def kaitai_to_xml(parser: "KaitaiParser", path: str) -> ET.ElementTree:
         XML representation of the file structure.
 
     """
-
-    root = ET.Element("root")
+    reparse_needed = False
 
     def recurse(parent_object: Union[List["KaitaiStruct"], "KaitaiStruct"], parent_node: ET.Element, is_array: bool) -> None:
         """Recursive function to built the XML tree.
@@ -70,26 +69,36 @@ def kaitai_to_xml(parser: "KaitaiParser", path: str) -> ET.ElementTree:
                 True if parent_object is a list, false otherwise.
 
         """
-        if is_array:
-            values = parent_object
-        else:
-            values = parser.get_children(parent_object)
+        nonlocal reparse_needed
 
-        for child_attr in values:
+        try:
+            if is_array:
+                values = parent_object
+            else:
+                values = parser.get_children(parent_object)
 
+            for child_attr in values:
+                current_node = ET.SubElement(parent_node, "node", name = child_attr.name, 
+                                                extra_info = parser.get_item_description(child_attr.value), 
+                                                start_offset = str(child_attr.start_offset), 
+                                                end_offset = str(child_attr.end_offset),
+                                                is_metavar = str(child_attr.is_metavar))
+                recurse(child_attr.value, current_node, child_attr.is_array)
+        except model.PytaiUnparsedAccessException:
+            reparse_needed = True
 
-            current_node = ET.SubElement(parent_node, "node", name = child_attr.name, 
-                                            extra_info = parser.get_item_description(child_attr.value), 
-                                            start_offset = str(child_attr.start_offset), 
-                                            end_offset = str(child_attr.end_offset),
-                                            is_metavar = str(child_attr.is_metavar))
-            recurse(child_attr.value, current_node, child_attr.is_array)
-
-
+    max_retries = 5
     with parser.parse(path) as parsed_file:
-        recurse(parent_object = parsed_file, parent_node = root, is_array = False)
-    
-    return root
+        for _ in range(max_retries):
+            root = ET.Element("root")
+            recurse(parent_object = parsed_file, parent_node = root, is_array = False)
+            if reparse_needed:
+                reparse_needed = False
+                # Try again
+            else:
+                return root
+
+    raise RuntimeError(f"Could not parse {path}")
 
 def save_kaitai_to_xml(kaitai_format: str, input_path: Union[str, Path], output_path: Union[str, Path]) -> None:
     """Save an XML representation of the given file to the given output path.
