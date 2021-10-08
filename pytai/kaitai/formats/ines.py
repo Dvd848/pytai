@@ -1,3 +1,11 @@
+This work is free. You can redistribute it and/or modify it under the
+terms of the Do What The Fuck You Want To Public License, Version 2,
+as published by Sam Hocevar. See http://www.wtfpl.net/ for more details.
+
+# This file was compiled from a KSY format file downloaded from:
+# https://github.com/kaitai-io/kaitai_struct_formats
+
+
 # This is a generated file! Please edit source .ksy file and use kaitai-struct-compiler to rebuild
 
 from pkg_resources import parse_version

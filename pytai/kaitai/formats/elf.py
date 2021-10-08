@@ -1,3 +1,129 @@
+# Creative Commons Legal Code
+#
+# CC0 1.0 Universal
+#
+#     CREATIVE COMMONS CORPORATION IS NOT A LAW FIRM AND DOES NOT PROVIDE
+#     LEGAL SERVICES. DISTRIBUTION OF THIS DOCUMENT DOES NOT CREATE AN
+#     ATTORNEY-CLIENT RELATIONSHIP. CREATIVE COMMONS PROVIDES THIS
+#     INFORMATION ON AN "AS-IS" BASIS. CREATIVE COMMONS MAKES NO WARRANTIES
+#     REGARDING THE USE OF THIS DOCUMENT OR THE INFORMATION OR WORKS
+#     PROVIDED HEREUNDER, AND DISCLAIMS LIABILITY FOR DAMAGES RESULTING FROM
+#     THE USE OF THIS DOCUMENT OR THE INFORMATION OR WORKS PROVIDED
+#     HEREUNDER.
+#
+# Statement of Purpose
+#
+# The laws of most jurisdictions throughout the world automatically confer
+# exclusive Copyright and Related Rights (defined below) upon the creator
+# and subsequent owner(s) (each and all, an "owner") of an original work of
+# authorship and/or a database (each, a "Work").
+#
+# Certain owners wish to permanently relinquish those rights to a Work for
+# the purpose of contributing to a commons of creative, cultural and
+# scientific works ("Commons") that the public can reliably and without fear
+# of later claims of infringement build upon, modify, incorporate in other
+# works, reuse and redistribute as freely as possible in any form whatsoever
+# and for any purposes, including without limitation commercial purposes.
+# These owners may contribute to the Commons to promote the ideal of a free
+# culture and the further production of creative, cultural and scientific
+# works, or to gain reputation or greater distribution for their Work in
+# part through the use and efforts of others.
+#
+# For these and/or other purposes and motivations, and without any
+# expectation of additional consideration or compensation, the person
+# associating CC0 with a Work (the "Affirmer"), to the extent that he or she
+# is an owner of Copyright and Related Rights in the Work, voluntarily
+# elects to apply CC0 to the Work and publicly distribute the Work under its
+# terms, with knowledge of his or her Copyright and Related Rights in the
+# Work and the meaning and intended legal effect of CC0 on those rights.
+#
+# 1. Copyright and Related Rights. A Work made available under CC0 may be
+# protected by copyright and related or neighboring rights ("Copyright and
+# Related Rights"). Copyright and Related Rights include, but are not
+# limited to, the following:
+#
+#   i. the right to reproduce, adapt, distribute, perform, display,
+#      communicate, and translate a Work;
+#  ii. moral rights retained by the original author(s) and/or performer(s);
+# iii. publicity and privacy rights pertaining to a person's image or
+#      likeness depicted in a Work;
+#  iv. rights protecting against unfair competition in regards to a Work,
+#      subject to the limitations in paragraph 4(a), below;
+#   v. rights protecting the extraction, dissemination, use and reuse of data
+#      in a Work;
+#  vi. database rights (such as those arising under Directive 96/9/EC of the
+#      European Parliament and of the Council of 11 March 1996 on the legal
+#      protection of databases, and under any national implementation
+#      thereof, including any amended or successor version of such
+#      directive); and
+# vii. other similar, equivalent or corresponding rights throughout the
+#      world based on applicable law or treaty, and any national
+#      implementations thereof.
+#
+# 2. Waiver. To the greatest extent permitted by, but not in contravention
+# of, applicable law, Affirmer hereby overtly, fully, permanently,
+# irrevocably and unconditionally waives, abandons, and surrenders all of
+# Affirmer's Copyright and Related Rights and associated claims and causes
+# of action, whether now known or unknown (including existing as well as
+# future claims and causes of action), in the Work (i) in all territories
+# worldwide, (ii) for the maximum duration provided by applicable law or
+# treaty (including future time extensions), (iii) in any current or future
+# medium and for any number of copies, and (iv) for any purpose whatsoever,
+# including without limitation commercial, advertising or promotional
+# purposes (the "Waiver"). Affirmer makes the Waiver for the benefit of each
+# member of the public at large and to the detriment of Affirmer's heirs and
+# successors, fully intending that such Waiver shall not be subject to
+# revocation, rescission, cancellation, termination, or any other legal or
+# equitable action to disrupt the quiet enjoyment of the Work by the public
+# as contemplated by Affirmer's express Statement of Purpose.
+#
+# 3. Public License Fallback. Should any part of the Waiver for any reason
+# be judged legally invalid or ineffective under applicable law, then the
+# Waiver shall be preserved to the maximum extent permitted taking into
+# account Affirmer's express Statement of Purpose. In addition, to the
+# extent the Waiver is so judged Affirmer hereby grants to each affected
+# person a royalty-free, non transferable, non sublicensable, non exclusive,
+# irrevocable and unconditional license to exercise Affirmer's Copyright and
+# Related Rights in the Work (i) in all territories worldwide, (ii) for the
+# maximum duration provided by applicable law or treaty (including future
+# time extensions), (iii) in any current or future medium and for any number
+# of copies, and (iv) for any purpose whatsoever, including without
+# limitation commercial, advertising or promotional purposes (the
+# "License"). The License shall be deemed effective as of the date CC0 was
+# applied by Affirmer to the Work. Should any part of the License for any
+# reason be judged legally invalid or ineffective under applicable law, such
+# partial invalidity or ineffectiveness shall not invalidate the remainder
+# of the License, and in such case Affirmer hereby affirms that he or she
+# will not (i) exercise any of his or her remaining Copyright and Related
+# Rights in the Work or (ii) assert any associated claims and causes of
+# action with respect to the Work, in either case contrary to Affirmer's
+# express Statement of Purpose.
+#
+# 4. Limitations and Disclaimers.
+#
+#  a. No trademark or patent rights held by Affirmer are waived, abandoned,
+#     surrendered, licensed or otherwise affected by this document.
+#  b. Affirmer offers the Work as-is and makes no representations or
+#     warranties of any kind concerning the Work, express, implied,
+#     statutory or otherwise, including without limitation warranties of
+#     title, merchantability, fitness for a particular purpose, non
+#     infringement, or the absence of latent or other defects, accuracy, or
+#     the present or absence of errors, whether or not discoverable, all to
+#     the greatest extent permissible under applicable law.
+#  c. Affirmer disclaims responsibility for clearing rights of other persons
+#     that may apply to the Work or any use thereof, including without
+#     limitation any person's Copyright and Related Rights in the Work.
+#     Further, Affirmer disclaims responsibility for obtaining any necessary
+#     consents, permissions or other rights required for any use of the
+#     Work.
+#  d. Affirmer understands and acknowledges that Creative Commons is not a
+#     party to this document and has no duty or obligation with respect to
+#     this CC0 or use of the Work.
+
+# This file was compiled from a KSY format file downloaded from:
+# https://github.com/kaitai-io/kaitai_struct_formats
+
+
 # This is a generated file! Please edit source .ksy file and use kaitai-struct-compiler to rebuild
 
 from pkg_resources import parse_version
@@ -13,7 +139,7 @@ if parse_version(kaitaistruct.__version__) < parse_version('0.9'):
 class Elf(KaitaiStruct):
     """
     .. seealso::
-       Source - https://sourceware.org/git/?p=glibc.git;a=blob;f=elf/elf.h;hb=HEAD
+       Source - https://sourceware.org/git/?p=glibc.git;a=blob;f=elf/elf.h;hb=0f62fe0532
     
     
     .. seealso::
@@ -119,23 +245,198 @@ class Elf(KaitaiStruct):
         x86 = 3
         m68k = 4
         m88k = 5
+        iamcu = 6
+        i860 = 7
         mips = 8
+        s370 = 9
+        mips_rs3_le = 10
+        parisc = 15
+        vpp500 = 17
+        sparc32plus = 18
+        i960 = 19
         powerpc = 20
         powerpc64 = 21
         s390 = 22
+        spu = 23
+        v800 = 36
+        fr20 = 37
+        rh32 = 38
+        rce = 39
         arm = 40
+        alpha = 41
         superh = 42
-        sparcv9 = 43
+        sparc_v9 = 43
+        tricore = 44
+        arc = 45
+        h8_300 = 46
+        h8_300h = 47
+        h8s = 48
+        h8_500 = 49
         ia_64 = 50
+        mips_x = 51
+        coldfire = 52
+        m68hc12 = 53
+        mma = 54
+        pcp = 55
+        ncpu = 56
+        ndr1 = 57
+        starcore = 58
+        me16 = 59
+        st100 = 60
+        tinyj = 61
         x86_64 = 62
+        pdsp = 63
+        pdp10 = 64
+        pdp11 = 65
+        fx66 = 66
+        st9plus = 67
+        st7 = 68
+        mc68hc16 = 69
+        mc68hc11 = 70
+        mc68hc08 = 71
+        mc68hc05 = 72
+        svx = 73
+        st19 = 74
+        vax = 75
+        cris = 76
+        javelin = 77
+        firepath = 78
+        zsp = 79
+        mmix = 80
+        huany = 81
+        prism = 82
         avr = 83
+        fr30 = 84
+        d10v = 85
+        d30v = 86
+        v850 = 87
+        m32r = 88
+        mn10300 = 89
+        mn10200 = 90
+        picojava = 91
+        openrisc = 92
+        arc_compact = 93
+        xtensa = 94
+        videocore = 95
+        tmm_gpp = 96
+        ns32k = 97
+        tpc = 98
+        snp1k = 99
+        st200 = 100
+        ip2k = 101
+        max = 102
+        compact_risc = 103
+        f2mc16 = 104
+        msp430 = 105
+        blackfin = 106
+        se_c33 = 107
+        sep = 108
+        arca = 109
+        unicore = 110
+        excess = 111
+        dxp = 112
+        altera_nios2 = 113
+        crx = 114
+        xgate = 115
+        c166 = 116
+        m16c = 117
+        dspic30f = 118
+        freescale_ce = 119
+        m32c = 120
+        tsk3000 = 131
+        rs08 = 132
+        sharc = 133
+        ecog2 = 134
+        score7 = 135
+        dsp24 = 136
+        videocore3 = 137
+        latticemico32 = 138
+        se_c17 = 139
+        ti_c6000 = 140
+        ti_c2000 = 141
+        ti_c5500 = 142
+        ti_arp32 = 143
+        ti_pru = 144
+        mmdsp_plus = 160
+        cypress_m8c = 161
+        r32c = 162
+        trimedia = 163
         qdsp6 = 164
+        i8051 = 165
+        stxp7x = 166
+        nds32 = 167
+        ecog1x = 168
+        maxq30 = 169
+        ximo16 = 170
+        manik = 171
+        craynv2 = 172
+        rx = 173
+        metag = 174
+        mcst_elbrus = 175
+        ecog16 = 176
+        cr16 = 177
+        etpu = 178
+        sle9x = 179
+        l10m = 180
+        k10m = 181
         aarch64 = 183
         avr32 = 185
-        amdgpu = 224
+        stm8 = 186
+        tile64 = 187
+        tilepro = 188
+        microblaze = 189
+        cuda = 190
+        tilegx = 191
+        cloudshield = 192
+        corea_1st = 193
+        corea_2nd = 194
+        arcv2 = 195
+        open8 = 196
+        rl78 = 197
+        videocore5 = 198
+        renesas_78kor = 199
+        freescale_56800ex = 200
+        ba1 = 201
+        ba2 = 202
+        xcore = 203
+        mchp_pic = 204
+        intelgt = 205
+        intel206 = 206
+        intel207 = 207
+        intel208 = 208
+        intel209 = 209
+        km32 = 210
+        kmx32 = 211
+        kmx16 = 212
+        kmx8 = 213
+        kvarc = 214
+        cdp = 215
+        coge = 216
+        cool = 217
+        norc = 218
+        csr_kalimba = 219
+        z80 = 220
+        visium = 221
+        ft32 = 222
+        moxie = 223
+        amd_gpu = 224
         riscv = 243
+        lanai = 244
+        ceva = 245
+        ceva_x2 = 246
         bpf = 247
+        graphcore_ipu = 248
+        img1 = 249
+        nfp = 250
+        ve = 251
         csky = 252
+        arc_compact3_64 = 253
+        mcs6502 = 254
+        arc_compact3 = 255
+        kvx = 256
+        wdc65816 = 257
+        loongarch = 258
+        kf32 = 259
 
     class SymbolType(Enum):
         no_type = 0
@@ -315,6 +616,8 @@ class Elf(KaitaiStruct):
         self._debug['ei_version']['start'] = self._io.pos()
         self.ei_version = self._io.read_u1()
         self._debug['ei_version']['end'] = self._io.pos()
+        if not self.ei_version == 1:
+            raise kaitaistruct.ValidationNotEqualError(1, self.ei_version, self._io, u"/seq/3")
         self._debug['abi']['start'] = self._io.pos()
         self.abi = KaitaiStream.resolve_enum(Elf.OsAbi, self._io.read_u1())
         self._debug['abi']['end'] = self._io.pos()
@@ -328,448 +631,6 @@ class Elf(KaitaiStruct):
         self.header = Elf.EndianElf(self._io, self, self._root)
         self.header._read()
         self._debug['header']['end'] = self._io.pos()
-
-    class PhdrTypeFlags(KaitaiStruct):
-        SEQ_FIELDS = []
-        def __init__(self, value, _io, _parent=None, _root=None):
-            self._io = _io
-            self._parent = _parent
-            self._root = _root if _root else self
-            self.value = value
-            self._debug = collections.defaultdict(dict)
-
-        def _read(self):
-            pass
-
-        @property
-        def read(self):
-            if hasattr(self, '_m_read'):
-                return self._m_read if hasattr(self, '_m_read') else None
-
-            self._m_read = (self.value & 4) != 0
-            return self._m_read if hasattr(self, '_m_read') else None
-
-        @property
-        def write(self):
-            if hasattr(self, '_m_write'):
-                return self._m_write if hasattr(self, '_m_write') else None
-
-            self._m_write = (self.value & 2) != 0
-            return self._m_write if hasattr(self, '_m_write') else None
-
-        @property
-        def execute(self):
-            if hasattr(self, '_m_execute'):
-                return self._m_execute if hasattr(self, '_m_execute') else None
-
-            self._m_execute = (self.value & 1) != 0
-            return self._m_execute if hasattr(self, '_m_execute') else None
-
-        @property
-        def mask_proc(self):
-            if hasattr(self, '_m_mask_proc'):
-                return self._m_mask_proc if hasattr(self, '_m_mask_proc') else None
-
-            self._m_mask_proc = (self.value & 4026531840) != 0
-            return self._m_mask_proc if hasattr(self, '_m_mask_proc') else None
-
-
-    class SectionHeaderFlags(KaitaiStruct):
-        SEQ_FIELDS = []
-        def __init__(self, value, _io, _parent=None, _root=None):
-            self._io = _io
-            self._parent = _parent
-            self._root = _root if _root else self
-            self.value = value
-            self._debug = collections.defaultdict(dict)
-
-        def _read(self):
-            pass
-
-        @property
-        def merge(self):
-            """might be merged."""
-            if hasattr(self, '_m_merge'):
-                return self._m_merge if hasattr(self, '_m_merge') else None
-
-            self._m_merge = (self.value & 16) != 0
-            return self._m_merge if hasattr(self, '_m_merge') else None
-
-        @property
-        def mask_os(self):
-            """OS-specific."""
-            if hasattr(self, '_m_mask_os'):
-                return self._m_mask_os if hasattr(self, '_m_mask_os') else None
-
-            self._m_mask_os = (self.value & 267386880) != 0
-            return self._m_mask_os if hasattr(self, '_m_mask_os') else None
-
-        @property
-        def exclude(self):
-            """section is excluded unless referenced or allocated (Solaris)."""
-            if hasattr(self, '_m_exclude'):
-                return self._m_exclude if hasattr(self, '_m_exclude') else None
-
-            self._m_exclude = (self.value & 134217728) != 0
-            return self._m_exclude if hasattr(self, '_m_exclude') else None
-
-        @property
-        def mask_proc(self):
-            """Processor-specific."""
-            if hasattr(self, '_m_mask_proc'):
-                return self._m_mask_proc if hasattr(self, '_m_mask_proc') else None
-
-            self._m_mask_proc = (self.value & 4026531840) != 0
-            return self._m_mask_proc if hasattr(self, '_m_mask_proc') else None
-
-        @property
-        def strings(self):
-            """contains nul-terminated strings."""
-            if hasattr(self, '_m_strings'):
-                return self._m_strings if hasattr(self, '_m_strings') else None
-
-            self._m_strings = (self.value & 32) != 0
-            return self._m_strings if hasattr(self, '_m_strings') else None
-
-        @property
-        def os_non_conforming(self):
-            """non-standard OS specific handling required."""
-            if hasattr(self, '_m_os_non_conforming'):
-                return self._m_os_non_conforming if hasattr(self, '_m_os_non_conforming') else None
-
-            self._m_os_non_conforming = (self.value & 256) != 0
-            return self._m_os_non_conforming if hasattr(self, '_m_os_non_conforming') else None
-
-        @property
-        def alloc(self):
-            """occupies memory during execution."""
-            if hasattr(self, '_m_alloc'):
-                return self._m_alloc if hasattr(self, '_m_alloc') else None
-
-            self._m_alloc = (self.value & 2) != 0
-            return self._m_alloc if hasattr(self, '_m_alloc') else None
-
-        @property
-        def exec_instr(self):
-            """executable."""
-            if hasattr(self, '_m_exec_instr'):
-                return self._m_exec_instr if hasattr(self, '_m_exec_instr') else None
-
-            self._m_exec_instr = (self.value & 4) != 0
-            return self._m_exec_instr if hasattr(self, '_m_exec_instr') else None
-
-        @property
-        def info_link(self):
-            """'sh_info' contains SHT index."""
-            if hasattr(self, '_m_info_link'):
-                return self._m_info_link if hasattr(self, '_m_info_link') else None
-
-            self._m_info_link = (self.value & 64) != 0
-            return self._m_info_link if hasattr(self, '_m_info_link') else None
-
-        @property
-        def write(self):
-            """writable."""
-            if hasattr(self, '_m_write'):
-                return self._m_write if hasattr(self, '_m_write') else None
-
-            self._m_write = (self.value & 1) != 0
-            return self._m_write if hasattr(self, '_m_write') else None
-
-        @property
-        def link_order(self):
-            """preserve order after combining."""
-            if hasattr(self, '_m_link_order'):
-                return self._m_link_order if hasattr(self, '_m_link_order') else None
-
-            self._m_link_order = (self.value & 128) != 0
-            return self._m_link_order if hasattr(self, '_m_link_order') else None
-
-        @property
-        def ordered(self):
-            """special ordering requirement (Solaris)."""
-            if hasattr(self, '_m_ordered'):
-                return self._m_ordered if hasattr(self, '_m_ordered') else None
-
-            self._m_ordered = (self.value & 67108864) != 0
-            return self._m_ordered if hasattr(self, '_m_ordered') else None
-
-        @property
-        def tls(self):
-            """section hold thread-local data."""
-            if hasattr(self, '_m_tls'):
-                return self._m_tls if hasattr(self, '_m_tls') else None
-
-            self._m_tls = (self.value & 1024) != 0
-            return self._m_tls if hasattr(self, '_m_tls') else None
-
-        @property
-        def group(self):
-            """section is member of a group."""
-            if hasattr(self, '_m_group'):
-                return self._m_group if hasattr(self, '_m_group') else None
-
-            self._m_group = (self.value & 512) != 0
-            return self._m_group if hasattr(self, '_m_group') else None
-
-
-    class DtFlag1Values(KaitaiStruct):
-        SEQ_FIELDS = []
-        def __init__(self, value, _io, _parent=None, _root=None):
-            self._io = _io
-            self._parent = _parent
-            self._root = _root if _root else self
-            self.value = value
-            self._debug = collections.defaultdict(dict)
-
-        def _read(self):
-            pass
-
-        @property
-        def singleton(self):
-            """Singleton symbols are used."""
-            if hasattr(self, '_m_singleton'):
-                return self._m_singleton if hasattr(self, '_m_singleton') else None
-
-            self._m_singleton = (self.value & 33554432) != 0
-            return self._m_singleton if hasattr(self, '_m_singleton') else None
-
-        @property
-        def ignmuldef(self):
-            if hasattr(self, '_m_ignmuldef'):
-                return self._m_ignmuldef if hasattr(self, '_m_ignmuldef') else None
-
-            self._m_ignmuldef = (self.value & 262144) != 0
-            return self._m_ignmuldef if hasattr(self, '_m_ignmuldef') else None
-
-        @property
-        def loadfltr(self):
-            """Trigger filtee loading at runtime."""
-            if hasattr(self, '_m_loadfltr'):
-                return self._m_loadfltr if hasattr(self, '_m_loadfltr') else None
-
-            self._m_loadfltr = (self.value & 16) != 0
-            return self._m_loadfltr if hasattr(self, '_m_loadfltr') else None
-
-        @property
-        def initfirst(self):
-            """Set RTLD_INITFIRST for this object."""
-            if hasattr(self, '_m_initfirst'):
-                return self._m_initfirst if hasattr(self, '_m_initfirst') else None
-
-            self._m_initfirst = (self.value & 32) != 0
-            return self._m_initfirst if hasattr(self, '_m_initfirst') else None
-
-        @property
-        def symintpose(self):
-            """Object has individual interposers."""
-            if hasattr(self, '_m_symintpose'):
-                return self._m_symintpose if hasattr(self, '_m_symintpose') else None
-
-            self._m_symintpose = (self.value & 8388608) != 0
-            return self._m_symintpose if hasattr(self, '_m_symintpose') else None
-
-        @property
-        def noreloc(self):
-            if hasattr(self, '_m_noreloc'):
-                return self._m_noreloc if hasattr(self, '_m_noreloc') else None
-
-            self._m_noreloc = (self.value & 4194304) != 0
-            return self._m_noreloc if hasattr(self, '_m_noreloc') else None
-
-        @property
-        def confalt(self):
-            """Configuration alternative created."""
-            if hasattr(self, '_m_confalt'):
-                return self._m_confalt if hasattr(self, '_m_confalt') else None
-
-            self._m_confalt = (self.value & 8192) != 0
-            return self._m_confalt if hasattr(self, '_m_confalt') else None
-
-        @property
-        def dispreldne(self):
-            """Disp reloc applied at build time."""
-            if hasattr(self, '_m_dispreldne'):
-                return self._m_dispreldne if hasattr(self, '_m_dispreldne') else None
-
-            self._m_dispreldne = (self.value & 32768) != 0
-            return self._m_dispreldne if hasattr(self, '_m_dispreldne') else None
-
-        @property
-        def rtld_global(self):
-            """Set RTLD_GLOBAL for this object."""
-            if hasattr(self, '_m_rtld_global'):
-                return self._m_rtld_global if hasattr(self, '_m_rtld_global') else None
-
-            self._m_rtld_global = (self.value & 2) != 0
-            return self._m_rtld_global if hasattr(self, '_m_rtld_global') else None
-
-        @property
-        def nodelete(self):
-            """Set RTLD_NODELETE for this object."""
-            if hasattr(self, '_m_nodelete'):
-                return self._m_nodelete if hasattr(self, '_m_nodelete') else None
-
-            self._m_nodelete = (self.value & 8) != 0
-            return self._m_nodelete if hasattr(self, '_m_nodelete') else None
-
-        @property
-        def trans(self):
-            if hasattr(self, '_m_trans'):
-                return self._m_trans if hasattr(self, '_m_trans') else None
-
-            self._m_trans = (self.value & 512) != 0
-            return self._m_trans if hasattr(self, '_m_trans') else None
-
-        @property
-        def origin(self):
-            """$ORIGIN must be handled."""
-            if hasattr(self, '_m_origin'):
-                return self._m_origin if hasattr(self, '_m_origin') else None
-
-            self._m_origin = (self.value & 128) != 0
-            return self._m_origin if hasattr(self, '_m_origin') else None
-
-        @property
-        def now(self):
-            """Set RTLD_NOW for this object."""
-            if hasattr(self, '_m_now'):
-                return self._m_now if hasattr(self, '_m_now') else None
-
-            self._m_now = (self.value & 1) != 0
-            return self._m_now if hasattr(self, '_m_now') else None
-
-        @property
-        def nohdr(self):
-            if hasattr(self, '_m_nohdr'):
-                return self._m_nohdr if hasattr(self, '_m_nohdr') else None
-
-            self._m_nohdr = (self.value & 1048576) != 0
-            return self._m_nohdr if hasattr(self, '_m_nohdr') else None
-
-        @property
-        def endfiltee(self):
-            """Filtee terminates filters search."""
-            if hasattr(self, '_m_endfiltee'):
-                return self._m_endfiltee if hasattr(self, '_m_endfiltee') else None
-
-            self._m_endfiltee = (self.value & 16384) != 0
-            return self._m_endfiltee if hasattr(self, '_m_endfiltee') else None
-
-        @property
-        def nodirect(self):
-            """Object has no-direct binding."""
-            if hasattr(self, '_m_nodirect'):
-                return self._m_nodirect if hasattr(self, '_m_nodirect') else None
-
-            self._m_nodirect = (self.value & 131072) != 0
-            return self._m_nodirect if hasattr(self, '_m_nodirect') else None
-
-        @property
-        def globaudit(self):
-            """Global auditing required."""
-            if hasattr(self, '_m_globaudit'):
-                return self._m_globaudit if hasattr(self, '_m_globaudit') else None
-
-            self._m_globaudit = (self.value & 16777216) != 0
-            return self._m_globaudit if hasattr(self, '_m_globaudit') else None
-
-        @property
-        def noksyms(self):
-            if hasattr(self, '_m_noksyms'):
-                return self._m_noksyms if hasattr(self, '_m_noksyms') else None
-
-            self._m_noksyms = (self.value & 524288) != 0
-            return self._m_noksyms if hasattr(self, '_m_noksyms') else None
-
-        @property
-        def interpose(self):
-            """Object is used to interpose."""
-            if hasattr(self, '_m_interpose'):
-                return self._m_interpose if hasattr(self, '_m_interpose') else None
-
-            self._m_interpose = (self.value & 1024) != 0
-            return self._m_interpose if hasattr(self, '_m_interpose') else None
-
-        @property
-        def nodump(self):
-            """Object can't be dldump'ed."""
-            if hasattr(self, '_m_nodump'):
-                return self._m_nodump if hasattr(self, '_m_nodump') else None
-
-            self._m_nodump = (self.value & 4096) != 0
-            return self._m_nodump if hasattr(self, '_m_nodump') else None
-
-        @property
-        def disprelpnd(self):
-            """Disp reloc applied at run-time."""
-            if hasattr(self, '_m_disprelpnd'):
-                return self._m_disprelpnd if hasattr(self, '_m_disprelpnd') else None
-
-            self._m_disprelpnd = (self.value & 65536) != 0
-            return self._m_disprelpnd if hasattr(self, '_m_disprelpnd') else None
-
-        @property
-        def noopen(self):
-            """Set RTLD_NOOPEN for this object."""
-            if hasattr(self, '_m_noopen'):
-                return self._m_noopen if hasattr(self, '_m_noopen') else None
-
-            self._m_noopen = (self.value & 64) != 0
-            return self._m_noopen if hasattr(self, '_m_noopen') else None
-
-        @property
-        def stub(self):
-            if hasattr(self, '_m_stub'):
-                return self._m_stub if hasattr(self, '_m_stub') else None
-
-            self._m_stub = (self.value & 67108864) != 0
-            return self._m_stub if hasattr(self, '_m_stub') else None
-
-        @property
-        def direct(self):
-            """Direct binding enabled."""
-            if hasattr(self, '_m_direct'):
-                return self._m_direct if hasattr(self, '_m_direct') else None
-
-            self._m_direct = (self.value & 256) != 0
-            return self._m_direct if hasattr(self, '_m_direct') else None
-
-        @property
-        def edited(self):
-            """Object is modified after built."""
-            if hasattr(self, '_m_edited'):
-                return self._m_edited if hasattr(self, '_m_edited') else None
-
-            self._m_edited = (self.value & 2097152) != 0
-            return self._m_edited if hasattr(self, '_m_edited') else None
-
-        @property
-        def group(self):
-            """Set RTLD_GROUP for this object."""
-            if hasattr(self, '_m_group'):
-                return self._m_group if hasattr(self, '_m_group') else None
-
-            self._m_group = (self.value & 4) != 0
-            return self._m_group if hasattr(self, '_m_group') else None
-
-        @property
-        def pie(self):
-            if hasattr(self, '_m_pie'):
-                return self._m_pie if hasattr(self, '_m_pie') else None
-
-            self._m_pie = (self.value & 134217728) != 0
-            return self._m_pie if hasattr(self, '_m_pie') else None
-
-        @property
-        def nodeflib(self):
-            """Ignore default lib search path."""
-            if hasattr(self, '_m_nodeflib'):
-                return self._m_nodeflib if hasattr(self, '_m_nodeflib') else None
-
-            self._m_nodeflib = (self.value & 2048) != 0
-            return self._m_nodeflib if hasattr(self, '_m_nodeflib') else None
-
 
     class EndianElf(KaitaiStruct):
         SEQ_FIELDS = ["e_type", "machine", "e_version", "entry_point", "program_header_offset", "section_header_offset", "flags", "e_ehsize", "program_header_entry_size", "qty_program_header", "section_header_entry_size", "qty_section_header", "section_names_idx"]
@@ -1163,14 +1024,6 @@ class Elf(KaitaiStruct):
                 self._debug['value_or_ptr']['end'] = self._io.pos()
 
             @property
-            def tag_enum(self):
-                if hasattr(self, '_m_tag_enum'):
-                    return self._m_tag_enum if hasattr(self, '_m_tag_enum') else None
-
-                self._m_tag_enum = KaitaiStream.resolve_enum(Elf.DynamicArrayTags, self.tag)
-                return self._m_tag_enum if hasattr(self, '_m_tag_enum') else None
-
-            @property
             def flag_1_values(self):
                 if hasattr(self, '_m_flag_1_values'):
                     return self._m_flag_1_values if hasattr(self, '_m_flag_1_values') else None
@@ -1205,6 +1058,31 @@ class Elf(KaitaiStruct):
                     io.seek(_pos)
 
                 return self._m_value_str if hasattr(self, '_m_value_str') else None
+
+            @property
+            def tag_enum(self):
+                if hasattr(self, '_m_tag_enum'):
+                    return self._m_tag_enum if hasattr(self, '_m_tag_enum') else None
+
+                self._m_tag_enum = KaitaiStream.resolve_enum(Elf.DynamicArrayTags, self.tag)
+                return self._m_tag_enum if hasattr(self, '_m_tag_enum') else None
+
+            @property
+            def flag_values(self):
+                if hasattr(self, '_m_flag_values'):
+                    return self._m_flag_values if hasattr(self, '_m_flag_values') else None
+
+                if self.tag_enum == Elf.DynamicArrayTags.flags:
+                    self._debug['_m_flag_values']['start'] = self._io.pos()
+                    if self._is_le:
+                        self._m_flag_values = Elf.DtFlagValues(self.value_or_ptr, self._io, self, self._root)
+                        self._m_flag_values._read()
+                    else:
+                        self._m_flag_values = Elf.DtFlagValues(self.value_or_ptr, self._io, self, self._root)
+                        self._m_flag_values._read()
+                    self._debug['_m_flag_values']['end'] = self._io.pos()
+
+                return self._m_flag_values if hasattr(self, '_m_flag_values') else None
 
             @property
             def is_value_str(self):
@@ -1349,90 +1227,92 @@ class Elf(KaitaiStruct):
                 if hasattr(self, '_m_body'):
                     return self._m_body if hasattr(self, '_m_body') else None
 
-                io = self._root._io
-                _pos = io.pos()
-                io.seek(self.ofs_body)
-                self._debug['_m_body']['start'] = io.pos()
-                if self._is_le:
-                    _on = self.type
-                    if _on == Elf.ShType.rel:
-                        self._raw__m_body = io.read_bytes(self.len_body)
-                        _io__raw__m_body = KaitaiStream(BytesIO(self._raw__m_body))
-                        self._m_body = Elf.EndianElf.RelocationSection(False, _io__raw__m_body, self, self._root, self._is_le)
-                        self._m_body._read()
-                    elif _on == Elf.ShType.note:
-                        self._raw__m_body = io.read_bytes(self.len_body)
-                        _io__raw__m_body = KaitaiStream(BytesIO(self._raw__m_body))
-                        self._m_body = Elf.EndianElf.NoteSection(_io__raw__m_body, self, self._root, self._is_le)
-                        self._m_body._read()
-                    elif _on == Elf.ShType.symtab:
-                        self._raw__m_body = io.read_bytes(self.len_body)
-                        _io__raw__m_body = KaitaiStream(BytesIO(self._raw__m_body))
-                        self._m_body = Elf.EndianElf.DynsymSection(_io__raw__m_body, self, self._root, self._is_le)
-                        self._m_body._read()
-                    elif _on == Elf.ShType.strtab:
-                        self._raw__m_body = io.read_bytes(self.len_body)
-                        _io__raw__m_body = KaitaiStream(BytesIO(self._raw__m_body))
-                        self._m_body = Elf.EndianElf.StringsStruct(_io__raw__m_body, self, self._root, self._is_le)
-                        self._m_body._read()
-                    elif _on == Elf.ShType.dynamic:
-                        self._raw__m_body = io.read_bytes(self.len_body)
-                        _io__raw__m_body = KaitaiStream(BytesIO(self._raw__m_body))
-                        self._m_body = Elf.EndianElf.DynamicSection(_io__raw__m_body, self, self._root, self._is_le)
-                        self._m_body._read()
-                    elif _on == Elf.ShType.dynsym:
-                        self._raw__m_body = io.read_bytes(self.len_body)
-                        _io__raw__m_body = KaitaiStream(BytesIO(self._raw__m_body))
-                        self._m_body = Elf.EndianElf.DynsymSection(_io__raw__m_body, self, self._root, self._is_le)
-                        self._m_body._read()
-                    elif _on == Elf.ShType.rela:
-                        self._raw__m_body = io.read_bytes(self.len_body)
-                        _io__raw__m_body = KaitaiStream(BytesIO(self._raw__m_body))
-                        self._m_body = Elf.EndianElf.RelocationSection(True, _io__raw__m_body, self, self._root, self._is_le)
-                        self._m_body._read()
+                if self.type != Elf.ShType.nobits:
+                    io = self._root._io
+                    _pos = io.pos()
+                    io.seek(self.ofs_body)
+                    self._debug['_m_body']['start'] = io.pos()
+                    if self._is_le:
+                        _on = self.type
+                        if _on == Elf.ShType.rel:
+                            self._raw__m_body = io.read_bytes(self.len_body)
+                            _io__raw__m_body = KaitaiStream(BytesIO(self._raw__m_body))
+                            self._m_body = Elf.EndianElf.RelocationSection(False, _io__raw__m_body, self, self._root, self._is_le)
+                            self._m_body._read()
+                        elif _on == Elf.ShType.note:
+                            self._raw__m_body = io.read_bytes(self.len_body)
+                            _io__raw__m_body = KaitaiStream(BytesIO(self._raw__m_body))
+                            self._m_body = Elf.EndianElf.NoteSection(_io__raw__m_body, self, self._root, self._is_le)
+                            self._m_body._read()
+                        elif _on == Elf.ShType.symtab:
+                            self._raw__m_body = io.read_bytes(self.len_body)
+                            _io__raw__m_body = KaitaiStream(BytesIO(self._raw__m_body))
+                            self._m_body = Elf.EndianElf.DynsymSection(_io__raw__m_body, self, self._root, self._is_le)
+                            self._m_body._read()
+                        elif _on == Elf.ShType.strtab:
+                            self._raw__m_body = io.read_bytes(self.len_body)
+                            _io__raw__m_body = KaitaiStream(BytesIO(self._raw__m_body))
+                            self._m_body = Elf.EndianElf.StringsStruct(_io__raw__m_body, self, self._root, self._is_le)
+                            self._m_body._read()
+                        elif _on == Elf.ShType.dynamic:
+                            self._raw__m_body = io.read_bytes(self.len_body)
+                            _io__raw__m_body = KaitaiStream(BytesIO(self._raw__m_body))
+                            self._m_body = Elf.EndianElf.DynamicSection(_io__raw__m_body, self, self._root, self._is_le)
+                            self._m_body._read()
+                        elif _on == Elf.ShType.dynsym:
+                            self._raw__m_body = io.read_bytes(self.len_body)
+                            _io__raw__m_body = KaitaiStream(BytesIO(self._raw__m_body))
+                            self._m_body = Elf.EndianElf.DynsymSection(_io__raw__m_body, self, self._root, self._is_le)
+                            self._m_body._read()
+                        elif _on == Elf.ShType.rela:
+                            self._raw__m_body = io.read_bytes(self.len_body)
+                            _io__raw__m_body = KaitaiStream(BytesIO(self._raw__m_body))
+                            self._m_body = Elf.EndianElf.RelocationSection(True, _io__raw__m_body, self, self._root, self._is_le)
+                            self._m_body._read()
+                        else:
+                            self._m_body = io.read_bytes(self.len_body)
                     else:
-                        self._m_body = io.read_bytes(self.len_body)
-                else:
-                    _on = self.type
-                    if _on == Elf.ShType.rel:
-                        self._raw__m_body = io.read_bytes(self.len_body)
-                        _io__raw__m_body = KaitaiStream(BytesIO(self._raw__m_body))
-                        self._m_body = Elf.EndianElf.RelocationSection(False, _io__raw__m_body, self, self._root, self._is_le)
-                        self._m_body._read()
-                    elif _on == Elf.ShType.note:
-                        self._raw__m_body = io.read_bytes(self.len_body)
-                        _io__raw__m_body = KaitaiStream(BytesIO(self._raw__m_body))
-                        self._m_body = Elf.EndianElf.NoteSection(_io__raw__m_body, self, self._root, self._is_le)
-                        self._m_body._read()
-                    elif _on == Elf.ShType.symtab:
-                        self._raw__m_body = io.read_bytes(self.len_body)
-                        _io__raw__m_body = KaitaiStream(BytesIO(self._raw__m_body))
-                        self._m_body = Elf.EndianElf.DynsymSection(_io__raw__m_body, self, self._root, self._is_le)
-                        self._m_body._read()
-                    elif _on == Elf.ShType.strtab:
-                        self._raw__m_body = io.read_bytes(self.len_body)
-                        _io__raw__m_body = KaitaiStream(BytesIO(self._raw__m_body))
-                        self._m_body = Elf.EndianElf.StringsStruct(_io__raw__m_body, self, self._root, self._is_le)
-                        self._m_body._read()
-                    elif _on == Elf.ShType.dynamic:
-                        self._raw__m_body = io.read_bytes(self.len_body)
-                        _io__raw__m_body = KaitaiStream(BytesIO(self._raw__m_body))
-                        self._m_body = Elf.EndianElf.DynamicSection(_io__raw__m_body, self, self._root, self._is_le)
-                        self._m_body._read()
-                    elif _on == Elf.ShType.dynsym:
-                        self._raw__m_body = io.read_bytes(self.len_body)
-                        _io__raw__m_body = KaitaiStream(BytesIO(self._raw__m_body))
-                        self._m_body = Elf.EndianElf.DynsymSection(_io__raw__m_body, self, self._root, self._is_le)
-                        self._m_body._read()
-                    elif _on == Elf.ShType.rela:
-                        self._raw__m_body = io.read_bytes(self.len_body)
-                        _io__raw__m_body = KaitaiStream(BytesIO(self._raw__m_body))
-                        self._m_body = Elf.EndianElf.RelocationSection(True, _io__raw__m_body, self, self._root, self._is_le)
-                        self._m_body._read()
-                    else:
-                        self._m_body = io.read_bytes(self.len_body)
-                self._debug['_m_body']['end'] = io.pos()
-                io.seek(_pos)
+                        _on = self.type
+                        if _on == Elf.ShType.rel:
+                            self._raw__m_body = io.read_bytes(self.len_body)
+                            _io__raw__m_body = KaitaiStream(BytesIO(self._raw__m_body))
+                            self._m_body = Elf.EndianElf.RelocationSection(False, _io__raw__m_body, self, self._root, self._is_le)
+                            self._m_body._read()
+                        elif _on == Elf.ShType.note:
+                            self._raw__m_body = io.read_bytes(self.len_body)
+                            _io__raw__m_body = KaitaiStream(BytesIO(self._raw__m_body))
+                            self._m_body = Elf.EndianElf.NoteSection(_io__raw__m_body, self, self._root, self._is_le)
+                            self._m_body._read()
+                        elif _on == Elf.ShType.symtab:
+                            self._raw__m_body = io.read_bytes(self.len_body)
+                            _io__raw__m_body = KaitaiStream(BytesIO(self._raw__m_body))
+                            self._m_body = Elf.EndianElf.DynsymSection(_io__raw__m_body, self, self._root, self._is_le)
+                            self._m_body._read()
+                        elif _on == Elf.ShType.strtab:
+                            self._raw__m_body = io.read_bytes(self.len_body)
+                            _io__raw__m_body = KaitaiStream(BytesIO(self._raw__m_body))
+                            self._m_body = Elf.EndianElf.StringsStruct(_io__raw__m_body, self, self._root, self._is_le)
+                            self._m_body._read()
+                        elif _on == Elf.ShType.dynamic:
+                            self._raw__m_body = io.read_bytes(self.len_body)
+                            _io__raw__m_body = KaitaiStream(BytesIO(self._raw__m_body))
+                            self._m_body = Elf.EndianElf.DynamicSection(_io__raw__m_body, self, self._root, self._is_le)
+                            self._m_body._read()
+                        elif _on == Elf.ShType.dynsym:
+                            self._raw__m_body = io.read_bytes(self.len_body)
+                            _io__raw__m_body = KaitaiStream(BytesIO(self._raw__m_body))
+                            self._m_body = Elf.EndianElf.DynsymSection(_io__raw__m_body, self, self._root, self._is_le)
+                            self._m_body._read()
+                        elif _on == Elf.ShType.rela:
+                            self._raw__m_body = io.read_bytes(self.len_body)
+                            _io__raw__m_body = KaitaiStream(BytesIO(self._raw__m_body))
+                            self._m_body = Elf.EndianElf.RelocationSection(True, _io__raw__m_body, self, self._root, self._is_le)
+                            self._m_body._read()
+                        else:
+                            self._m_body = io.read_bytes(self.len_body)
+                    self._debug['_m_body']['end'] = io.pos()
+                    io.seek(_pos)
+
                 return self._m_body if hasattr(self, '_m_body') else None
 
             @property
@@ -2124,6 +2004,520 @@ class Elf(KaitaiStruct):
                 self._io.seek(_pos)
 
             return self._m_section_names if hasattr(self, '_m_section_names') else None
+
+
+    class DtFlag1Values(KaitaiStruct):
+        SEQ_FIELDS = []
+        def __init__(self, value, _io, _parent=None, _root=None):
+            self._io = _io
+            self._parent = _parent
+            self._root = _root if _root else self
+            self.value = value
+            self._debug = collections.defaultdict(dict)
+
+        def _read(self):
+            pass
+
+        @property
+        def singleton(self):
+            """Singleton symbols are used."""
+            if hasattr(self, '_m_singleton'):
+                return self._m_singleton if hasattr(self, '_m_singleton') else None
+
+            self._m_singleton = (self.value & 33554432) != 0
+            return self._m_singleton if hasattr(self, '_m_singleton') else None
+
+        @property
+        def ignmuldef(self):
+            if hasattr(self, '_m_ignmuldef'):
+                return self._m_ignmuldef if hasattr(self, '_m_ignmuldef') else None
+
+            self._m_ignmuldef = (self.value & 262144) != 0
+            return self._m_ignmuldef if hasattr(self, '_m_ignmuldef') else None
+
+        @property
+        def loadfltr(self):
+            """Trigger filtee loading at runtime."""
+            if hasattr(self, '_m_loadfltr'):
+                return self._m_loadfltr if hasattr(self, '_m_loadfltr') else None
+
+            self._m_loadfltr = (self.value & 16) != 0
+            return self._m_loadfltr if hasattr(self, '_m_loadfltr') else None
+
+        @property
+        def initfirst(self):
+            """Set RTLD_INITFIRST for this object."""
+            if hasattr(self, '_m_initfirst'):
+                return self._m_initfirst if hasattr(self, '_m_initfirst') else None
+
+            self._m_initfirst = (self.value & 32) != 0
+            return self._m_initfirst if hasattr(self, '_m_initfirst') else None
+
+        @property
+        def symintpose(self):
+            """Object has individual interposers."""
+            if hasattr(self, '_m_symintpose'):
+                return self._m_symintpose if hasattr(self, '_m_symintpose') else None
+
+            self._m_symintpose = (self.value & 8388608) != 0
+            return self._m_symintpose if hasattr(self, '_m_symintpose') else None
+
+        @property
+        def noreloc(self):
+            if hasattr(self, '_m_noreloc'):
+                return self._m_noreloc if hasattr(self, '_m_noreloc') else None
+
+            self._m_noreloc = (self.value & 4194304) != 0
+            return self._m_noreloc if hasattr(self, '_m_noreloc') else None
+
+        @property
+        def confalt(self):
+            """Configuration alternative created."""
+            if hasattr(self, '_m_confalt'):
+                return self._m_confalt if hasattr(self, '_m_confalt') else None
+
+            self._m_confalt = (self.value & 8192) != 0
+            return self._m_confalt if hasattr(self, '_m_confalt') else None
+
+        @property
+        def dispreldne(self):
+            """Disp reloc applied at build time."""
+            if hasattr(self, '_m_dispreldne'):
+                return self._m_dispreldne if hasattr(self, '_m_dispreldne') else None
+
+            self._m_dispreldne = (self.value & 32768) != 0
+            return self._m_dispreldne if hasattr(self, '_m_dispreldne') else None
+
+        @property
+        def rtld_global(self):
+            """Set RTLD_GLOBAL for this object."""
+            if hasattr(self, '_m_rtld_global'):
+                return self._m_rtld_global if hasattr(self, '_m_rtld_global') else None
+
+            self._m_rtld_global = (self.value & 2) != 0
+            return self._m_rtld_global if hasattr(self, '_m_rtld_global') else None
+
+        @property
+        def nodelete(self):
+            """Set RTLD_NODELETE for this object."""
+            if hasattr(self, '_m_nodelete'):
+                return self._m_nodelete if hasattr(self, '_m_nodelete') else None
+
+            self._m_nodelete = (self.value & 8) != 0
+            return self._m_nodelete if hasattr(self, '_m_nodelete') else None
+
+        @property
+        def trans(self):
+            if hasattr(self, '_m_trans'):
+                return self._m_trans if hasattr(self, '_m_trans') else None
+
+            self._m_trans = (self.value & 512) != 0
+            return self._m_trans if hasattr(self, '_m_trans') else None
+
+        @property
+        def origin(self):
+            """$ORIGIN must be handled."""
+            if hasattr(self, '_m_origin'):
+                return self._m_origin if hasattr(self, '_m_origin') else None
+
+            self._m_origin = (self.value & 128) != 0
+            return self._m_origin if hasattr(self, '_m_origin') else None
+
+        @property
+        def now(self):
+            """Set RTLD_NOW for this object."""
+            if hasattr(self, '_m_now'):
+                return self._m_now if hasattr(self, '_m_now') else None
+
+            self._m_now = (self.value & 1) != 0
+            return self._m_now if hasattr(self, '_m_now') else None
+
+        @property
+        def nohdr(self):
+            if hasattr(self, '_m_nohdr'):
+                return self._m_nohdr if hasattr(self, '_m_nohdr') else None
+
+            self._m_nohdr = (self.value & 1048576) != 0
+            return self._m_nohdr if hasattr(self, '_m_nohdr') else None
+
+        @property
+        def endfiltee(self):
+            """Filtee terminates filters search."""
+            if hasattr(self, '_m_endfiltee'):
+                return self._m_endfiltee if hasattr(self, '_m_endfiltee') else None
+
+            self._m_endfiltee = (self.value & 16384) != 0
+            return self._m_endfiltee if hasattr(self, '_m_endfiltee') else None
+
+        @property
+        def nodirect(self):
+            """Object has no-direct binding."""
+            if hasattr(self, '_m_nodirect'):
+                return self._m_nodirect if hasattr(self, '_m_nodirect') else None
+
+            self._m_nodirect = (self.value & 131072) != 0
+            return self._m_nodirect if hasattr(self, '_m_nodirect') else None
+
+        @property
+        def globaudit(self):
+            """Global auditing required."""
+            if hasattr(self, '_m_globaudit'):
+                return self._m_globaudit if hasattr(self, '_m_globaudit') else None
+
+            self._m_globaudit = (self.value & 16777216) != 0
+            return self._m_globaudit if hasattr(self, '_m_globaudit') else None
+
+        @property
+        def noksyms(self):
+            if hasattr(self, '_m_noksyms'):
+                return self._m_noksyms if hasattr(self, '_m_noksyms') else None
+
+            self._m_noksyms = (self.value & 524288) != 0
+            return self._m_noksyms if hasattr(self, '_m_noksyms') else None
+
+        @property
+        def interpose(self):
+            """Object is used to interpose."""
+            if hasattr(self, '_m_interpose'):
+                return self._m_interpose if hasattr(self, '_m_interpose') else None
+
+            self._m_interpose = (self.value & 1024) != 0
+            return self._m_interpose if hasattr(self, '_m_interpose') else None
+
+        @property
+        def nodump(self):
+            """Object can't be dldump'ed."""
+            if hasattr(self, '_m_nodump'):
+                return self._m_nodump if hasattr(self, '_m_nodump') else None
+
+            self._m_nodump = (self.value & 4096) != 0
+            return self._m_nodump if hasattr(self, '_m_nodump') else None
+
+        @property
+        def disprelpnd(self):
+            """Disp reloc applied at run-time."""
+            if hasattr(self, '_m_disprelpnd'):
+                return self._m_disprelpnd if hasattr(self, '_m_disprelpnd') else None
+
+            self._m_disprelpnd = (self.value & 65536) != 0
+            return self._m_disprelpnd if hasattr(self, '_m_disprelpnd') else None
+
+        @property
+        def noopen(self):
+            """Set RTLD_NOOPEN for this object."""
+            if hasattr(self, '_m_noopen'):
+                return self._m_noopen if hasattr(self, '_m_noopen') else None
+
+            self._m_noopen = (self.value & 64) != 0
+            return self._m_noopen if hasattr(self, '_m_noopen') else None
+
+        @property
+        def stub(self):
+            if hasattr(self, '_m_stub'):
+                return self._m_stub if hasattr(self, '_m_stub') else None
+
+            self._m_stub = (self.value & 67108864) != 0
+            return self._m_stub if hasattr(self, '_m_stub') else None
+
+        @property
+        def direct(self):
+            """Direct binding enabled."""
+            if hasattr(self, '_m_direct'):
+                return self._m_direct if hasattr(self, '_m_direct') else None
+
+            self._m_direct = (self.value & 256) != 0
+            return self._m_direct if hasattr(self, '_m_direct') else None
+
+        @property
+        def edited(self):
+            """Object is modified after built."""
+            if hasattr(self, '_m_edited'):
+                return self._m_edited if hasattr(self, '_m_edited') else None
+
+            self._m_edited = (self.value & 2097152) != 0
+            return self._m_edited if hasattr(self, '_m_edited') else None
+
+        @property
+        def group(self):
+            """Set RTLD_GROUP for this object."""
+            if hasattr(self, '_m_group'):
+                return self._m_group if hasattr(self, '_m_group') else None
+
+            self._m_group = (self.value & 4) != 0
+            return self._m_group if hasattr(self, '_m_group') else None
+
+        @property
+        def pie(self):
+            if hasattr(self, '_m_pie'):
+                return self._m_pie if hasattr(self, '_m_pie') else None
+
+            self._m_pie = (self.value & 134217728) != 0
+            return self._m_pie if hasattr(self, '_m_pie') else None
+
+        @property
+        def nodeflib(self):
+            """Ignore default lib search path."""
+            if hasattr(self, '_m_nodeflib'):
+                return self._m_nodeflib if hasattr(self, '_m_nodeflib') else None
+
+            self._m_nodeflib = (self.value & 2048) != 0
+            return self._m_nodeflib if hasattr(self, '_m_nodeflib') else None
+
+
+    class SectionHeaderFlags(KaitaiStruct):
+        SEQ_FIELDS = []
+        def __init__(self, value, _io, _parent=None, _root=None):
+            self._io = _io
+            self._parent = _parent
+            self._root = _root if _root else self
+            self.value = value
+            self._debug = collections.defaultdict(dict)
+
+        def _read(self):
+            pass
+
+        @property
+        def merge(self):
+            """might be merged."""
+            if hasattr(self, '_m_merge'):
+                return self._m_merge if hasattr(self, '_m_merge') else None
+
+            self._m_merge = (self.value & 16) != 0
+            return self._m_merge if hasattr(self, '_m_merge') else None
+
+        @property
+        def mask_os(self):
+            """OS-specific."""
+            if hasattr(self, '_m_mask_os'):
+                return self._m_mask_os if hasattr(self, '_m_mask_os') else None
+
+            self._m_mask_os = (self.value & 267386880) != 0
+            return self._m_mask_os if hasattr(self, '_m_mask_os') else None
+
+        @property
+        def exclude(self):
+            """section is excluded unless referenced or allocated (Solaris)."""
+            if hasattr(self, '_m_exclude'):
+                return self._m_exclude if hasattr(self, '_m_exclude') else None
+
+            self._m_exclude = (self.value & 134217728) != 0
+            return self._m_exclude if hasattr(self, '_m_exclude') else None
+
+        @property
+        def mask_proc(self):
+            """Processor-specific."""
+            if hasattr(self, '_m_mask_proc'):
+                return self._m_mask_proc if hasattr(self, '_m_mask_proc') else None
+
+            self._m_mask_proc = (self.value & 4026531840) != 0
+            return self._m_mask_proc if hasattr(self, '_m_mask_proc') else None
+
+        @property
+        def strings(self):
+            """contains nul-terminated strings."""
+            if hasattr(self, '_m_strings'):
+                return self._m_strings if hasattr(self, '_m_strings') else None
+
+            self._m_strings = (self.value & 32) != 0
+            return self._m_strings if hasattr(self, '_m_strings') else None
+
+        @property
+        def os_non_conforming(self):
+            """non-standard OS specific handling required."""
+            if hasattr(self, '_m_os_non_conforming'):
+                return self._m_os_non_conforming if hasattr(self, '_m_os_non_conforming') else None
+
+            self._m_os_non_conforming = (self.value & 256) != 0
+            return self._m_os_non_conforming if hasattr(self, '_m_os_non_conforming') else None
+
+        @property
+        def alloc(self):
+            """occupies memory during execution."""
+            if hasattr(self, '_m_alloc'):
+                return self._m_alloc if hasattr(self, '_m_alloc') else None
+
+            self._m_alloc = (self.value & 2) != 0
+            return self._m_alloc if hasattr(self, '_m_alloc') else None
+
+        @property
+        def exec_instr(self):
+            """executable."""
+            if hasattr(self, '_m_exec_instr'):
+                return self._m_exec_instr if hasattr(self, '_m_exec_instr') else None
+
+            self._m_exec_instr = (self.value & 4) != 0
+            return self._m_exec_instr if hasattr(self, '_m_exec_instr') else None
+
+        @property
+        def info_link(self):
+            """'sh_info' contains SHT index."""
+            if hasattr(self, '_m_info_link'):
+                return self._m_info_link if hasattr(self, '_m_info_link') else None
+
+            self._m_info_link = (self.value & 64) != 0
+            return self._m_info_link if hasattr(self, '_m_info_link') else None
+
+        @property
+        def write(self):
+            """writable."""
+            if hasattr(self, '_m_write'):
+                return self._m_write if hasattr(self, '_m_write') else None
+
+            self._m_write = (self.value & 1) != 0
+            return self._m_write if hasattr(self, '_m_write') else None
+
+        @property
+        def link_order(self):
+            """preserve order after combining."""
+            if hasattr(self, '_m_link_order'):
+                return self._m_link_order if hasattr(self, '_m_link_order') else None
+
+            self._m_link_order = (self.value & 128) != 0
+            return self._m_link_order if hasattr(self, '_m_link_order') else None
+
+        @property
+        def ordered(self):
+            """special ordering requirement (Solaris)."""
+            if hasattr(self, '_m_ordered'):
+                return self._m_ordered if hasattr(self, '_m_ordered') else None
+
+            self._m_ordered = (self.value & 67108864) != 0
+            return self._m_ordered if hasattr(self, '_m_ordered') else None
+
+        @property
+        def tls(self):
+            """section hold thread-local data."""
+            if hasattr(self, '_m_tls'):
+                return self._m_tls if hasattr(self, '_m_tls') else None
+
+            self._m_tls = (self.value & 1024) != 0
+            return self._m_tls if hasattr(self, '_m_tls') else None
+
+        @property
+        def group(self):
+            """section is member of a group."""
+            if hasattr(self, '_m_group'):
+                return self._m_group if hasattr(self, '_m_group') else None
+
+            self._m_group = (self.value & 512) != 0
+            return self._m_group if hasattr(self, '_m_group') else None
+
+
+    class PhdrTypeFlags(KaitaiStruct):
+        SEQ_FIELDS = []
+        def __init__(self, value, _io, _parent=None, _root=None):
+            self._io = _io
+            self._parent = _parent
+            self._root = _root if _root else self
+            self.value = value
+            self._debug = collections.defaultdict(dict)
+
+        def _read(self):
+            pass
+
+        @property
+        def read(self):
+            if hasattr(self, '_m_read'):
+                return self._m_read if hasattr(self, '_m_read') else None
+
+            self._m_read = (self.value & 4) != 0
+            return self._m_read if hasattr(self, '_m_read') else None
+
+        @property
+        def write(self):
+            if hasattr(self, '_m_write'):
+                return self._m_write if hasattr(self, '_m_write') else None
+
+            self._m_write = (self.value & 2) != 0
+            return self._m_write if hasattr(self, '_m_write') else None
+
+        @property
+        def execute(self):
+            if hasattr(self, '_m_execute'):
+                return self._m_execute if hasattr(self, '_m_execute') else None
+
+            self._m_execute = (self.value & 1) != 0
+            return self._m_execute if hasattr(self, '_m_execute') else None
+
+        @property
+        def mask_proc(self):
+            if hasattr(self, '_m_mask_proc'):
+                return self._m_mask_proc if hasattr(self, '_m_mask_proc') else None
+
+            self._m_mask_proc = (self.value & 4026531840) != 0
+            return self._m_mask_proc if hasattr(self, '_m_mask_proc') else None
+
+
+    class DtFlagValues(KaitaiStruct):
+        """
+        .. seealso::
+           Figure 5-11: DT_FLAGS values - https://refspecs.linuxbase.org/elf/gabi4+/ch5.dynamic.html
+        
+        
+        .. seealso::
+           Source - https://github.com/golang/go/blob/48dfddbab3/src/debug/elf/elf.go#L1079-L1095
+        
+        
+        .. seealso::
+           Source - https://docs.oracle.com/cd/E37838_01/html/E36783/chapter6-42444.html#OSLLGchapter7-tbl-5
+        """
+        SEQ_FIELDS = []
+        def __init__(self, value, _io, _parent=None, _root=None):
+            self._io = _io
+            self._parent = _parent
+            self._root = _root if _root else self
+            self.value = value
+            self._debug = collections.defaultdict(dict)
+
+        def _read(self):
+            pass
+
+        @property
+        def bind_now(self):
+            """all relocations for this object must be processed before returning
+            control to the program
+            """
+            if hasattr(self, '_m_bind_now'):
+                return self._m_bind_now if hasattr(self, '_m_bind_now') else None
+
+            self._m_bind_now = (self.value & 8) != 0
+            return self._m_bind_now if hasattr(self, '_m_bind_now') else None
+
+        @property
+        def origin(self):
+            """object may reference the $ORIGIN substitution string."""
+            if hasattr(self, '_m_origin'):
+                return self._m_origin if hasattr(self, '_m_origin') else None
+
+            self._m_origin = (self.value & 1) != 0
+            return self._m_origin if hasattr(self, '_m_origin') else None
+
+        @property
+        def textrel(self):
+            """relocation entries might request modifications to a non-writable segment."""
+            if hasattr(self, '_m_textrel'):
+                return self._m_textrel if hasattr(self, '_m_textrel') else None
+
+            self._m_textrel = (self.value & 4) != 0
+            return self._m_textrel if hasattr(self, '_m_textrel') else None
+
+        @property
+        def static_tls(self):
+            """object uses static thread-local storage scheme."""
+            if hasattr(self, '_m_static_tls'):
+                return self._m_static_tls if hasattr(self, '_m_static_tls') else None
+
+            self._m_static_tls = (self.value & 16) != 0
+            return self._m_static_tls if hasattr(self, '_m_static_tls') else None
+
+        @property
+        def symbolic(self):
+            """symbolic linking."""
+            if hasattr(self, '_m_symbolic'):
+                return self._m_symbolic if hasattr(self, '_m_symbolic') else None
+
+            self._m_symbolic = (self.value & 2) != 0
+            return self._m_symbolic if hasattr(self, '_m_symbolic') else None
 
 
     @property

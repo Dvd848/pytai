@@ -1,3 +1,27 @@
+# MIT License
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+# This file was compiled from a KSY format file downloaded from:
+# https://github.com/kaitai-io/kaitai_struct_formats
+
+
 # This is a generated file! Please edit source .ksy file and use kaitai-struct-compiler to rebuild
 
 from pkg_resources import parse_version
@@ -10,6 +34,7 @@ import collections
 if parse_version(kaitaistruct.__version__) < parse_version('0.9'):
     raise Exception("Incompatible Kaitai Struct Python API: 0.9 or later is required, but you have %s" % (kaitaistruct.__version__))
 
+import asn1_der
 class MachO(KaitaiStruct):
 
     class MagicType(Enum):
@@ -242,7 +267,8 @@ class MachO(KaitaiStruct):
             code_directory = 4208856066
             embedded_signature = 4208856256
             detached_signature = 4208856257
-            entitlement = 4208882033
+            entitlements = 4208882033
+            der_entitlements = 4208882034
         SEQ_FIELDS = ["magic", "length", "body"]
         def __init__(self, _io, _parent=None, _root=None):
             self._io = _io
@@ -269,11 +295,6 @@ class MachO(KaitaiStruct):
                 _io__raw_body = KaitaiStream(BytesIO(self._raw_body))
                 self.body = MachO.CsBlob.CodeDirectory(_io__raw_body, self, self._root)
                 self.body._read()
-            elif _on == MachO.CsBlob.CsMagic.entitlement:
-                self._raw_body = self._io.read_bytes((self.length - 8))
-                _io__raw_body = KaitaiStream(BytesIO(self._raw_body))
-                self.body = MachO.CsBlob.Entitlement(_io__raw_body, self, self._root)
-                self.body._read()
             elif _on == MachO.CsBlob.CsMagic.requirements:
                 self._raw_body = self._io.read_bytes((self.length - 8))
                 _io__raw_body = KaitaiStream(BytesIO(self._raw_body))
@@ -289,28 +310,24 @@ class MachO(KaitaiStruct):
                 _io__raw_body = KaitaiStream(BytesIO(self._raw_body))
                 self.body = MachO.CsBlob.SuperBlob(_io__raw_body, self, self._root)
                 self.body._read()
+            elif _on == MachO.CsBlob.CsMagic.entitlements:
+                self._raw_body = self._io.read_bytes((self.length - 8))
+                _io__raw_body = KaitaiStream(BytesIO(self._raw_body))
+                self.body = MachO.CsBlob.Entitlements(_io__raw_body, self, self._root)
+                self.body._read()
             elif _on == MachO.CsBlob.CsMagic.detached_signature:
                 self._raw_body = self._io.read_bytes((self.length - 8))
                 _io__raw_body = KaitaiStream(BytesIO(self._raw_body))
                 self.body = MachO.CsBlob.SuperBlob(_io__raw_body, self, self._root)
                 self.body._read()
+            elif _on == MachO.CsBlob.CsMagic.der_entitlements:
+                self._raw_body = self._io.read_bytes((self.length - 8))
+                _io__raw_body = KaitaiStream(BytesIO(self._raw_body))
+                self.body = asn1_der.Asn1Der(_io__raw_body)
+                self.body._read()
             else:
                 self.body = self._io.read_bytes((self.length - 8))
             self._debug['body']['end'] = self._io.pos()
-
-        class Entitlement(KaitaiStruct):
-            SEQ_FIELDS = ["data"]
-            def __init__(self, _io, _parent=None, _root=None):
-                self._io = _io
-                self._parent = _parent
-                self._root = _root if _root else self
-                self._debug = collections.defaultdict(dict)
-
-            def _read(self):
-                self._debug['data']['start'] = self._io.pos()
-                self.data = self._io.read_bytes_full()
-                self._debug['data']['end'] = self._io.pos()
-
 
         class CodeDirectory(KaitaiStruct):
             SEQ_FIELDS = ["version", "flags", "hash_offset", "ident_offset", "n_special_slots", "n_code_slots", "code_limit", "hash_size", "hash_type", "spare1", "page_size", "spare2", "scatter_offset", "team_id_offset"]
@@ -736,6 +753,7 @@ class MachO(KaitaiStruct):
                 resource_dir = 3
                 application = 4
                 entitlements = 5
+                der_entitlements = 7
                 alternate_code_directories = 4096
                 signature_slot = 65536
             SEQ_FIELDS = ["type", "offset"]
@@ -847,6 +865,20 @@ class MachO(KaitaiStruct):
 
 
         class BlobWrapper(KaitaiStruct):
+            SEQ_FIELDS = ["data"]
+            def __init__(self, _io, _parent=None, _root=None):
+                self._io = _io
+                self._parent = _parent
+                self._root = _root if _root else self
+                self._debug = collections.defaultdict(dict)
+
+            def _read(self):
+                self._debug['data']['start'] = self._io.pos()
+                self.data = self._io.read_bytes_full()
+                self._debug['data']['end'] = self._io.pos()
+
+
+        class Entitlements(KaitaiStruct):
             SEQ_FIELDS = ["data"]
             def __init__(self, _io, _parent=None, _root=None):
                 self._io = _io

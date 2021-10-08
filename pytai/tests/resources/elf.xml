@@ -1915,8 +1915,8 @@
                   <node name="[0]" extra_info="" start_offset="11768" end_offset="11784" is_metavar="False">
                      <node name="tag" extra_info="1 (0x1)" start_offset="11768" end_offset="11776" is_metavar="False"/>
                      <node name="value_or_ptr" extra_info="41 (0x29)" start_offset="11776" end_offset="11784" is_metavar="False"/>
-                     <node name="tag_enum" extra_info="needed" start_offset="None" end_offset="None" is_metavar="True"/>
                      <node name="value_str" extra_info="libc.so.6" start_offset="1025" end_offset="1035" is_metavar="True"/>
+                     <node name="tag_enum" extra_info="needed" start_offset="None" end_offset="None" is_metavar="True"/>
                      <node name="is_value_str" extra_info="True (0x1)" start_offset="None" end_offset="None" is_metavar="True"/>
                   </node>
                   <node name="[1]" extra_info="" start_offset="11784" end_offset="11800" is_metavar="False">
@@ -2036,7 +2036,6 @@
                   <node name="[20]" extra_info="" start_offset="12088" end_offset="12104" is_metavar="False">
                      <node name="tag" extra_info="1879048187 (0x6ffffffb)" start_offset="12088" end_offset="12096" is_metavar="False"/>
                      <node name="value_or_ptr" extra_info="134217728 (0x8000000)" start_offset="12096" end_offset="12104" is_metavar="False"/>
-                     <node name="tag_enum" extra_info="flags_1" start_offset="None" end_offset="None" is_metavar="True"/>
                      <node name="flag_1_values" extra_info="" start_offset="12248" end_offset="12248" is_metavar="True">
                         <node name="singleton" extra_info="False (0x0)" start_offset="None" end_offset="None" is_metavar="True"/>
                         <node name="ignmuldef" extra_info="False (0x0)" start_offset="None" end_offset="None" is_metavar="True"/>
@@ -2067,6 +2066,7 @@
                         <node name="pie" extra_info="True (0x1)" start_offset="None" end_offset="None" is_metavar="True"/>
                         <node name="nodeflib" extra_info="False (0x0)" start_offset="None" end_offset="None" is_metavar="True"/>
                      </node>
+                     <node name="tag_enum" extra_info="flags_1" start_offset="None" end_offset="None" is_metavar="True"/>
                      <node name="is_value_str" extra_info="False (0x0)" start_offset="None" end_offset="None" is_metavar="True"/>
                   </node>
                   <node name="[21]" extra_info="" start_offset="12104" end_offset="12120" is_metavar="False">
@@ -2287,7 +2287,6 @@
             <node name="info" extra_info="Byte Array (Length: 4)" start_offset="16332" end_offset="16336" is_metavar="False"/>
             <node name="align" extra_info="1 (0x1)" start_offset="16336" end_offset="16344" is_metavar="False"/>
             <node name="entry_size" extra_info="0 (0x0)" start_offset="16344" end_offset="16352" is_metavar="False"/>
-            <node name="body" extra_info="Byte Array (Length: 8)" start_offset="12336" end_offset="12344" is_metavar="True"/>
             <node name="name" extra_info=".bss" start_offset="14671" end_offset="14676" is_metavar="True"/>
             <node name="flags_obj" extra_info="" start_offset="16352" end_offset="16352" is_metavar="True">
                <node name="merge" extra_info="False (0x0)" start_offset="None" end_offset="None" is_metavar="True"/>
