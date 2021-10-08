@@ -66,10 +66,7 @@ class TreeItem():
 
     @property
     def path(self) -> str:
-        """Full path up to this item. For metavars, path is returned as empty string."""
-
-        if TAG_METAVAR in self._item["tags"]:
-            return ""
+        """Full path up to this item."""
 
         path = []
         path.append(self._item["text"])
@@ -195,7 +192,6 @@ class TreeAreaView():
         
         if is_metavar:
             tags.append(TAG_METAVAR)
-            name = f"[{name} (Inferred)]"
 
         handle = self.tree.insert(parent_handle, 'end', text = name, open = True, values = (extra_info,), tags = tuple(tags))
         return handle
