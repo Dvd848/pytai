@@ -89,8 +89,8 @@ class View(tk.Tk):
         self.bottom_frame.pack(side=tk.BOTTOM, fill = tk.BOTH)
 
         self.pw = tk.PanedWindow(orient = 'horizontal') 
-        self.tree_view = TreeAreaView(self.pw, self.address_bar, self.callbacks)
-        self.hex_view = HexAreaView(self.pw, self.callbacks)
+        self.tree_view = TreeAreaView(self, self.pw, self.address_bar, self.callbacks)
+        self.hex_view = HexAreaView(self, self.pw, self.callbacks)
 
         self.pw.add(self.tree_view.widget, minsize = 450)
         self.pw.add(self.hex_view.widget, minsize = 740)

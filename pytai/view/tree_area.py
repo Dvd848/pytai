@@ -102,7 +102,7 @@ class TreeItem():
 class TreeAreaView():
     """Implements the view for the key area."""
 
-    def __init__(self, parent, address_bar: AddressBar, callbacks: Dict[Events, Callable[..., None]]):
+    def __init__(self, root, parent, address_bar: AddressBar, callbacks: Dict[Events, Callable[..., None]]):
         """Instantiate the class.
         
         Args:
@@ -116,6 +116,7 @@ class TreeAreaView():
                 Dictionary of callbacks to call when an event from Events occurs
                 
         """
+        self.root = root
         self.parent = parent
         self.callbacks = callbacks
         self.address_bar = address_bar
@@ -194,6 +195,8 @@ class TreeAreaView():
             tags.append(TAG_METAVAR)
 
         handle = self.tree.insert(parent_handle, 'end', text = name, open = True, values = (extra_info,), tags = tuple(tags))
+        self.root.update()
+        
         return handle
 
     def fix_tkinter_color_tags(self) -> None:

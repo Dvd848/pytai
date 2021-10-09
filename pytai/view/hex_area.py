@@ -55,7 +55,7 @@ class HexAreaView():
     REPR_CHARS_PER_BYTE_HEX = 3 # Two chars for hex representation + one space
     REPR_CHARS_PER_BYTE_ASCII = 1
 
-    def __init__(self, parent, callbacks: Dict[Events, Callable[..., None]]):
+    def __init__(self, root, parent, callbacks: Dict[Events, Callable[..., None]]):
         """Instantiate the class.
         
         Args:
@@ -66,6 +66,7 @@ class HexAreaView():
                 Dictionary of callbacks to call when an event from Events occurs
                 
         """
+        self.root = root
         self.parent = parent
         self.callbacks = callbacks
 
@@ -139,27 +140,6 @@ class HexAreaView():
         """Return the actual widget."""
         return self.main_frame
 
-    def _populate_address_area(self, num_bytes: int) -> None:
-        """Populate the address area with addresses given the file length.
-
-        Args:
-            num_bytes:
-                Length of the file.
-        """
-        num_lines = num_bytes // self.BYTES_PER_ROW
-        if (num_bytes % self.BYTES_PER_ROW) != 0:
-            num_lines += 1
-
-        chars_per_byte = 2
-        format_pad_len = 8 * chars_per_byte
-
-        for i in range(num_lines):
-            base_address = format(i * self.BYTES_PER_ROW, 'X').rjust(format_pad_len, '0')
-            self.textbox_address.insert(tk.END, f"{base_address}\n")
-
-        self.textbox_address.tag_add(TAG_JUSTIFY_RIGHT, 1.0, tk.END)
-        self.textbox_address.config(state = tk.DISABLED)
-
     def populate_hex_view(self, byte_arr: bytes) -> None:
         """Populate the hex view with the content of the file.
 
@@ -167,14 +147,22 @@ class HexAreaView():
             byte_arr:
                 The contents of the file, as a binary array.
         """
-        self._populate_address_area(len(byte_arr))
+        chars_per_byte = 2
+        format_pad_len = 8 * chars_per_byte
         
-        for chunk in chunker(byte_arr, self.BYTES_PER_ROW):
+        for i, chunk in enumerate(chunker(byte_arr, self.BYTES_PER_ROW)):
             hex_format = chunk.hex(" ")
             self.textbox_hex.insert(tk.END, f"{hex_format}\n")
 
             ascii_format = "".join([chr(i) if 32 <= i <= 127 else "." for i in chunk])
             self.textbox_ascii.insert(tk.END, f"{ascii_format}\n")
+
+            base_address = format(i * self.BYTES_PER_ROW, 'X').rjust(format_pad_len, '0')
+            self.textbox_address.insert(tk.END, f"{base_address}\n")
+            self.root.update()           
+
+        self.textbox_address.tag_add(TAG_JUSTIFY_RIGHT, 1.0, tk.END)
+        self.textbox_address.config(state = tk.DISABLED)
 
         self.textbox_hex.config(state = tk.DISABLED)
         self.textbox_ascii.config(state = tk.DISABLED)
