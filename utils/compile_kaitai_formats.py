@@ -6,10 +6,12 @@ import argparse
 import json
 
 FORMAT_PATH = Path(".") / "tmp" / "kaitai_struct_formats"
+WORKING_PATH = Path(".") / "tmp" / "working"
 OUTPUT_PATH = Path("..") / "pytai" / "kaitai" / "formats"
 KAITAI_STRUCT_FORMAT_REPO = "https://github.com/kaitai-io/kaitai_struct_formats"
 
 def clone_kaitai_repo() -> None:
+    """Clone the Kaitai format repo to FORMAT_PATH."""
     print("[-] Cloning Kaitai Repository")
 
     if shutil.which("git") is None:
@@ -22,19 +24,19 @@ def clone_kaitai_repo() -> None:
     if result.returncode != 0:
         raise RuntimeError(f"Failed to clone repo!\nstdout:\n{result.stdout}\nstderr:\n{result.stderr}")
     
-def prepend_license(path: Path, license: str) -> None:
-    with open(OUTPUT_PATH / path, "r+") as f:
+def prepend_license_and_save(in_path: Path, license: str, out_path: Path) -> None:
+    """Open the given file, prepend the given license and save to given path."""
+    with open(in_path, "r") as f, open(out_path, "w") as o:
         contents = f.read()
-        f.seek(0)
-        f.write(LICENSES[license].strip())
-        f.write("\n\n")
-        f.write(f"# This file was compiled from a KSY format file downloaded from:\n")
-        f.write(f"# {KAITAI_STRUCT_FORMAT_REPO}\n")
-        f.write("\n\n")
-        f.write(contents)
-        f.truncate()
+        o.write(LICENSES[license].strip())
+        o.write("\n\n")
+        o.write(f"# This file was compiled from a KSY format file downloaded from:\n")
+        o.write(f"# {KAITAI_STRUCT_FORMAT_REPO}\n")
+        o.write("\n\n")
+        o.write(contents)
 
 def compile_kaitai_formats() -> None:
+    """Iterate all KSY files in FORMAT_PATH and save to OUTPUT_PATH."""
     print("[-] Compiling KSY files")
 
     try:    
@@ -58,7 +60,7 @@ def compile_kaitai_formats() -> None:
 
             if license in ["Apache-2.0", "BSD-2-Clause", "BSD-3-Clause-Attribution", "CC0-1.0", "MIT", "WTFPL", "Unlicense"]:
                 print(f"  [V] {ksy_path.stem}: Compatible license ({license}), compiling...")
-                command = ["ksc", "--ksc-json-output", "--target", "python", "--debug", "--outdir", str(OUTPUT_PATH.resolve()), 
+                command = ["ksc", "--ksc-json-output", "--target", "python", "--debug", "--outdir", str(WORKING_PATH.resolve()), 
                                 "--import-path", str(FORMAT_PATH.resolve()), str(ksy_path.resolve())]
                 result = subprocess.run(command, capture_output=True, text=True)
                 if result.returncode != 0:
@@ -70,7 +72,7 @@ def compile_kaitai_formats() -> None:
                     firstSpecName = output["firstSpecName"]
                     python_files = output["output"]["python"][firstSpecName]["files"]
                     for file in python_files:
-                        prepend_license(file["fileName"], license)
+                        prepend_license_and_save(WORKING_PATH.resolve() / file["fileName"], license, OUTPUT_PATH.resolve() / file["fileName"])
                 except KeyError:
                     print(f"      Error: {result.stdout}")
                     continue
