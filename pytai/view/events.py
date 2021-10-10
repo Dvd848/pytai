@@ -48,3 +48,5 @@ class Events(enum.Enum):
     # Get current working directory
     GET_CWD            = enum.auto()
     
+    # Abort loading the current file
+    CANCEL_LOAD        = enum.auto()

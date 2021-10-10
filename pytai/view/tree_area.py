@@ -40,6 +40,8 @@ from typing import Dict, Callable, Tuple
 from .bars import *
 from .events import *
 
+from ..common import *
+
 TAG_OFFSET_PREFIX = "_offset_"
 TAG_OFFSET_SEPARATOR = "-"
 TAG_METAVAR = "metavar"
@@ -187,17 +189,19 @@ class TreeAreaView():
             Handle to this item, to be used for child items.
         """
 
-        tags = []
-        if start_offset is not None and end_offset is not None:
-            tags.append(f"{TAG_OFFSET_PREFIX}{start_offset}{TAG_OFFSET_SEPARATOR}{end_offset}")
-        
-        if is_metavar:
-            tags.append(TAG_METAVAR)
+        try:
+            tags = []
+            if start_offset is not None and end_offset is not None:
+                tags.append(f"{TAG_OFFSET_PREFIX}{start_offset}{TAG_OFFSET_SEPARATOR}{end_offset}")
+            
+            if is_metavar:
+                tags.append(TAG_METAVAR)
 
-        handle = self.tree.insert(parent_handle, 'end', text = name, open = True, values = (extra_info,), tags = tuple(tags))
-        self.root.update()
-        
-        return handle
+            handle = self.tree.insert(parent_handle, 'end', text = name, open = True, values = (extra_info,), tags = tuple(tags))
+
+            return handle
+        except tk.TclError as e:
+            raise PyTaiViewException from e
 
     def fix_tkinter_color_tags(self) -> None:
         """A W/A to allow tkinter to display a TreeView's foreground/background."""

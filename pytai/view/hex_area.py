@@ -129,6 +129,7 @@ class HexAreaView():
 
     def reset(self):
         """Reset the text widgets to the original state."""
+        self.abort_load = True
         for textbox in self.textboxes:
             textbox.config(state = tk.NORMAL)
             textbox.delete('1.0', tk.END)
@@ -147,25 +148,47 @@ class HexAreaView():
             byte_arr:
                 The contents of the file, as a binary array.
         """
-        chars_per_byte = 2
-        format_pad_len = 8 * chars_per_byte
-        
-        for i, chunk in enumerate(chunker(byte_arr, self.BYTES_PER_ROW)):
-            hex_format = chunk.hex(" ")
-            self.textbox_hex.insert(tk.END, f"{hex_format}\n")
+        self.abort_load = False
 
-            ascii_format = "".join([chr(i) if 32 <= i <= 127 else "." for i in chunk])
-            self.textbox_ascii.insert(tk.END, f"{ascii_format}\n")
+        try:
+            from io import StringIO
+            chars_per_byte = 2
+            format_pad_len = 8 * chars_per_byte
 
-            base_address = format(i * self.BYTES_PER_ROW, 'X').rjust(format_pad_len, '0')
-            self.textbox_address.insert(tk.END, f"{base_address}\n")
-            self.root.update()           
+            num_bytes = len(byte_arr)
+            num_lines = num_bytes // self.BYTES_PER_ROW
+            if (num_bytes % self.BYTES_PER_ROW) != 0:
+                num_lines += 1
+            
+            textbox_hex_content = StringIO()
+            textbox_ascii_content = StringIO()
+            textbox_address_content = "\n".join([format(i * self.BYTES_PER_ROW, 'X').rjust(format_pad_len, '0') for i in range(num_lines)])
 
-        self.textbox_address.tag_add(TAG_JUSTIFY_RIGHT, 1.0, tk.END)
-        self.textbox_address.config(state = tk.DISABLED)
+            for chunk in chunker(byte_arr, self.BYTES_PER_ROW):
+                
+                if self.abort_load:
+                    break
 
-        self.textbox_hex.config(state = tk.DISABLED)
-        self.textbox_ascii.config(state = tk.DISABLED)
+                hex_format = chunk.hex(" ")
+                textbox_hex_content.write(hex_format + "\n")
+
+                ascii_format = "".join([chr(c) if 32 <= c <= 127 else "." for c in chunk])
+                textbox_ascii_content.write(ascii_format + "\n")
+            
+            self.textbox_hex.insert(tk.END, textbox_hex_content.getvalue())
+            self.textbox_ascii.insert(tk.END, textbox_ascii_content.getvalue())
+            self.textbox_address.insert(tk.END, textbox_address_content + "\n")
+
+            self.textbox_address.tag_add(TAG_JUSTIFY_RIGHT, 1.0, tk.END)
+            self.textbox_address.config(state = tk.DISABLED)
+
+            self.textbox_hex.config(state = tk.DISABLED)
+            self.textbox_ascii.config(state = tk.DISABLED)
+        except tk.TclError as e:
+            if not self.abort_load:
+                raise e
+
+
 
     @classmethod
     def _offset_to_line_column(cls, chars_per_byte: int, offset: int, adjust_column: int = 0) -> str:

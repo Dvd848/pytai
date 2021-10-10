@@ -178,6 +178,67 @@ class View(tk.Tk):
             self.set_status("")
         self.hex_view.mark_range(start_offset, end_offset)
 
+    def show_loading(self) -> None:
+        self.loading = LoadingWindow(self.root, self.callbacks[Events.CANCEL_LOAD])
+
+    def hide_loading(self) -> None:
+        self.loading.stop()
+        self.loading = None
+
+class LoadingWindow():
+    def __init__(self, parent, cancel_callback):
+        """Instantiate the class.
+        
+        Args:
+            parent:
+                Parent tk class.
+                
+        """
+        self.parent = parent
+        self.cancel_callback = cancel_callback
+
+        self.window = tk.Toplevel(self.parent)
+        self.window.title(f"Loading...") 
+        self.window.resizable(0, 0)
+        self.window.transient(self.parent)
+        self.window.grab_set()
+        #self.window.overrideredirect(True)
+
+        self.progress = ttk.Progressbar(self.window, orient = tk.HORIZONTAL, length = 150, mode = 'determinate')
+        self.progress.start()
+        self.progress.pack(padx = 30, pady = (20, 0))
+
+        cancel_button = tk.Button(self.window, text="Cancel", padx = 3, pady = 3, command = self.cancel)
+        cancel_button.pack(side = tk.BOTTOM, pady = 15)
+
+        self.window.protocol("WM_DELETE_WINDOW", self.on_close)
+        self.loading = True
+        self.center_window(self.parent)
+
+
+    def stop(self) -> None:
+        try:
+            self.loading = False
+            self.window.destroy()
+        except tk.TclError:
+            pass
+
+    def cancel(self) -> None:
+        if messagebox.askokcancel("Cancel Loading...", "Are you sure you want to cancel loading?"):
+            self.cancel_callback()
+            self.stop()
+
+    def on_close(self) -> None:
+        self.cancel()
+
+    def center_window(self, parent):
+        self.window.update()
+        height = self.window.winfo_height()
+        width = self.window.winfo_width()
+        x = (parent.winfo_width() - width) // 2
+        y = (parent.winfo_height() - height) // 2
+        self.window.geometry('+{}+{}'.format(self.parent.winfo_rootx() + x, self.parent.winfo_rooty() + y))
+
 
 class OpenFileWindow():
     """Window for selecting the file to view."""

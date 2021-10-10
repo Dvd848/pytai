@@ -50,6 +50,7 @@ class Application():
             v.Events.GOTO:                self.cb_goto,
             v.Events.OPEN:                self.cb_open,
             v.Events.GET_CWD:             self.cb_get_cwd,
+            v.Events.CANCEL_LOAD:         self.cb_cancel_load,
         }
 
         self.current_file_path = None
@@ -77,9 +78,13 @@ class Application():
                 Dictionary should contain one of the following pairs:
                     (-) kaitai_format -> Name of Kaitai format module from format folder
         """
+        self.abort_load = False
+        self.view.show_loading()
         with utils.memory_map(path_file) as f:
             self.view.populate_hex_view(f)
         self._populate_structure_tree(path_file, format)
+        self.view.root.update()
+        self.view.hide_loading()
 
     def _populate_structure_tree(self, path_file: Union[str, Path], format: Dict[str, str]) -> None:
         """Populates the View's structure tree for the given file.
@@ -97,8 +102,6 @@ class Application():
         try:
             parser = self.model.get_parser(**format)
             with parser.parse(self.current_file_path) as parsed_file:
-
-
                 NodeAttributes = namedtuple("NodeAttributes", "parent name value start_offset end_offset is_metavar is_array")
 
                 # Build the structure tree by iterating the parsed file (BFS)
@@ -107,15 +110,16 @@ class Application():
         
                 queue.append(NodeAttributes(parent = '', name = 'root', value = parsed_file, start_offset = 0, end_offset = 0, 
                                             is_metavar = False, is_array = False))
-        
-                while queue:
-                    node_attr = queue.pop(0)
 
+                while queue:
+                    if self.abort_load:
+                        return
+
+                    node_attr = queue.pop(0)
                     handle = self.view.add_tree_item(node_attr.parent, name = node_attr.name, 
                                                     extra_info = parser.get_item_description(node_attr.value), 
                                                     start_offset = node_attr.start_offset, end_offset = node_attr.end_offset, 
                                                     is_metavar = node_attr.is_metavar)
-                    
                     if node_attr.is_array:
                         values = node_attr.value
                     else:
@@ -132,6 +136,9 @@ class Application():
                 self.view.set_status("Loaded")
         except PyTaiException as e:
             self.view.display_error(str(e))
+        except PyTaiViewException:
+            if not self.abort_load:
+                raise
         except Exception:
             raise
 
@@ -167,3 +174,8 @@ class Application():
             return Path(self.current_file_path).parent
 
         return "."
+
+    def cb_cancel_load(self) -> None:
+        """Callback for an event where the user aborts loading."""
+        self.abort_load = True
+        self.view.reset()
