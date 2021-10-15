@@ -82,14 +82,15 @@ class Application():
                     (-) kaitai_format -> Name of Kaitai format module from format folder
         """
         self.abort_load = False
-        self.parents = dict()
+        self.tree_loaded = False
+        self.tree_parents = dict()
 
         self.view.show_loading()
 
-        self.thread_queue = queue.Queue()
-        th=threading.Thread(target=self._populate_structure_tree, args = (path_file, format))
-        th.start()
-        self.view.root.after(100, self._add_nodes_to_tree)
+        self.tree_thread_queue = queue.Queue()
+        tree_thread = threading.Thread(target = self._populate_structure_tree, args = (path_file, format))
+        tree_thread.start()
+        self.view.start_worker(self._add_nodes_to_tree)
 
         #with utils.memory_map(path_file) as f:
         #    self.view.populate_hex_view(f)
@@ -126,7 +127,7 @@ class Application():
 
                     node_attr = queue.pop(0)
 
-                    self.thread_queue.put(dict(current = i, parent = node_attr.parent, name = node_attr.name, 
+                    self.tree_thread_queue.put(dict(current = i, parent = node_attr.parent, name = node_attr.name, 
                                                     extra_info = parser.get_item_description(node_attr.value), 
                                                     start_offset = node_attr.start_offset, end_offset = node_attr.end_offset, 
                                                     is_metavar = node_attr.is_metavar))
@@ -142,41 +143,68 @@ class Application():
                                                     end_offset = child_attr.end_offset, 
                                                     is_metavar = child_attr.is_metavar, is_array = child_attr.is_array) )
                     i += 1
-                self.thread_queue.put(None)
+                self.tree_thread_queue.put(None)
 
         except PyTaiException as e:
-            #self.view.display_error(str(e))
-            pass
+            self.tree_thread_queue.put(e)
         except Exception:
             raise
 
 
-    def _add_nodes_to_tree(self):
+    def _add_nodes_to_tree(self) -> bool:
+        """Adds a subset of nodes to the tree view.
+
+        This function will read up to MAX_NODES_PER_CALL nodes from the 
+        node queue and add them to the tree. If needed, it will
+        request to reschedule itself to add more nodes.
+        The function stops requesting to reschedule itself when it reads
+        None from the queue (or when any exception other than an empty queue
+        exception is raised).
+        
+        Called in the context of the View.
+        
+        Returns:
+            True if it needs to be called again, False otherwise.
+        """
+        MAX_NODES_PER_CALL = 100
         try:
-            for _ in range(100):
-                node_attr = self.thread_queue.get(0)
+            for _ in range(MAX_NODES_PER_CALL):
+                queue_item = self.tree_thread_queue.get(0)
 
-                if node_attr is None: 
-                    self.parents = None
-                    self.thread_queue = None
-                    self.view.set_status("Loaded")
-                    self.view.hide_loading()
-                    return
+                if queue_item is None: 
+                    # All done
+                    self.tree_loaded = True
+                    self._finalize_load()
+                    return False
+                elif isinstance(queue_item, Exception):
+                    raise queue_item
 
-                parent = self.parents.get(node_attr["parent"], '')
+                parent = self.tree_parents.get(queue_item["parent"], '')
 
-                handle = self.view.add_tree_item(parent, name = node_attr["name"], 
-                                                extra_info = node_attr["extra_info"], 
-                                                start_offset = node_attr["start_offset"], 
-                                                end_offset = node_attr["end_offset"], 
-                                                is_metavar = node_attr["is_metavar"])
-                self.parents[node_attr["current"]] = handle
-            self.view.root.after_idle(self._add_nodes_to_tree)
+                handle = self.view.add_tree_item(parent, name = queue_item["name"], 
+                                                extra_info = queue_item["extra_info"], 
+                                                start_offset = queue_item["start_offset"], 
+                                                end_offset = queue_item["end_offset"], 
+                                                is_metavar = queue_item["is_metavar"])
+                self.tree_parents[queue_item["current"]] = handle
+            return True
         except queue.Empty:
-            self.view.root.after_idle(self._add_nodes_to_tree)
+            return True
         except PyTaiViewException:
             if not self.abort_load:
                 raise
+        except PyTaiException as e:
+            self.view.display_error(str(e))
+
+        return False
+
+    def _finalize_load(self) -> None:
+        """Finalize loading by performing cleanups and any other action needed at end of load."""
+        if self.tree_loaded:
+            self.tree_parents = None
+            self.tree_thread_queue = None
+            self.view.set_status("Loaded")
+            self.view.hide_loading()
 
 
     def cb_refresh(self) -> None:

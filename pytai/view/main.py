@@ -185,6 +185,11 @@ class View(tk.Tk):
         self.loading.stop()
         self.loading = None
 
+    def start_worker(self, callback) -> None:
+        reschedule = callback()
+        if reschedule:
+            self.root.after_idle(lambda: self.start_worker(callback))
+
 class LoadingWindow():
     def __init__(self, parent, cancel_callback):
         """Instantiate the class.
