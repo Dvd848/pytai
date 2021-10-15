@@ -32,6 +32,9 @@ from pathlib import Path
 from collections import namedtuple
 from typing import Union, Dict, Optional
 
+import threading
+import queue
+
 from . import view as v
 from . import model as m
 
@@ -79,12 +82,17 @@ class Application():
                     (-) kaitai_format -> Name of Kaitai format module from format folder
         """
         self.abort_load = False
+        self.parents = dict()
+
         self.view.show_loading()
-        with utils.memory_map(path_file) as f:
-            self.view.populate_hex_view(f)
-        self._populate_structure_tree(path_file, format)
-        self.view.root.update()
-        self.view.hide_loading()
+
+        self.thread_queue = queue.Queue()
+        th=threading.Thread(target=self._populate_structure_tree, args = (path_file, format))
+        th.start()
+        self.view.root.after(100, self._add_nodes_to_tree)
+
+        #with utils.memory_map(path_file) as f:
+        #    self.view.populate_hex_view(f)
 
     def _populate_structure_tree(self, path_file: Union[str, Path], format: Dict[str, str]) -> None:
         """Populates the View's structure tree for the given file.
@@ -108,39 +116,68 @@ class Application():
 
                 queue = []
         
-                queue.append(NodeAttributes(parent = '', name = 'root', value = parsed_file, start_offset = 0, end_offset = 0, 
+                queue.append(NodeAttributes(parent = None, name = 'root', value = parsed_file, start_offset = 0, end_offset = 0, 
                                             is_metavar = False, is_array = False))
 
+                i = 0
                 while queue:
                     if self.abort_load:
                         return
 
                     node_attr = queue.pop(0)
-                    handle = self.view.add_tree_item(node_attr.parent, name = node_attr.name, 
+
+                    self.thread_queue.put(dict(current = i, parent = node_attr.parent, name = node_attr.name, 
                                                     extra_info = parser.get_item_description(node_attr.value), 
                                                     start_offset = node_attr.start_offset, end_offset = node_attr.end_offset, 
-                                                    is_metavar = node_attr.is_metavar)
+                                                    is_metavar = node_attr.is_metavar))
+
                     if node_attr.is_array:
                         values = node_attr.value
                     else:
                         values = parser.get_children(node_attr.value)
 
                     for child_attr in values:
-
-                        queue.append( NodeAttributes(parent = handle, name = child_attr.name, value = child_attr.value, 
+                        queue.append( NodeAttributes(parent = i, name = child_attr.name, value = child_attr.value, 
                                                     start_offset = child_attr.start_offset, 
                                                     end_offset = child_attr.end_offset, 
                                                     is_metavar = child_attr.is_metavar, is_array = child_attr.is_array) )
+                    i += 1
+                self.thread_queue.put(None)
 
-
-                self.view.set_status("Loaded")
         except PyTaiException as e:
-            self.view.display_error(str(e))
+            #self.view.display_error(str(e))
+            pass
+        except Exception:
+            raise
+
+
+    def _add_nodes_to_tree(self):
+        try:
+            for _ in range(100):
+                node_attr = self.thread_queue.get(0)
+
+                if node_attr is None: 
+                    self.parents = None
+                    self.thread_queue = None
+                    self.view.set_status("Loaded")
+                    self.view.hide_loading()
+                    return
+
+                parent = self.parents.get(node_attr["parent"], '')
+
+                handle = self.view.add_tree_item(parent, name = node_attr["name"], 
+                                                extra_info = node_attr["extra_info"], 
+                                                start_offset = node_attr["start_offset"], 
+                                                end_offset = node_attr["end_offset"], 
+                                                is_metavar = node_attr["is_metavar"])
+                self.parents[node_attr["current"]] = handle
+            self.view.root.after_idle(self._add_nodes_to_tree)
+        except queue.Empty:
+            self.view.root.after_idle(self._add_nodes_to_tree)
         except PyTaiViewException:
             if not self.abort_load:
                 raise
-        except Exception:
-            raise
+
 
     def cb_refresh(self) -> None:
         """Callback for an event where the user refreshes the view."""
