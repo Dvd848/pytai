@@ -229,12 +229,15 @@ class View(tk.Tk):
         self.root.after(time_ms, callback)
 
 class LoadingWindow():
-    def __init__(self, parent, cancel_callback):
+    def __init__(self, parent, cancel_callback: Callable[[], None]):
         """Instantiate the class.
         
         Args:
             parent:
                 Parent tk class.
+
+            cancel_callback: 
+                Callback to call if the user cancels loading.
                 
         """
         self.parent = parent
@@ -255,25 +258,27 @@ class LoadingWindow():
         cancel_button.pack(side = tk.BOTTOM, pady = 15)
 
         self.window.protocol("WM_DELETE_WINDOW", self.on_close)
-        self.loading = True
         self.center_window(self.parent)
 
     def stop(self) -> None:
+        """Stop loading and kill the loading window."""
         try:
-            self.loading = False
             self.window.destroy()
         except tk.TclError:
             pass
 
     def cancel(self) -> None:
+        """Handle an event where the user clicks the 'cancel' button."""
         if messagebox.askokcancel("Cancel Loading...", "Are you sure you want to cancel loading?"):
             self.cancel_callback()
             self.stop()
 
     def on_close(self) -> None:
+        """Handle an event where the user closes the loading window."""
         self.cancel()
 
     def center_window(self, parent):
+        """Centers the window within the given parent window."""
         self.window.update()
         height = self.window.winfo_height()
         width = self.window.winfo_width()

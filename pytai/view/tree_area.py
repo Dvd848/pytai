@@ -52,8 +52,12 @@ class TreeItem():
         """Instantiate a tree item.
         
         Args:
+            root:
+                Root tk class.
+
             tree:
                 Parent Treeview for this item.
+                
             id: 
                 Treeview ID for this item.
         """

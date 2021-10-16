@@ -62,6 +62,9 @@ class HexAreaView():
         """Instantiate the class.
         
         Args:
+            root:
+                Root tk class.
+                
             parent: 
                 Parent tk class.
                             
