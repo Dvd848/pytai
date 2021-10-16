@@ -32,6 +32,7 @@ from pathlib import Path
 from collections import namedtuple
 from typing import Union, Dict, Optional
 
+import enum
 import threading
 import queue
 
@@ -41,8 +42,14 @@ from . import model as m
 from . import utils
 
 from .common import *
+from .utils import *
 
 class Application():
+    class Task(enum.Enum):
+        BUILD_TREE         = enum.auto()
+        POPULATE_HEX_AREA  = enum.auto()
+
+
     def __init__(self, file: Optional[str], format: Dict[str, Optional[str]], *args, **kwargs):
 
         # These callbacks are used to notify the application
@@ -84,24 +91,23 @@ class Application():
         """
         self.abort_load = False
 
-        self.tree_loaded = False
-        self.hex_loaded = False
+        self.background_tasks = BackgroundTasks()
+        self.background_tasks.start_task(self.Task.BUILD_TREE)
+        self.background_tasks.start_task(self.Task.POPULATE_HEX_AREA)
         
         self.tree_parents = dict()
 
         self.view.show_loading()
 
         self.tree_thread_queue = queue.Queue()
-        tree_thread = threading.Thread(target = self._populate_structure_tree, args = (path_file, format))
-        tree_thread.daemon = True
-        tree_thread.start()
+        start_deamon(function = self._populate_structure_tree, args = (path_file, format))
         self.view.start_worker(self._add_nodes_to_tree)
 
-        def done_loading_hex():
-            self.hex_loaded = True
+        def done_loading_hex(is_success: bool) -> None:
+            self.background_tasks.task_done(self.Task.POPULATE_HEX_AREA, is_success)
             self._finalize_load()
 
-        self.file_mmap = utils.memory_map(path_file) #TODO: Make sure this is always closed
+        self.file_mmap = utils.memory_map(path_file)
         self.view.populate_hex_view(self.file_mmap, done_loading_hex)
 
     def _populate_structure_tree(self, path_file: Union[str, Path], format: Dict[str, str]) -> None:
@@ -132,7 +138,7 @@ class Application():
                 i = 0
                 while queue:
                     if self.abort_load:
-                        return
+                        break
 
                     node_attr = queue.pop(0)
 
@@ -178,11 +184,11 @@ class Application():
         MAX_NODES_PER_CALL = 100
         try:
             for _ in range(MAX_NODES_PER_CALL):
-                queue_item = self.tree_thread_queue.get(0)
+                queue_item = self.tree_thread_queue.get(block = False)
 
                 if queue_item is None: 
                     # All done
-                    self.tree_loaded = True
+                    self.background_tasks.task_done(self.Task.BUILD_TREE, is_success = True)
                     self._finalize_load()
                     return False
                 elif isinstance(queue_item, Exception):
@@ -199,23 +205,27 @@ class Application():
             return True
         except queue.Empty:
             return True
-        except PyTaiViewException:
+        except PyTaiViewException as e:
             if not self.abort_load:
-                raise
-        except PyTaiException as e:
+                self.view.display_error(str(e))
+        except Exception as e:
             self.view.display_error(str(e))
-            self.cb_cancel_load()
-
+            
+        self.background_tasks.task_done(self.Task.BUILD_TREE, is_success = False)
+        self.cb_cancel_load()
+        self._finalize_load()
         return False
 
     def _finalize_load(self) -> None:
         """Finalize loading by performing cleanups and any other action needed at end of load."""
-        if self.tree_loaded and self.hex_loaded:
+        if self.background_tasks.all_done():
             self.tree_parents = None
             self.tree_thread_queue = None
-            self.view.set_status("Loaded")
             self.view.hide_loading()
             self.file_mmap.close()
+
+        if self.background_tasks.all_succeeded():
+            self.view.set_status("Loaded")
 
 
     def cb_refresh(self) -> None:

@@ -24,8 +24,10 @@ License:
 import mmap
 import os
 from collections.abc import Iterable
-from typing import Generator, List
+from typing import Callable, Generator, List, Any
 import inspect
+import enum
+import threading
 
 def memory_map(filename: str, access=mmap.ACCESS_READ) -> mmap.mmap:
     """Map a file to the memory using mmap.
@@ -68,3 +70,49 @@ def getproperties(obj):
         for name, value in vars(tp).items():
             if isinstance(value, property):
                 yield name, getattr(obj, name)
+
+def start_deamon(function: Callable, args: Iterable = ()) -> threading.Thread:
+    """Start a deamon with the given function and arguments."""
+    thread = threading.Thread(target = function, args = args)
+    thread.daemon = True
+    thread.start()
+    return thread
+
+class BackgroundTasks():
+    """A class to track background operations."""
+
+    class State(enum.Enum):
+        STARTED     = enum.auto()
+        FAILED      = enum.auto()
+        SUCCEEDED   = enum.auto()
+
+    def __init__(self) -> None:
+        self.tasks = {}
+
+    def start_task(self, task: Any) -> None:
+        """Mark a task as started.
+        
+        Args:
+            task:
+                Identifier for the task.
+        """
+        if task in self.tasks:
+            raise RuntimeError(f"Task {task} already started")
+        self.tasks[task] = self.State.STARTED
+
+    def task_done(self, task: Any, is_success: bool) -> None:
+        """Mark a task as done.
+        
+        Args:
+            is_success:
+                True if task was successful, False otherwise
+        """
+        self.tasks[task] = self.State.SUCCEEDED if is_success else self.State.FAILED
+
+    def all_done(self) -> bool:
+        """Returns True if all tasks were completed."""
+        return all([x != self.State.STARTED for x in self.tasks.values()])
+
+    def all_succeeded(self) -> bool:
+        """Returns True if all tasks were completed successfully."""
+        return all([x == self.State.SUCCEEDED for x in self.tasks.values()])

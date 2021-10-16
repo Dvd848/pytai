@@ -37,7 +37,6 @@ from tkinter import ttk
 from typing import Dict, Callable, Optional
 from io import StringIO
 
-import threading
 import queue
 
 from .events import *
@@ -159,11 +158,9 @@ class HexAreaView():
         """
         self.abort_load = False
 
-        self.done_cb = done_cb
+        self.hex_content_done_cb = done_cb
         self.hex_thread_queue = queue.Queue()
-        hex_thread = threading.Thread(target = self._create_hex_view_content, args = (byte_arr, self.hex_thread_queue))
-        hex_thread.daemon = True
-        hex_thread.start()
+        start_deamon(function = self._create_hex_view_content, args = (byte_arr, self.hex_thread_queue))
         self.root.after(50, self._add_content_to_hex_view)
 
     def _create_hex_view_content(self, byte_arr: bytes, queue: queue.Queue) -> None:
@@ -187,6 +184,9 @@ class HexAreaView():
             chunk_size = 0x1000
 
             for i, chunk_external in enumerate(chunker(byte_arr, chunk_size)):
+                if self.abort_load:
+                    break
+
                 # String concatenation is faster with StringIO
                 textbox_hex_content = StringIO()
                 textbox_ascii_content = StringIO()
@@ -221,20 +221,11 @@ class HexAreaView():
         If needed, this function reschedules itself to run again.
         """
         
-        if self.abort_load:
-            return
-
         try:
-            queue_item = self.hex_thread_queue.get(0)
+            queue_item = self.hex_thread_queue.get(block = False)
 
-            if queue_item is None: 
-                # TODO: Finalize also for error flows
-                self.textbox_address.config(state = tk.DISABLED)
-                self.textbox_hex.config(state = tk.DISABLED)
-                self.textbox_ascii.config(state = tk.DISABLED)
-                self.done_cb()
-                self.done_cb = None
-                self.hex_thread_queue = None
+            if queue_item is None or self.abort_load: 
+                self._cleanup_hex_content(is_success = not self.abort_load)
                 return
             elif isinstance(queue_item, Exception):
                 raise queue_item
@@ -247,10 +238,22 @@ class HexAreaView():
             self.textbox_address.tag_add(TAG_JUSTIFY_RIGHT, 1.0, tk.END)
             self.root.after_idle(self._add_content_to_hex_view)
         except tk.TclError as e:
+            self._cleanup_hex_content(is_success = False)
             if not self.abort_load:
                 raise e
         except queue.Empty:
             self.root.after_idle(self._add_content_to_hex_view)
+        except Exception as e:
+            self._cleanup_hex_content(is_success = False)
+            self.callbacks[Events.SHOW_ERROR](f"Error: {str(e)}")
+
+    def _cleanup_hex_content(self, is_success: bool) -> None:
+        self.textbox_address.config(state = tk.DISABLED)
+        self.textbox_hex.config(state = tk.DISABLED)
+        self.textbox_ascii.config(state = tk.DISABLED)
+        self.hex_content_done_cb(is_success)
+        self.hex_content_done_cb = None
+        self.hex_thread_queue = None
 
     @classmethod
     def _offset_to_line_column(cls, chars_per_byte: int, offset: int, adjust_column: int = 0) -> str:
