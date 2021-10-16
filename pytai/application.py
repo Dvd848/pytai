@@ -155,8 +155,8 @@ class Application():
 
         except PyTaiException as e:
             self.tree_thread_queue.put(e)
-        except Exception:
-            raise
+        except Exception as e:
+            self.tree_thread_queue.put(PyTaiException(f"Error while parsing file:\n'{str(e)}'"))
 
 
     def _add_nodes_to_tree(self) -> bool:
@@ -203,6 +203,7 @@ class Application():
                 raise
         except PyTaiException as e:
             self.view.display_error(str(e))
+            self.cb_cancel_load()
 
         return False
 
