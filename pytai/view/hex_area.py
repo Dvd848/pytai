@@ -35,6 +35,10 @@ import tkinter as tk
 from tkinter import ttk
 
 from typing import Dict, Callable, Optional
+from io import StringIO
+
+import threading
+import queue
 
 from .events import *
 
@@ -90,6 +94,7 @@ class HexAreaView():
         self.textbox_ascii.tag_config(TAG_HIGHLIGHT, background='gold3')
         self.textbox_ascii.tag_config(TAG_SELECTION, background='lightgray')
 
+
         self.textboxes = [self.textbox_address, self.textbox_hex, self.textbox_ascii]
 
         self.scrollbar = tk.Scrollbar(self.main_frame)
@@ -141,54 +146,110 @@ class HexAreaView():
         """Return the actual widget."""
         return self.main_frame
 
-    def populate_hex_view(self, byte_arr: bytes) -> None:
+    def populate_hex_view(self, byte_arr: bytes, done_cb: Callable[[], None]) -> None:
         """Populate the hex view with the content of the file.
 
         Args:
             byte_arr:
                 The contents of the file, as a binary array.
+
+            done_cb:
+                A callback to call when the hex view is fully populated.
+
         """
         self.abort_load = False
 
+        self.done_cb = done_cb
+        self.hex_thread_queue = queue.Queue()
+        hex_thread = threading.Thread(target = self._create_hex_view_content, args = (byte_arr, self.hex_thread_queue))
+        hex_thread.start()
+        self.root.after(50, self._add_content_to_hex_view)
+
+    def _create_hex_view_content(self, byte_arr: bytes, queue: queue.Queue) -> None:
+        """Create the content to be insterted into the hex view and pass it to the given queue.
+
+        This function runs is a separate thread, and feeds the queue with chunks of content to be 
+        appended to the hex view.
+
+        Args:
+            byte_arr:
+                The byte array to be formatted into the hex view.
+
+            queue:
+                The output queue to which the chunks of formatted text need to be sent to.
+        
+        """
         try:
-            from io import StringIO
             chars_per_byte = 2
             format_pad_len = 8 * chars_per_byte
 
-            num_bytes = len(byte_arr)
-            num_lines = num_bytes // self.BYTES_PER_ROW
-            if (num_bytes % self.BYTES_PER_ROW) != 0:
-                num_lines += 1
-            
-            textbox_hex_content = StringIO()
-            textbox_ascii_content = StringIO()
-            textbox_address_content = "\n".join([format(i * self.BYTES_PER_ROW, 'X').rjust(format_pad_len, '0') for i in range(num_lines)])
+            chunk_size = 0x1000
 
-            for chunk in chunker(byte_arr, self.BYTES_PER_ROW):
-                
-                if self.abort_load:
-                    break
+            for i, chunk_external in enumerate(chunker(byte_arr, chunk_size)):
+                # String concatenation is faster with StringIO
+                textbox_hex_content = StringIO()
+                textbox_ascii_content = StringIO()
+                textbox_address_content = StringIO()
+                base_addr = chunk_size * i
 
-                hex_format = chunk.hex(" ")
-                textbox_hex_content.write(hex_format + "\n")
+                for j, chunk_16b in enumerate(chunker(chunk_external, self.BYTES_PER_ROW)):
+                    
+                    if self.abort_load:
+                        break
 
-                ascii_format = "".join([chr(c) if 32 <= c <= 127 else "." for c in chunk])
-                textbox_ascii_content.write(ascii_format + "\n")
-            
+                    hex_format = chunk_16b.hex(" ")
+                    textbox_hex_content.write(hex_format + "\n")
+
+                    ascii_format = "".join([chr(c) if 32 <= c <= 127 else "." for c in chunk_16b])
+                    textbox_ascii_content.write(ascii_format + "\n")
+
+                    textbox_address_content.write(format(base_addr + (j * self.BYTES_PER_ROW), 'X').rjust(format_pad_len, '0') + "\n")
+
+                queue.put((textbox_address_content, textbox_hex_content, textbox_ascii_content))
+
+            queue.put(None)
+        except Exception as e:
+            queue.put(e)
+
+    def _add_content_to_hex_view(self) -> None:
+        """Listens to the hex content thread queue and appends content to the hex view.
+        
+        This function runs in the context of the View, reads formatted text from the content
+        creation thread and appends it to the hex view.
+
+        If needed, this function reschedules itself to run again.
+        """
+        
+        if self.abort_load:
+            return
+
+        try:
+            queue_item = self.hex_thread_queue.get(0)
+
+            if queue_item is None: 
+                # TODO: Finalize also for error flows
+                self.textbox_address.config(state = tk.DISABLED)
+                self.textbox_hex.config(state = tk.DISABLED)
+                self.textbox_ascii.config(state = tk.DISABLED)
+                self.done_cb()
+                self.done_cb = None
+                self.hex_thread_queue = None
+                return
+            elif isinstance(queue_item, Exception):
+                raise queue_item
+
+            textbox_address_content, textbox_hex_content, textbox_ascii_content = queue_item
+
             self.textbox_hex.insert(tk.END, textbox_hex_content.getvalue())
             self.textbox_ascii.insert(tk.END, textbox_ascii_content.getvalue())
-            self.textbox_address.insert(tk.END, textbox_address_content + "\n")
-
+            self.textbox_address.insert(tk.END, textbox_address_content.getvalue())
             self.textbox_address.tag_add(TAG_JUSTIFY_RIGHT, 1.0, tk.END)
-            self.textbox_address.config(state = tk.DISABLED)
-
-            self.textbox_hex.config(state = tk.DISABLED)
-            self.textbox_ascii.config(state = tk.DISABLED)
+            self.root.after_idle(self._add_content_to_hex_view)
         except tk.TclError as e:
             if not self.abort_load:
                 raise e
-
-
+        except queue.Empty:
+            self.root.after_idle(self._add_content_to_hex_view)
 
     @classmethod
     def _offset_to_line_column(cls, chars_per_byte: int, offset: int, adjust_column: int = 0) -> str:

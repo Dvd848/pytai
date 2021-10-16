@@ -63,7 +63,8 @@ class Application():
         self.model = m.Model()
 
         if (file is not None):
-            self.populate_view(file, format)
+            # Need to run populate_view in the View context, *after* the View mainloop is in action 
+            self.view.schedule_function(time_ms = 100, callback = lambda: self.populate_view(file, format))
 
     def run(self) -> None:
         """Runs the application."""
@@ -82,7 +83,10 @@ class Application():
                     (-) kaitai_format -> Name of Kaitai format module from format folder
         """
         self.abort_load = False
+
         self.tree_loaded = False
+        self.hex_loaded = False
+        
         self.tree_parents = dict()
 
         self.view.show_loading()
@@ -92,8 +96,12 @@ class Application():
         tree_thread.start()
         self.view.start_worker(self._add_nodes_to_tree)
 
-        #with utils.memory_map(path_file) as f:
-        #    self.view.populate_hex_view(f)
+        def done_loading_hex():
+            self.hex_loaded = True
+            self._finalize_load()
+
+        self.file_mmap = utils.memory_map(path_file) #TODO: Make sure this is always closed
+        self.view.populate_hex_view(self.file_mmap, done_loading_hex)
 
     def _populate_structure_tree(self, path_file: Union[str, Path], format: Dict[str, str]) -> None:
         """Populates the View's structure tree for the given file.
@@ -200,11 +208,12 @@ class Application():
 
     def _finalize_load(self) -> None:
         """Finalize loading by performing cleanups and any other action needed at end of load."""
-        if self.tree_loaded:
+        if self.tree_loaded and self.hex_loaded:
             self.tree_parents = None
             self.tree_thread_queue = None
             self.view.set_status("Loaded")
             self.view.hide_loading()
+            self.file_mmap.close()
 
 
     def cb_refresh(self) -> None:
@@ -243,4 +252,6 @@ class Application():
     def cb_cancel_load(self) -> None:
         """Callback for an event where the user aborts loading."""
         self.abort_load = True
+        self.view.hide_loading()
         self.view.reset()
+        self.view.set_status(f"Aborted")

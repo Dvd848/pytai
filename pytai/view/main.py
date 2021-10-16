@@ -179,16 +179,54 @@ class View(tk.Tk):
         self.hex_view.mark_range(start_offset, end_offset)
 
     def show_loading(self) -> None:
+        """Show the loading window."""
+        
+        # tkinter has better performance when the widgets aren't visible
+        self.pw.pack_forget() 
+
         self.loading = LoadingWindow(self.root, self.callbacks[Events.CANCEL_LOAD])
+        
 
     def hide_loading(self) -> None:
-        self.loading.stop()
-        self.loading = None
+        """Hide the loading window."""
 
-    def start_worker(self, callback) -> None:
+        try:
+            self.pw.pack(fill = tk.BOTH, expand = True) # Show the widgets again
+            self.loading.stop()
+            self.loading = None
+        except AttributeError:
+            assert(self.loading is None)
+            pass
+
+    def start_worker(self, callback: Callable[[], bool]) -> None:
+        """Start a worker provided by the caller.
+        
+        The worker will be called again as long as the previous call returned True.
+
+        Args:
+            callback:
+                The callback to the worker. Expected to return a boolean indicating
+                whether it should be called again.
+        
+        """
         reschedule = callback()
         if reschedule:
             self.root.after_idle(lambda: self.start_worker(callback))
+
+    def schedule_function(self, time_ms, callback: Callable[[], None]) -> None:
+        """Schedule a function to run after time_ms milliseconds.
+
+        Function will run in the View context.
+        
+        Args:
+            time_ms:
+                Time in milliseconds after which the callback will be called.
+
+            callback:
+                Callback to call.
+                
+        """
+        self.root.after(time_ms, callback)
 
 class LoadingWindow():
     def __init__(self, parent, cancel_callback):
@@ -209,7 +247,7 @@ class LoadingWindow():
         self.window.grab_set()
         #self.window.overrideredirect(True)
 
-        self.progress = ttk.Progressbar(self.window, orient = tk.HORIZONTAL, length = 150, mode = 'determinate')
+        self.progress = ttk.Progressbar(self.window, orient = tk.HORIZONTAL, length = 150, mode = 'indeterminate')
         self.progress.start()
         self.progress.pack(padx = 30, pady = (20, 0))
 
@@ -219,7 +257,6 @@ class LoadingWindow():
         self.window.protocol("WM_DELETE_WINDOW", self.on_close)
         self.loading = True
         self.center_window(self.parent)
-
 
     def stop(self) -> None:
         try:
