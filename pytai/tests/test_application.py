@@ -24,7 +24,7 @@ License:
 import unittest
 import xml.etree.ElementTree as ET
 
-from typing import Union
+from typing import Union, Callable
 
 from unittest.mock import patch, MagicMock
 from pathlib import Path
@@ -55,6 +55,14 @@ class MockView(MagicMock):
         d = {k: str(v) for k, v in kwargs.items()}
 
         return ET.SubElement(parent_handle, "node", **d)
+
+    def schedule_function(self, time_ms: int, callback: Callable[[], None]) -> None:
+        callback()
+
+    def start_worker(self, callback: Callable[[], bool]) -> None:
+        reschedule = True
+        while reschedule:
+            reschedule = callback()
 
 class TestOffsets(unittest.TestCase):
     @classmethod

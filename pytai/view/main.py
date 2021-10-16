@@ -213,7 +213,7 @@ class View(tk.Tk):
         if reschedule:
             self.root.after_idle(lambda: self.start_worker(callback))
 
-    def schedule_function(self, time_ms, callback: Callable[[], None]) -> None:
+    def schedule_function(self, time_ms: int, callback: Callable[[], None]) -> None:
         """Schedule a function to run after time_ms milliseconds.
 
         Function will run in the View context.
