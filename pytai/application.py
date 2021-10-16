@@ -93,6 +93,7 @@ class Application():
 
         self.tree_thread_queue = queue.Queue()
         tree_thread = threading.Thread(target = self._populate_structure_tree, args = (path_file, format))
+        tree_thread.daemon = True
         tree_thread.start()
         self.view.start_worker(self._add_nodes_to_tree)
 

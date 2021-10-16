@@ -162,6 +162,7 @@ class HexAreaView():
         self.done_cb = done_cb
         self.hex_thread_queue = queue.Queue()
         hex_thread = threading.Thread(target = self._create_hex_view_content, args = (byte_arr, self.hex_thread_queue))
+        hex_thread.daemon = True
         hex_thread.start()
         self.root.after(50, self._add_content_to_hex_view)
 
