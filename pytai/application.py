@@ -91,11 +91,14 @@ class Application():
         """
         self.abort_load = False
 
+
         self.background_tasks = BackgroundTasks()
         self.background_tasks.start_task(self.Task.BUILD_TREE)
         self.background_tasks.start_task(self.Task.POPULATE_HEX_AREA)
         
         self.tree_parents = dict()
+
+        self.view.set_current_file_path("")
 
         self.view.show_loading()
 
@@ -120,7 +123,7 @@ class Application():
                 See description under populate_view().
         """
 
-        self.current_file_path = path_file
+        self.current_file_path = Path(path_file).resolve()
         self.format = format
 
         try:
@@ -226,6 +229,7 @@ class Application():
 
         if self.background_tasks.all_succeeded():
             self.view.set_status("Loaded")
+            self.view.set_current_file_path(self.current_file_path)
 
 
     def cb_refresh(self) -> None:
@@ -249,7 +253,7 @@ class Application():
         """Callback for an event where the user wants to open a new file."""
         self.view.reset()
         self.populate_view(path, format)
-        self.view.set_status(f"Opened {path}")
+        self.view.set_status(f"Opening {Path(path).resolve()}")
 
     def cb_get_cwd(self) -> str:
         """Callback for getting the current working directory.
@@ -267,3 +271,4 @@ class Application():
         self.view.hide_loading()
         self.view.reset()
         self.view.set_status(f"Aborted")
+        self.view.set_current_file_path("")

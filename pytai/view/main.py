@@ -54,6 +54,7 @@ class View(tk.Tk):
         super().__init__(*args, **kwargs)
 
         self.root = self
+        self.app_title = title
         self.callbacks = callbacks
 
         self.title(title)
@@ -227,6 +228,20 @@ class View(tk.Tk):
                 
         """
         self.root.after(time_ms, callback)
+
+    def set_current_file_path(self, file_path: str) -> None:
+        """Displays the path of the file currently open.
+        
+        Args:
+            file_path:
+                Path to the file currently open.
+                An empty string removes the file path.
+        
+        """
+        title = self.app_title
+        if file_path != "":
+            title += f" - [{file_path}]"
+        self.winfo_toplevel().title(title)
 
 class LoadingWindow():
     def __init__(self, parent, cancel_callback: Callable[[], None]):
