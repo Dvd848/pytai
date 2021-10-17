@@ -386,6 +386,9 @@ class OpenFileWindow():
                 if search_term.lower() in item.lower():
                     self.lbox.insert(tk.END, item)
 
+        if self.lbox.size() == 1:
+            self.lbox.select_set(0)
+
     def submit(self, event = None) -> None:
         try:
             file_path = self.entry_file_name.get()
