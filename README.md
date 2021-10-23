@@ -52,6 +52,8 @@ $ python3 ./pytai.pyz -f ../../archive.zip -kf zip
 $ python3 __main__.py -f ../../program.exe -kf dos_mz
 ```
 
+The latest stable version of `pytai.pyz` can be downloaded from the [Releases](https://github.com/Dvd848/pytai/releases) page.
+
 ## Screenshots
 
 ### Main Window
