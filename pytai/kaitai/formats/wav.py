@@ -37,6 +37,7 @@ import kaitaistruct
 from kaitaistruct import KaitaiStruct, KaitaiStream, BytesIO
 from enum import Enum
 import collections
+from riff import Riff
 
 
 if parse_version(kaitaistruct.__version__) < parse_version('0.9'):

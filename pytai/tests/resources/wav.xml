@@ -1,0 +1,52 @@
+<?xml version="1.0" ?>
+<root>
+   <node name="chunk" extra_info="" start_offset="0" end_offset="138806" is_metavar="False">
+      <node name="id" extra_info="1179011410 (0x46464952)" start_offset="0" end_offset="4" is_metavar="False"/>
+      <node name="len" extra_info="138798 (0x21e2e)" start_offset="4" end_offset="8" is_metavar="False"/>
+      <node name="data_slot" extra_info="" start_offset="8" end_offset="138806" is_metavar="False"/>
+      <node name="pad_byte" extra_info="Byte Array (Length: 0)" start_offset="138806" end_offset="138806" is_metavar="False"/>
+   </node>
+   <node name="subchunks" extra_info="" start_offset="12" end_offset="138806" is_metavar="True">
+      <node name="[0]" extra_info="" start_offset="12" end_offset="36" is_metavar="False">
+         <node name="chunk" extra_info="" start_offset="12" end_offset="36" is_metavar="False">
+            <node name="id" extra_info="544501094 (0x20746d66)" start_offset="12" end_offset="16" is_metavar="False"/>
+            <node name="len" extra_info="16 (0x10)" start_offset="16" end_offset="20" is_metavar="False"/>
+            <node name="data_slot" extra_info="" start_offset="20" end_offset="36" is_metavar="False"/>
+            <node name="pad_byte" extra_info="Byte Array (Length: 0)" start_offset="36" end_offset="36" is_metavar="False"/>
+         </node>
+         <node name="chunk_id" extra_info="fmt" start_offset="None" end_offset="None" is_metavar="True"/>
+         <node name="chunk_data" extra_info="" start_offset="20" end_offset="36" is_metavar="True">
+            <node name="w_format_tag" extra_info="pcm" start_offset="20" end_offset="22" is_metavar="False"/>
+            <node name="n_channels" extra_info="1 (0x1)" start_offset="22" end_offset="24" is_metavar="False"/>
+            <node name="n_samples_per_sec" extra_info="32000 (0x7d00)" start_offset="24" end_offset="28" is_metavar="False"/>
+            <node name="n_avg_bytes_per_sec" extra_info="64000 (0xfa00)" start_offset="28" end_offset="32" is_metavar="False"/>
+            <node name="n_block_align" extra_info="2 (0x2)" start_offset="32" end_offset="34" is_metavar="False"/>
+            <node name="w_bits_per_sample" extra_info="16 (0x10)" start_offset="34" end_offset="36" is_metavar="False"/>
+            <node name="is_extensible" extra_info="False (0x0)" start_offset="None" end_offset="None" is_metavar="True"/>
+            <node name="is_basic_pcm" extra_info="True (0x1)" start_offset="None" end_offset="None" is_metavar="True"/>
+            <node name="is_basic_float" extra_info="False (0x0)" start_offset="None" end_offset="None" is_metavar="True"/>
+            <node name="is_cb_size_meaningful" extra_info="False (0x0)" start_offset="None" end_offset="None" is_metavar="True"/>
+         </node>
+      </node>
+      <node name="[1]" extra_info="" start_offset="36" end_offset="138806" is_metavar="False">
+         <node name="chunk" extra_info="" start_offset="36" end_offset="138806" is_metavar="False">
+            <node name="id" extra_info="1635017060 (0x61746164)" start_offset="36" end_offset="40" is_metavar="False"/>
+            <node name="len" extra_info="138762 (0x21e0a)" start_offset="40" end_offset="44" is_metavar="False"/>
+            <node name="data_slot" extra_info="" start_offset="44" end_offset="138806" is_metavar="False"/>
+            <node name="pad_byte" extra_info="Byte Array (Length: 0)" start_offset="138806" end_offset="138806" is_metavar="False"/>
+         </node>
+         <node name="chunk_id" extra_info="data" start_offset="None" end_offset="None" is_metavar="True"/>
+         <node name="chunk_data" extra_info="" start_offset="44" end_offset="138806" is_metavar="True">
+            <node name="data" extra_info="Byte Array (Length: 138762)" start_offset="44" end_offset="138806" is_metavar="False"/>
+         </node>
+      </node>
+   </node>
+   <node name="parent_chunk_data" extra_info="" start_offset="8" end_offset="138806" is_metavar="True">
+      <node name="form_type" extra_info="1163280727 (0x45564157)" start_offset="8" end_offset="12" is_metavar="False"/>
+      <node name="subchunks_slot" extra_info="" start_offset="12" end_offset="138806" is_metavar="False"/>
+   </node>
+   <node name="is_form_type_wave" extra_info="True (0x1)" start_offset="None" end_offset="None" is_metavar="True"/>
+   <node name="is_riff_chunk" extra_info="True (0x1)" start_offset="None" end_offset="None" is_metavar="True"/>
+   <node name="chunk_id" extra_info="riff" start_offset="None" end_offset="None" is_metavar="True"/>
+   <node name="form_type" extra_info="wave" start_offset="None" end_offset="None" is_metavar="True"/>
+</root>

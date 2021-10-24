@@ -27,7 +27,7 @@ import importlib
 import inspect
 
 from pathlib import Path
-from typing import Union, Any, Dict, Tuple
+from typing import Union, Any, Dict, Tuple, Generator, Optional
 from collections import namedtuple
 from contextlib import contextmanager
 
@@ -68,7 +68,7 @@ class Parser(object):
         """
         raise NotImplementedError("Inheriting classes must implement this method")
 
-    def get_children(self, parent: Any) -> "Parser.ChildAttr":
+    def get_children(self, parent: Any) -> Generator[Optional["Parser.ChildAttr"], None, None]:
         """An iterator over the name and value of the children of the given parent.
         
         Args:
@@ -76,17 +76,23 @@ class Parser(object):
                 An object as returned by parse() or get_children()
 
         Returns:
-            A generator serving tuples containing the:
-             * Name of the child (str)
-             * Value of the child (arbitrary object)
-               The value can either be a parser-specific object representing a structure
-               or an integral type such as a list, string, integer, enum etc.
-             * Start and end offsets of the structure in the file
-             * Whether the child is actually in the file or an inferred metavar. 
-               An inferred metavar is a variable that does not exist as-is in the file, 
-               but is somehow transformmed from an existing variable to provide a 
-               user-friendly representation of the existing variable.
-             * Whether the value is an array of values, each with their own offsets
+            A generator serving either: 
+                (-) Tuples containing the:
+                        * Name of the child (str)
+                        * Value of the child (arbitrary object)
+                        The value can either be a parser-specific object representing a structure
+                        or an integral type such as a list, string, integer, enum etc.
+                        * Start and end offsets of the structure in the file
+                        * Whether the child is actually in the file or an inferred metavar. 
+                        An inferred metavar is a variable that does not exist as-is in the file, 
+                        but is somehow transformmed from an existing variable to provide a 
+                        user-friendly representation of the existing variable.
+                        * Whether the value is an array of values, each with their own offsets
+                OR:
+                (-) "None", which indicates that the currect child has some unresolved dependency.
+                        * In such a case, the caller can choose to continue traversing the tree for the 
+                        sake of resolving the dependency, while marking for itself that a subsequent traversal
+                        will later be needed.
         """
         raise NotImplementedError("Inheriting classes must implement this method")
 
@@ -209,6 +215,11 @@ class KaitaiParser(Parser):
                 - Is array: True if the given object is in fact a list of objects.
                 - Value: Value of the object. For arrays, will be expanded to a list of ParserChildAttr, 
                          otherwise same as value sent to it
+
+        Raises:
+            PytaiUnparsedAccessException:
+                In case there is some cross-dependency between this child attribute and an unparsed section of the binary.
+                This can happen when the current element references an element which hasn't been parsed yet.
             
         """
         start_offset = end_offset = None
@@ -240,11 +251,13 @@ class KaitaiParser(Parser):
         except KeyError:
             pass
         except AttributeError:
+            # data._base_offset doesn't exist - meaning the Kaitai Stream which this element is referring to hasn't been handled by this function yet.
+            # This can happen in case of a cross-reference to a different stream.
             raise PytaiUnparsedAccessException(f"Unparsed access during parsing of '{child_name}' ")
 
         return start_offset, end_offset, is_array, value
 
-    def get_children(self, parent: "KaitaiStruct") -> Parser.ChildAttr:
+    def get_children(self, parent: "KaitaiStruct") -> Generator[Optional[Parser.ChildAttr], None, None]:
         if not isinstance(parent, self.kaitaistruct.KaitaiStruct):
             return
 
@@ -254,22 +267,27 @@ class KaitaiParser(Parser):
             if not hasattr(parent, child):
                 continue
 
-            start_offset, end_offset, is_array, value = self._get_details(debug_dict, parent, child, getattr(parent, child))
+            try:
+                start_offset, end_offset, is_array, value = self._get_details(debug_dict, parent, child, getattr(parent, child))
 
-            yield Parser.ChildAttr(name = child, value = value, start_offset = start_offset, 
-                                    end_offset = end_offset, is_metavar = False, 
-                                    is_array = is_array)
+                yield Parser.ChildAttr(name = child, value = value, start_offset = start_offset, 
+                                        end_offset = end_offset, is_metavar = False, 
+                                        is_array = is_array)
+            except PytaiUnparsedAccessException:
+                yield None
 
         for name, value in utils.getproperties(parent):
             if value is None:
                 continue
             
-            start_offset, end_offset, is_array, value = self._get_details(debug_dict, parent, f"_m_{name}", value)
+            try:
+                start_offset, end_offset, is_array, value = self._get_details(debug_dict, parent, f"_m_{name}", value)
 
-            yield Parser.ChildAttr(name = name, value = value, start_offset = start_offset, 
-                                   end_offset = end_offset, is_metavar = True, 
-                                   is_array = is_array)
-
+                yield Parser.ChildAttr(name = name, value = value, start_offset = start_offset, 
+                                       end_offset = end_offset, is_metavar = True, 
+                                       is_array = is_array)
+            except PytaiUnparsedAccessException:
+                yield None
 
 class Model(object):
 

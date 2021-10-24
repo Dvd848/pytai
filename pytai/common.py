@@ -37,6 +37,9 @@ class PyTaiException(Exception):
 class PyTaiViewException(Exception):
     pass
 
+class PyTaiReparseException(Exception):
+    pass
+
 def kaitai_formats() -> List[str]:
     """Returns a list of supporeted Kaitai formats."""
     res = []

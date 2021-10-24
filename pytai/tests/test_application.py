@@ -103,5 +103,8 @@ class TestOffsets(unittest.TestCase):
     def test_elf(self):
         self.generic_test("elf")
 
+    def test_wav(self):
+        self.generic_test("wav")
+
 if __name__ == "__main__":
     unittest.main()
