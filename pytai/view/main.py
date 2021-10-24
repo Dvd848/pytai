@@ -351,8 +351,8 @@ class OpenFileWindow():
         self.entry_format = EntryWithPlaceholder(self.window, placeholder = self.filter_str, textvariable = self.search_var, width = 40)
 
         lbox_frame = tk.Frame(self.window)
-        lbox_scrollbar = tk.Scrollbar(lbox_frame)
         self.lbox = tk.Listbox(lbox_frame, height = 10)
+        lbox_scrollbar = tk.Scrollbar(lbox_frame, command = self.lbox.yview)
         self.lbox.config(yscrollcommand= lbox_scrollbar.set)
         self.search_var.trace("w", lambda name, index, mode: self.update_list())
 
