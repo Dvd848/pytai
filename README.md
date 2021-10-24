@@ -80,6 +80,7 @@ These are members that are inferred from the binary contents (usually a user-fri
 * [Binary Ninja UI Plugin](https://github.com/Vector35/kaitai): A GUI plugin for Binary Ninja
 * [Kaitai Struct VSCode](https://marketplace.visualstudio.com/items?itemName=fudgepops.kaitai-struct-vscode): Extension for [VS Code](https://code.visualstudio.com/)
 * [Hobbits](https://github.com/Mahlet-Inc/hobbits): Multi-platform GUI for bit-based analysis, processing, and visualization
+* [PolyFile](https://github.com/trailofbits/polyfile): A utility to identify and map the semantic structure of files
 
 ## Requirements
 
