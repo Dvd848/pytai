@@ -10,13 +10,15 @@ Given a binary file with a supported format, `pytai` can be used to browse the s
 
 ```console
 $ python3 ./pytai.pyz -h                 
-usage: pytai.pyz [-h] [-f FILE] [-kf FORMAT]
+usage: pytai.pyz [-h] [-kf FORMAT] [file]
 
 pytai: A Python-based Kaitai Struct Visualizer and HEX Viewer
 
+positional arguments:
+  file                  Path to binary file
+
 optional arguments:
   -h, --help            show this help message and exit
-  -f FILE, --file FILE  Path to binary file
   -kf FORMAT, --kaitai-format FORMAT
                         Kaitai Format to use when parsing the file. Current formats found under "kaitai/formats" are:
                         aix_utmp, allegro_dat, andes_firmware, android_asus_bootldr, android_dto, android_img,
@@ -47,9 +49,9 @@ Examples:
 
 ```console
 $ python3 ./pytai.pyz
-$ python3 ./pytai.pyz -f ../../image.png -kf png
-$ python3 ./pytai.pyz -f ../../archive.zip -kf zip
-$ python3 __main__.py -f ../../program.exe -kf dos_mz
+$ python3 ./pytai.pyz ../../image.png -kf png
+$ python3 ./pytai.pyz ../../archive.zip -kf zip
+$ python3 __main__.py ../../program.exe -kf dos_mz
 ```
 
 The latest stable version of `pytai.pyz` can be downloaded from the [Releases](https://github.com/Dvd848/pytai/releases) page.

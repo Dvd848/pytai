@@ -24,7 +24,7 @@ License:
 import mmap
 import os
 from collections.abc import Iterable
-from typing import Callable, Generator, List, Any
+from typing import Callable, Generator, List, Any, Optional
 import inspect
 import enum
 import threading
@@ -116,3 +116,80 @@ class BackgroundTasks():
     def all_succeeded(self) -> bool:
         """Returns True if all tasks were completed successfully."""
         return all([x == self.State.SUCCEEDED for x in self.tasks.values()])
+
+def get_kaitai_format(file_path: str) -> Optional[str]:
+    """Try to identify the Kaitai format for a given file.
+    
+    Args:
+        file_path:
+            Path to binary file.
+
+    Returns:
+        The Kaitai format name for the given file (if identified), or None.
+    """
+    with open(file_path, "rb") as f:
+        data = f.read(0x8010)
+    
+    sigs0 = {
+        b"BM":"bmp",
+        b"dex\x0A":"dex",
+        b"IWAD":"doom_wad",
+        b"PWAD":"doom_wad",
+        b"\x7fELF":"elf",
+        b"GIF87a":"gif",
+        b"GIF89a":"gif",
+        b"\x1f\x8b":"gzip",
+        b"ID3\3":"id3v2_3",
+        b"ID3\4":"id3v2_4",
+        b"NES":"ines",
+        b"\xCA\xFE\xBA\xBE":"java_class",
+        b"\xFF\xD8":"jpeg",
+        b"\xCE\xFA\xED\xFE":"mach_o",
+        b"\xCF\xFA\xED\xFE":"mach_o",
+        b"\xD0\xCF\x11\xE0":"microsoft_cfb",
+        # b"\x0A":"pcx", # way too unreliable
+        b"\x89\x50\x4E\x47\x0D\x0A\x1A\x0A":"png",
+        b"OggS":"ogg",
+        b"\0\0\0\x14ftypqt  ":"quicktime_mov",
+        b"Rar!\x1a\x07\0":"rar",
+        b"Rar!\x1a\x07\1\0":"rar",
+        b"SQLite format 3\0":"sqlite3",
+        b"FWS":"swf",
+        b"VZ":"uefi_te",
+        # b"II*\0":"tiff", # not in kaitai?
+        # b"MM\0*":"tiff", # not in kaitai?
+        b"PK\3\4":"zip",
+    }
+
+    for sig in sorted(sigs0, key=lambda x:len(x)):
+        if data[:len(sig)] == sig:
+            return sigs0[sig]
+
+    if data.startswith(b"RIFF"):
+        sub = data[8:8+4]
+        riff_sigs = {b"AVI ":"avi", b"WAVE":"wav"}
+        for sig in riff_sigs:
+            if sub == sig:
+                return riff_sigs[sub]
+        return "riff"
+
+    if data.startswith(b"MZ"):
+        lfanew = int.from_bytes(data[60:64], "little")
+        if lfanew <= 0x400:
+            if data[lfanew:lfanew+4] == b"PE\0\0":
+                return "microsoft_pe"
+        return "dos_mz"
+
+    if data[0x80:0x80+4] == b"DICM":
+        return "dicom"
+
+    if data[0x8001:0x8001+5] == b"CD001":
+        return "iso9660"
+
+    if data[-128:-128+5] == b"TAGv1":
+        return "id3v1_1"
+
+    if data[-18:] == b"TRUEVISION-XFILE.\0":
+        return "tga"
+
+    return None

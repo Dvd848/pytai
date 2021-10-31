@@ -385,6 +385,19 @@ class OpenFileWindow():
                                               filetypes = [("all files", "*.*")])
         self.entry_file_name.delete(0, tk.END)
         self.entry_file_name.insert(0, filename)
+
+        try:
+            format = get_kaitai_format(filename)
+            self.select_from_list(format)
+        except Exception:
+            pass
+
+    def select_from_list(self, name: str) -> None:
+        self.search_var.set(name)
+        for i, listbox_entry in enumerate(self.lbox.get(0, tk.END)):
+            if listbox_entry == name:
+                self.lbox.select_set(i)
+                break
       
     def update_list(self):
         search_term = self.search_var.get()
