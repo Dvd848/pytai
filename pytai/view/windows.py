@@ -25,14 +25,30 @@ License:
 import tkinter as tk
 from tkinter import ttk
 
+import enum
+import re
+
 from tkinter import messagebox, filedialog
 from typing import Callable
+
 
 from .widgets import *
 from ..common import *
 from ..utils import get_kaitai_format
 
-class LoadingWindow():
+class BaseWindow():
+    """Base class for windows."""
+
+    def center_window(self, parent):
+        """Centers the window within the given parent window."""
+        self.window.update()
+        height = self.window.winfo_height()
+        width = self.window.winfo_width()
+        x = (parent.winfo_width() - width) // 2
+        y = (parent.winfo_height() - height) // 2
+        self.window.geometry('+{}+{}'.format(self.parent.winfo_rootx() + x, self.parent.winfo_rooty() + y))
+
+class LoadingWindow(BaseWindow):
     def __init__(self, parent, cancel_callback: Callable[[], None]):
         """Instantiate the class.
         
@@ -81,17 +97,10 @@ class LoadingWindow():
         """Handle an event where the user closes the loading window."""
         self.cancel()
 
-    def center_window(self, parent):
-        """Centers the window within the given parent window."""
-        self.window.update()
-        height = self.window.winfo_height()
-        width = self.window.winfo_width()
-        x = (parent.winfo_width() - width) // 2
-        y = (parent.winfo_height() - height) // 2
-        self.window.geometry('+{}+{}'.format(self.parent.winfo_rootx() + x, self.parent.winfo_rooty() + y))
 
 
-class OpenFileWindow():
+
+class OpenFileWindow(BaseWindow):
     """Window for selecting the file to view."""
     
     def __init__(self, parent, cwd: str, open_file_callback: Callable[[str, str], None]):
@@ -219,6 +228,135 @@ class OpenFileWindow():
             format = self.lbox.get(lbox_selection)
 
             self.open_file_callback(file_path, {"kaitai_format": format})
+            self.window.destroy()
+        except Exception as e:
+            messagebox.showerror("Error", str(e))
+        
+
+    def cancel(self, event = None) -> None:
+        """Cancel the operation."""
+        self.window.destroy()
+
+class SearchWindow(BaseWindow):
+    """Window for searching within the open file."""
+
+    class SearchType(enum.Enum):
+        # Must be sequential, zero-based
+        HEX_VALUES  = 0
+        TEXT_STRING = 1
+    
+    def __init__(self, parent, search_callback: Callable[[bytes], None]):
+        """Instantiate the class.
+        
+        Args:
+            parent:
+                Parent tk class.
+
+            search_callback:
+                Callback to perform the search.
+                
+        """
+        self.parent = parent
+        self.search_callback = search_callback
+
+        self.window = tk.Toplevel(self.parent)
+        self.window.title(f"Find") 
+        self.window.resizable(0, 0)
+        self.window.transient(self.parent)
+        self.window.grab_set()
+
+        label_search_for = tk.Label(self.window,
+                                       text = "Search for: ",
+                                       anchor = tk.W)
+
+        self.entry_search_term = tk.Entry(self.window, width = 40)
+
+        label_search_for.grid(row = 0, column = 0, padx = 5, pady = 5, sticky = tk.W)
+        self.entry_search_term.grid(row = 0, column = 1, padx = 5, pady = 5)
+        
+        label_as = tk.Label(self.window,
+                                text = "As: ",
+                                anchor=tk.W)
+
+        self.search_type = ttk.Combobox(self.window, values = [v.name.replace("_", " ").title() for v in self.SearchType])
+        self.search_type.current(self.SearchType.HEX_VALUES.value)
+        label_as.grid(row = 1, column = 0, padx = 5, pady = 0, sticky = tk.W)
+        self.search_type.grid(row = 1, column = 1, padx = 5, pady = 5, sticky="ew")
+                
+        button_frame = tk.Frame(self.window)
+
+        button_ok = tk.Button(button_frame,
+                        text = "OK",
+                        command = self.submit, width = 7)
+        button_cancel = tk.Button(button_frame,
+                        text = "Cancel",
+                        command = self.cancel, width = 7)
+
+        button_cancel.pack(side = tk.RIGHT)
+        button_ok.pack(side = tk.RIGHT, padx = 10)
+        button_frame.grid(row = 3, column = 1, padx = 5, pady = 12, sticky = tk.E)
+
+        self.window.bind('<Return>', self.submit)
+        self.window.bind('<Escape>', self.cancel)
+        self.window.focus_force()
+        self.entry_search_term.focus()
+
+        self.center_window(self.parent)
+
+    def _validate_search_term(cls, term: str, type: "SearchType"):
+        """Validate the given search term according to the given type.
+
+        A valid HEX search term must only contain pairs of legal HEX characters
+        (and spaces which are discarded).
+
+        An empty string is illegal.
+
+        An exception is raised if the search term is invalid.
+        
+        Args:
+            term:
+                The search term.
+
+            type:
+                The type of the search term.
+        """
+
+        if type == cls.SearchType.HEX_VALUES:
+            term = term.replace(" ", "")
+            if re.fullmatch(r"^[0-9a-fA-F]*$", term) is None or ( (len(term) % 2) != 0):
+                raise ValueError("Invalid hex string")
+
+        if term == "":
+            raise ValueError("Please enter a search term")
+            
+    def _term_to_byte_arr(cls, term: str, type: "SearchType") -> bytes:
+        """Converts a search term to a byte array.
+        
+        Args:
+            term:
+                Search term in string representation.
+
+            type:
+                Type of search term.
+
+        Returns:
+            Search term as byte array representation.
+        """
+        if type == cls.SearchType.HEX_VALUES:
+            return bytes.fromhex(term)
+        elif type == cls.SearchType.TEXT_STRING:
+            return term.encode("utf-8")
+        else:
+            raise ValueError(f"Invalid search type: {type}")
+
+    def submit(self, event = None) -> None:
+        try:
+            term = self.entry_search_term.get()
+            type = self.SearchType(self.search_type.current())
+            self._validate_search_term(term, type)
+            byte_arr = self._term_to_byte_arr(term, type)
+            self.search_callback(byte_arr)
+            
             self.window.destroy()
         except Exception as e:
             messagebox.showerror("Error", str(e))

@@ -300,12 +300,14 @@ class HexAreaView():
                                        self._offset_to_line_column(self.REPR_CHARS_PER_BYTE_ASCII, start_offset), 
                                        self._offset_to_line_column(self.REPR_CHARS_PER_BYTE_ASCII, end_offset))
 
-    def make_visible(self, offset: Optional[int], highlight: bool = False) -> None:
-        """Jump to a given offset in the HEX viewer.
+    def make_visible(self, offset: Optional[int], length: int = 1, highlight: bool = False) -> None:
+        """Jump to a given offset in the HEX viewer, and optionally highlight it.
         
         Args:
             offset:
-                The offset to jump to.
+                The offset to jump to. If is None, will clear the highlight.
+            length:
+                Length of sequence to highlight, if selected.
             highlight:
                 In addition, highlight the location.
         """
@@ -318,5 +320,6 @@ class HexAreaView():
         self.textbox_hex.see(location)
 
         if highlight:
-            self.textbox_hex.tag_add(TAG_GOTO, location, f"{location}+2c")
+            self.textbox_hex.tag_add(TAG_GOTO, location, f"{location}+{(length * self.REPR_CHARS_PER_BYTE_HEX) - 1}c")
+
         

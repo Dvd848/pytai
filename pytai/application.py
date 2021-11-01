@@ -61,6 +61,9 @@ class Application():
             v.Events.OPEN:                self.cb_open,
             v.Events.GET_CWD:             self.cb_get_cwd,
             v.Events.CANCEL_LOAD:         self.cb_cancel_load,
+            v.Events.SEARCH:              self.cb_search,
+            v.Events.FIND_NEXT:           self.cb_find_next,
+            v.Events.FIND_PREV:           lambda: self.cb_find_next(reverse = True),
         }
 
         self.current_file_path = None
@@ -99,6 +102,7 @@ class Application():
         self.tree_parents = dict()
 
         self.view.set_current_file_path("")
+        self.search_context = None
 
         self.view.show_loading()
 
@@ -113,6 +117,7 @@ class Application():
         self.file_mmap = utils.memory_map(path_file)
         self.view.populate_hex_view(self.file_mmap, done_loading_hex)
 
+    # TODO: This can go to the model now
     def _populate_structure_tree(self, path_file: Union[str, Path], format: Dict[str, str]) -> None:
         """Populates the View's structure tree for the given file.
         
@@ -258,7 +263,7 @@ class Application():
             self.tree_parents = None
             self.tree_thread_queue = None
             self.view.hide_loading()
-            self.file_mmap.close()
+            #self.file_mmap.close()
 
         if self.background_tasks.all_succeeded():
             self.view.set_status("Loaded")
@@ -305,3 +310,31 @@ class Application():
         self.view.reset()
         self.view.set_status(f"Aborted")
         self.view.set_current_file_path("")
+
+    def cb_search(self, term: bytes) -> None:
+        """Callback for an event where the user wants to search the binary."""
+        # TODO: Should communicate with GUI thread via queue
+        self.search_context = m.SearchContext(self.file_mmap, term)
+        self.cb_find_next()
+
+    def cb_find_next(self, reverse: bool = False) -> None:
+        """Callback for an event where the user wants to find the next occurrence of the term.
+        
+        Args:
+            reverse:
+                Search in reverse direction.
+        """
+
+        if self.search_context is None:
+            # If there is no term, open the original "Search" dialog
+            self.view.show_search()
+            return
+
+        offset = self.search_context.find_next(reverse)
+        if offset >= 0:
+            self.view.make_visible(offset, length = len(self.search_context.term), highlight = True)
+            self.view.set_status(f"Found at offset {hex(offset)} ({offset})")
+        else:
+            self.view.make_visible(None)
+            self.view.set_status(f"Search term not found")
+            self.view.display_error("Search term not found")

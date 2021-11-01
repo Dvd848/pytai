@@ -78,6 +78,9 @@ class View(tk.Tk):
             MenuBar.Events.REFRESH:                 self.refresh,
             MenuBar.Events.GOTO:                    self.show_goto,
             MenuBar.Events.OPEN:                    self.show_open,
+            MenuBar.Events.SEARCH:                  self.show_search,
+            MenuBar.Events.FIND_NEXT:               self.find_next,
+            MenuBar.Events.FIND_PREV:               self.find_prev,
         })
         self.root.config(menu = self.menubar)
         
@@ -101,6 +104,9 @@ class View(tk.Tk):
 
         self.root.bind('<F5>', self.refresh)
         self.root.bind('<Control-g>', self.show_goto)
+        self.root.bind('<Control-f>', self.show_search)
+        self.root.bind('<F3>', self.find_next)
+        self.root.bind('<Shift-F3>', self.find_prev)
         self.root.bind('<Control-o>', self.show_open)
 
         # Delegate a few interface functions directly to internal implementation
@@ -132,10 +138,22 @@ class View(tk.Tk):
         except ValueError as e:
             self.display_error(f"Unable to jump to offset {answer}:\n({str(e)})")
 
-    def show_open(self, event) -> None:
+    def show_open(self, event = None) -> None:
+        """Show the 'Open file' window."""
         cwd = self.callbacks[Events.GET_CWD]()
         OpenFileWindow(self.root, cwd, self.callbacks[Events.OPEN])
 
+    def show_search(self, event = None) -> None:
+        """Show the 'Search' window"""
+        SearchWindow(self.root, self.callbacks[Events.SEARCH])
+
+    def find_next(self, event = None) -> None:
+        """Find the next occurrance of the search term."""
+        self.callbacks[Events.FIND_NEXT]()
+
+    def find_prev(self, event = None) -> None:
+        """Find the previous occurrance of the search term."""
+        self.callbacks[Events.FIND_PREV]()
 
     def set_status(self, status: str) -> None:
         """Set the given status in the status bar.

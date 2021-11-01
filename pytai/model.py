@@ -25,6 +25,7 @@ from enum import Enum
 import sys
 import importlib
 import inspect
+import mmap
 
 from pathlib import Path
 from typing import Union, Any, Dict, Tuple, Generator, Optional
@@ -319,6 +320,50 @@ class Model(object):
         raise RuntimeError("Can't identify appropriate parser type")
 
         
+class SearchContext(object):
+    """Context for searching within a given binary.
+    
+    Supports a single search term and allows searching forward and backwards for it.
+    The context remembers the previous occurrance of the term and the next search request
+    continues from the previous one.
+    """
+    def __init__(self, mmap: mmap.mmap, term: bytes):
+        """Instansiate the object.
 
+        Args:
+            mmap:
+                Memory mapped object representing the binary.
 
+            term:
+                Search term for this context.(as bytes)
         
+        """
+        self._mmap = mmap
+        self._mmap_len = len(mmap)
+        self._offset = 0
+        self._term = term
+
+    def find_next(self, reverse: bool = False) -> int:
+        """Find the next occurrence of the term (forwards or backwards).
+        
+        Args:
+            reverse:
+                True if the request is to search backwards.
+        
+        Returns:
+            The offset of the next term in the binary, or -1 if not found.
+        """
+        if not reverse:
+            self._offset = self._mmap.find(self.term, self._offset + 1)
+        else:
+            end = self._offset if self._offset >= 0 else self._mmap_len
+            self._offset = self._mmap.rfind(self.term, 0, end + len(self.term) - 1)
+        
+        return self._offset
+
+    @property
+    def term(self) -> str:
+        """The given search term."""
+        return self._term
+
+    

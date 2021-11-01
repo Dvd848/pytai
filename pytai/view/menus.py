@@ -59,6 +59,15 @@ class MenuBar(tk.Menu):
         # User wants to open file
         OPEN                    = enum.auto()
 
+        # User wants to search file
+        SEARCH                  = enum.auto()
+
+        # User wants to find the next occurrance of the search term
+        FIND_NEXT               = enum.auto()
+
+        # User wants to find the previous occurrance of the search term
+        FIND_PREV               = enum.auto()
+
     def __init__(self, parent, callbacks: Dict[Events, Callable[..., None]]):
         """Instantiate the class.
         
@@ -80,6 +89,10 @@ class MenuBar(tk.Menu):
         self.add_cascade(label="File", menu=filemenu)
 
         searchmenu = tk.Menu(self, tearoff=0)
+        searchmenu.add_command(label="Find...", command=lambda: self.callbacks[self.Events.SEARCH](None), accelerator="Ctrl+F")
+        searchmenu.add_command(label="Find Next", command=lambda: self.callbacks[self.Events.FIND_NEXT](None), accelerator="F3")
+        searchmenu.add_command(label="Find Previous", command=lambda: self.callbacks[self.Events.FIND_PREV](None), accelerator="Shift+F3")
+        searchmenu.add_separator()
         searchmenu.add_command(label="Go to...", command=lambda: self.callbacks[self.Events.GOTO](None), accelerator="Ctrl+G")
         self.add_cascade(label="Search", menu=searchmenu)
 

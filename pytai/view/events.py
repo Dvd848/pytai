@@ -50,3 +50,12 @@ class Events(enum.Enum):
     
     # Abort loading the current file
     CANCEL_LOAD        = enum.auto()
+
+    # Search in binary
+    SEARCH             = enum.auto()
+
+    # Find next result for search
+    FIND_NEXT          = enum.auto()
+
+    # Find previous result for search
+    FIND_PREV          = enum.auto()
