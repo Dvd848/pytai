@@ -186,7 +186,8 @@ class OpenFileWindow(BaseWindow):
 
         try:
             format = get_kaitai_format(filename)
-            self.select_from_list(format)
+            if format is not None:
+                self.select_from_list(format)
         except Exception:
             pass
 
