@@ -83,28 +83,43 @@ class MenuBar(tk.Menu):
 
         self.callbacks = callbacks
 
+        self.commands_require_file = {}
+
+        def add_command(menu, requires_file: bool, **kwargs) -> None:
+            self.commands_require_file[(menu, kwargs['label'])] = requires_file
+            menu.add_command(**kwargs)
+
         filemenu = tk.Menu(self, tearoff=0)
-        filemenu.add_command(label="Open...", command=lambda: self.callbacks[self.Events.OPEN](None), accelerator="Ctrl+O")
-        filemenu.add_command(label="Exit", command=parent.quit)
-        self.add_cascade(label="File", menu=filemenu)
+        add_command(filemenu, False, label = "Open...", command = lambda: self.callbacks[self.Events.OPEN](None), accelerator = "Ctrl+O")
+        add_command(filemenu, False, label = "Exit", command = parent.quit)
+        self.add_cascade(label = "File", menu = filemenu)
 
-        searchmenu = tk.Menu(self, tearoff=0)
-        searchmenu.add_command(label="Find...", command=lambda: self.callbacks[self.Events.SEARCH](None), accelerator="Ctrl+F")
-        searchmenu.add_command(label="Find Next", command=lambda: self.callbacks[self.Events.FIND_NEXT](None), accelerator="F3")
-        searchmenu.add_command(label="Find Previous", command=lambda: self.callbacks[self.Events.FIND_PREV](None), accelerator="Shift+F3")
+        searchmenu = tk.Menu(self, tearoff = 0)
+        add_command(searchmenu, True, label = "Find...", command = lambda: self.callbacks[self.Events.SEARCH](None), accelerator = "Ctrl+F")
+        add_command(searchmenu, True, label = "Find Next", command = lambda: self.callbacks[self.Events.FIND_NEXT](None), accelerator = "F3")
+        add_command(searchmenu, True, label = "Find Previous", command = lambda: self.callbacks[self.Events.FIND_PREV](None), accelerator = "Shift+F3")
         searchmenu.add_separator()
-        searchmenu.add_command(label="Go to...", command=lambda: self.callbacks[self.Events.GOTO](None), accelerator="Ctrl+G")
-        self.add_cascade(label="Search", menu=searchmenu)
+        add_command(searchmenu, True, label = "Go to...", command = lambda: self.callbacks[self.Events.GOTO](None), accelerator = "Ctrl+G")
+        self.add_cascade(label = "Search", menu = searchmenu)
+        
+        viewmenu = tk.Menu(self, tearoff = 0)
+        add_command(viewmenu, True, label = "Refresh", command = lambda: self.callbacks[self.Events.REFRESH](None), accelerator = "F5")
+        self.add_cascade(label = "View", menu = viewmenu)
 
-        viewmenu = tk.Menu(self, tearoff=0)
-        viewmenu.add_command(label="Refresh", command=lambda: self.callbacks[self.Events.REFRESH](None), accelerator="F5")
-        self.add_cascade(label="View", menu=viewmenu)
+        helpmenu = tk.Menu(self, tearoff = 0)
+        add_command(helpmenu, False, label = "About...", command = self.show_about)
+        self.add_cascade(label = "Help", menu = helpmenu)
 
-        helpmenu = tk.Menu(self, tearoff=0)
-        helpmenu.add_command(label="About...", command=self.show_about)
-        self.add_cascade(label="Help", menu=helpmenu)
+        self.toggle_loaded_file_commands(enable = False)
 
-    def show_about(self):
+    def show_about(self) -> None:
         """Show the "About" window."""
         messagebox.showinfo("About", "pytai: A Kaitai Struct Visualizer and HEX Viewer GUI in Python\nhttps://github.com/Dvd848/pytai\n\n"
                                      "Based on structure parsers provided by the Kaitai project\nhttps://kaitai.io/")
+
+    def toggle_loaded_file_commands(self, enable: bool) -> None:
+        """Enables/disables menu options which require an open file."""
+        target = tk.NORMAL if enable else tk.DISABLED 
+        for (menu, label), requires_file in self.commands_require_file.items():
+            if requires_file:
+                menu.entryconfigure(label, state = target)

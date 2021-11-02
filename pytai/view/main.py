@@ -57,6 +57,7 @@ class View(tk.Tk):
         self.root = self
         self.app_title = title
         self.callbacks = callbacks
+        self.is_file_open = False
 
         self.title(title)
         self.resizable(width = True, height = True)
@@ -123,10 +124,16 @@ class View(tk.Tk):
 
     def refresh(self, event) -> None:
         """Handle a user refresh request."""
+        if not self.is_file_open:
+            return
+
         self.callbacks[Events.REFRESH]()
 
     def show_goto(self, event) -> None:
         """Show the 'goto' diaglog to jump to an arbitrary offset."""
+        if not self.is_file_open:
+            return
+            
         answer = simpledialog.askstring("Go to...", "Enter offset (prefix with '0x' for hex)",
                                          parent = self.root)
         if answer is None:
@@ -145,14 +152,23 @@ class View(tk.Tk):
 
     def show_search(self, event = None) -> None:
         """Show the 'Search' window"""
+        if not self.is_file_open:
+            return
+
         SearchWindow(self.root, self.callbacks[Events.SEARCH])
 
     def find_next(self, event = None) -> None:
         """Find the next occurrance of the search term."""
+        if not self.is_file_open:
+            return
+
         self.callbacks[Events.FIND_NEXT]()
 
     def find_prev(self, event = None) -> None:
         """Find the previous occurrance of the search term."""
+        if not self.is_file_open:
+            return
+
         self.callbacks[Events.FIND_PREV]()
 
     def set_status(self, status: str) -> None:
@@ -260,5 +276,10 @@ class View(tk.Tk):
         title = self.app_title
         if file_path != "":
             title += f" - [{file_path}]"
+            self.is_file_open = True
+            self.menubar.toggle_loaded_file_commands(enable = True)
+        else:
+            self.is_file_open = False
+            self.menubar.toggle_loaded_file_commands(enable = False)
         self.winfo_toplevel().title(title)
 
