@@ -340,7 +340,7 @@ class SearchContext(object):
         """
         self._mmap = mmap
         self._mmap_len = len(mmap)
-        self._offset = 0
+        self._offset = -1
         self._term = term
 
     def find_next(self, reverse: bool = False) -> int:
