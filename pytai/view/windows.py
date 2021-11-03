@@ -74,8 +74,8 @@ class LoadingWindow(BaseWindow):
         self.progress.start()
         self.progress.pack(padx = 30, pady = (20, 0))
 
-        cancel_button = tk.Button(self.window, text="Cancel", padx = 3, pady = 3, command = self.cancel)
-        cancel_button.pack(side = tk.BOTTOM, pady = 15)
+        self.cancel_button = tk.Button(self.window, text="Cancel", padx = 3, pady = 3, command = self.cancel)
+        self.cancel_button.pack(side = tk.BOTTOM, pady = 15)
 
         self.window.protocol("WM_DELETE_WINDOW", self.on_close)
         self.center_window(self.parent)
@@ -89,9 +89,12 @@ class LoadingWindow(BaseWindow):
 
     def cancel(self) -> None:
         """Handle an event where the user clicks the 'cancel' button."""
+        self.cancel_button.config(state = tk.DISABLED)
         if messagebox.askokcancel("Cancel Loading...", "Are you sure you want to cancel loading?"):
             self.cancel_callback()
             self.stop()
+        else:
+            self.cancel_button.config(state = tk.NORMAL)
 
     def on_close(self) -> None:
         """Handle an event where the user closes the loading window."""
@@ -163,15 +166,15 @@ class OpenFileWindow(BaseWindow):
         
         self.update_list()
 
-        button_ok = tk.Button(self.window,
+        self.button_ok = tk.Button(self.window,
                         text = "OK",
                         command = self.submit, width = 7)
-        button_cancel = tk.Button(self.window,
+        self.button_cancel = tk.Button(self.window,
                         text = "Cancel",
                         command = self.cancel, width = 7)
 
-        button_ok.grid(row = 3, column = 1, padx = 5, pady = 12, sticky = tk.E)
-        button_cancel.grid(row = 3, column = 2, padx = 5, pady = 12, sticky = tk.W)
+        self.button_ok.grid(row = 3, column = 1, padx = 5, pady = 12, sticky = tk.E)
+        self.button_cancel.grid(row = 3, column = 2, padx = 5, pady = 12, sticky = tk.W)
 
         self.window.bind('<Return>', self.submit)
         self.window.bind('<Escape>', self.cancel)
@@ -231,7 +234,11 @@ class OpenFileWindow(BaseWindow):
             self.open_file_callback(file_path, {"kaitai_format": format})
             self.window.destroy()
         except Exception as e:
+            self.button_ok.config(state = tk.DISABLED)
+            self.button_cancel.config(state = tk.DISABLED)
             messagebox.showerror("Error", str(e))
+            self.button_ok.config(state = tk.NORMAL)
+            self.button_cancel.config(state = tk.NORMAL)
         
 
     def cancel(self, event = None) -> None:
@@ -286,15 +293,15 @@ class SearchWindow(BaseWindow):
                 
         button_frame = tk.Frame(self.window)
 
-        button_ok = tk.Button(button_frame,
+        self.button_ok = tk.Button(button_frame,
                         text = "OK",
                         command = self.submit, width = 7)
-        button_cancel = tk.Button(button_frame,
+        self.button_cancel = tk.Button(button_frame,
                         text = "Cancel",
                         command = self.cancel, width = 7)
 
-        button_cancel.pack(side = tk.RIGHT)
-        button_ok.pack(side = tk.RIGHT, padx = 10)
+        self.button_cancel.pack(side = tk.RIGHT)
+        self.button_ok.pack(side = tk.RIGHT, padx = 10)
         button_frame.grid(row = 3, column = 1, padx = 5, pady = 12, sticky = tk.E)
 
         self.window.bind('<Return>', self.submit)
@@ -360,7 +367,11 @@ class SearchWindow(BaseWindow):
             
             self.window.destroy()
         except Exception as e:
+            self.button_ok.config(state = tk.DISABLED)
+            self.button_cancel.config(state = tk.DISABLED)
             messagebox.showerror("Error", str(e))
+            self.button_ok.config(state = tk.NORMAL)
+            self.button_cancel.config(state = tk.NORMAL)
         
 
     def cancel(self, event = None) -> None:
