@@ -29,11 +29,9 @@ License:
     SOFTWARE.
 """
 from pathlib import Path
-from collections import namedtuple
 from typing import Union, Dict, Optional
 
 import enum
-import threading
 import queue
 
 from . import view as v
@@ -106,8 +104,15 @@ class Application():
 
         self.view.show_loading()
 
+        self.current_file_path = Path(path_file).resolve()
+        self.format = format
+        parser = self.model.get_parser(**format)
+
+        def abort_cb():
+            return self.abort_load
+
         self.tree_thread_queue = queue.Queue()
-        start_deamon(function = self._populate_structure_tree, args = (path_file, format))
+        start_deamon(function = self.model.build_structure_tree, args = (self.current_file_path, parser, self.tree_thread_queue, abort_cb))
         self.view.start_worker(self._add_nodes_to_tree)
 
         def done_loading_hex(is_success: bool) -> None:
@@ -117,92 +122,7 @@ class Application():
         self.file_mmap = utils.memory_map(path_file)
         self.view.populate_hex_view(self.file_mmap, done_loading_hex)
 
-    # TODO: This can go to the model now
-    def _populate_structure_tree(self, path_file: Union[str, Path], format: Dict[str, str]) -> None:
-        """Populates the View's structure tree for the given file.
-        
-        Args:
-            path_file:
-                Path to the file to be parsed.
-            format:
-                See description under populate_view().
-        """
-
-        self.current_file_path = Path(path_file).resolve()
-        self.format = format
-
-        try:
-            parser = self.model.get_parser(**format)
-            with parser.parse(self.current_file_path) as parsed_file:
-                NodeAttributes = namedtuple("NodeAttributes", "parent name value start_offset end_offset is_metavar is_array")
-
-                # Build the structure tree by iterating the parsed file (BFS)
-
-                # For some files, due to a cross-dependency, we might first try to process an element without processing its 
-                # dependency. The solution is to raise a flag in such a case (reparse_needed), continue parsing the file
-                # until the dependency is parsed, and then repeat the parsing process with the dependency already resolved.
-                max_parse_retries = 5
-
-                for retry_num in range(max_parse_retries):
-
-                    reparse_needed = False
-
-                    work_queue = []
-            
-                    work_queue.append(NodeAttributes(parent = None, name = 'root', value = parsed_file, start_offset = 0, end_offset = 0, 
-                                                is_metavar = False, is_array = False))
-
-                    i = 0
-                    while work_queue:
-                        if self.abort_load:
-                            break
-
-                        node_attr = work_queue.pop(0)
-
-                        if not reparse_needed:
-                            self.tree_thread_queue.put(dict(current = i, parent = node_attr.parent, name = node_attr.name, 
-                                                            extra_info = parser.get_item_description(node_attr.value), 
-                                                            start_offset = node_attr.start_offset, end_offset = node_attr.end_offset, 
-                                                            is_metavar = node_attr.is_metavar))
-                        # else: We're just parsing for the sake of resolved a dependency, no point in adding to the GUI
-
-                        if node_attr.is_array:
-                            values = node_attr.value
-                        else:
-                            values = parser.get_children(node_attr.value)
-
-                        for child_attr in values:
-                            if child_attr is not None:
-                                work_queue.append( NodeAttributes(parent = i, name = child_attr.name, value = child_attr.value, 
-                                                        start_offset = child_attr.start_offset, 
-                                                        end_offset = child_attr.end_offset, 
-                                                        is_metavar = child_attr.is_metavar, is_array = child_attr.is_array) )
-                            else:
-                                # There is some unresolved dependency which should be resolved later
-                                reparse_needed = True
-                        i += 1
-
-                    if not reparse_needed:
-                        # We are done
-                        self.tree_thread_queue.put(None)
-                        break
-                    else:
-                        # We need to reparse, so empty the GUI queue and try again
-                        try:
-                            while True:
-                                self.tree_thread_queue.get_nowait()
-                        except queue.Empty:
-                            pass
-                        self.tree_thread_queue.put(PyTaiReparseException(f"Reparse Needed, attempt #{retry_num}"))
-                else:
-                    raise PyTaiException("Unable to parse file!")
-
-        except PyTaiException as e:
-            self.tree_thread_queue.put(e)
-        except Exception as e:
-            self.tree_thread_queue.put(PyTaiException(f"Error while parsing file:\n'{str(e)}'"))
-
-
+    
     def _add_nodes_to_tree(self) -> bool:
         """Adds a subset of nodes to the tree view.
 
