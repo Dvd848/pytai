@@ -323,7 +323,7 @@ class SearchWindow(BaseWindow):
         """
 
         if type == cls.SearchType.HEX_VALUES:
-            term = term.replace(" ", "")
+            term = re.sub(r'\s+', '', term)
             if re.fullmatch(r"^[0-9a-fA-F]*$", term) is None or ( (len(term) % 2) != 0):
                 raise ValueError("Invalid hex string")
 
