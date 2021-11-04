@@ -82,6 +82,7 @@ class View(tk.Tk):
             MenuBar.Events.SEARCH:                  self.show_search,
             MenuBar.Events.FIND_NEXT:               self.find_next,
             MenuBar.Events.FIND_PREV:               self.find_prev,
+            MenuBar.Events.ABOUT:                   self.show_about,
         })
         self.root.config(menu = self.menubar)
         
@@ -173,6 +174,10 @@ class View(tk.Tk):
             return
 
         self.callbacks[Events.FIND_PREV]()
+
+    def show_about(self, event = None) -> None:
+        """Show the 'About' window."""
+        AboutWindow(self.root)
 
     def set_status(self, status: str) -> None:
         """Set the given status in the status bar.

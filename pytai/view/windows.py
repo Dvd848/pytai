@@ -27,6 +27,7 @@ from tkinter import ttk
 
 import enum
 import re
+import webbrowser
 
 from tkinter import messagebox, filedialog
 from typing import Callable
@@ -376,4 +377,61 @@ class SearchWindow(BaseWindow):
 
     def cancel(self, event = None) -> None:
         """Cancel the operation."""
+        self.window.destroy()
+
+class AboutWindow(BaseWindow):
+    """The "about" window."""
+    
+    def __init__(self, parent):
+        """Instantiate the class.
+        
+        Args:
+            parent:
+                Parent tk class.
+        """
+        self.parent = parent
+
+        def open_link(event):
+            webbrowser.open_new(event.widget.cget("text"))
+
+        background = '#F8F8F8'
+
+        self.window = tk.Toplevel(self.parent, bg = background)
+        self.window.title(f"About {APP_NAME}") 
+        self.window.resizable(0, 0)
+        self.window.transient(self.parent)
+        self.window.grab_set()
+
+
+        frame = tk.Frame(self.window, background = background)
+
+        title = tk.Label(frame, text = APP_NAME, font=("Arial", 18, 'bold'), background = background)
+        title.grid(row = 0, column = 0, pady = (0, 7))
+
+        line1 = tk.Label(frame, text = "A Kaitai Struct Visualizer and Hex Viewer GUI in Python", background = background)
+        line1.grid(row = 1, column = 0, sticky = tk.W)
+
+        link1 = tk.Label(frame, text="https://github.com/Dvd848/pytai", fg="blue", cursor="hand2", background = background)
+        link1.bind("<Button-1>", open_link)
+        link1.grid(row = 2, column = 0, sticky = tk.W, pady = (0, 15))
+
+        line2 = tk.Label(frame, text = "Based on structure parsers provided by the Kaitai project", background = background)
+        line2.grid(row = 3, column = 0, sticky = tk.W)
+
+        link2 = tk.Label(frame, text="https://kaitai.io/", fg="blue", cursor="hand2", background = background)
+        link2.bind("<Button-1>", open_link)
+        link2.grid(row = 4, column = 0, sticky = tk.W)
+
+        button_close = tk.Button(frame, text = "Close", command = self.close, width = 7)
+        button_close.grid(row = 5, column = 0, columnspan = 2)
+
+        frame.pack(padx = 15, pady = 15)
+        
+        self.window.bind('<Escape>', self.close)
+        self.center_window(self.parent)
+        self.window.focus_force()
+
+
+    def close(self, event = None) -> None:
+        """Close the window."""
         self.window.destroy()

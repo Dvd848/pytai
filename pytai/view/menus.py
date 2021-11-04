@@ -68,6 +68,9 @@ class MenuBar(tk.Menu):
         # User wants to find the previous occurrance of the search term
         FIND_PREV               = enum.auto()
 
+        # User wants to view "about" window
+        ABOUT                   = enum.auto()
+
     def __init__(self, parent, callbacks: Dict[Events, Callable[..., None]]):
         """Instantiate the class.
         
@@ -114,8 +117,7 @@ class MenuBar(tk.Menu):
 
     def show_about(self) -> None:
         """Show the "About" window."""
-        messagebox.showinfo("About", "pytai: A Kaitai Struct Visualizer and HEX Viewer GUI in Python\nhttps://github.com/Dvd848/pytai\n\n"
-                                     "Based on structure parsers provided by the Kaitai project\nhttps://kaitai.io/")
+        self.callbacks[self.Events.ABOUT]()
 
     def toggle_loaded_file_commands(self, enable: bool) -> None:
         """Enables/disables menu options which require an open file."""

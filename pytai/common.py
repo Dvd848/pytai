@@ -25,6 +25,8 @@ from pathlib import Path
 import importlib.resources
 from typing import List
 
+APP_NAME = "pytai"
+
 SUBFOLDER_KAITAI = "kaitai"
 SUBFOLDER_FORMATS = "formats"
 

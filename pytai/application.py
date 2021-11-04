@@ -67,7 +67,7 @@ class Application():
         self.current_file_path = None
         self.format = None
 
-        self.view = v.View(title = "pytai", callbacks = callbacks)
+        self.view = v.View(title = APP_NAME, callbacks = callbacks)
         self.model = m.Model()
 
         if (file is not None):
