@@ -140,7 +140,10 @@ class View(tk.Tk):
             return
 
         try:
-            offset = int(answer, 0)
+            try:
+                offset = int(answer, 0)
+            except ValueError:
+                raise ValueError("Illegal characters")
             self.callbacks[Events.GOTO](offset)
         except ValueError as e:
             self.display_error(f"Unable to jump to offset {answer}:\n({str(e)})")
