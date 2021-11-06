@@ -30,9 +30,11 @@ License:
 """
 from pathlib import Path
 from typing import Union, Dict, Optional
+from collections import namedtuple
 
 import enum
 import queue
+import bisect
 
 from . import view as v
 from . import model as m
@@ -47,6 +49,7 @@ class Application():
         BUILD_TREE         = enum.auto()
         POPULATE_HEX_AREA  = enum.auto()
 
+    XRefAttr = namedtuple("XRefAttr", "start_offset end_offset tree_handle")
 
     def __init__(self, file: Optional[str], format: Dict[str, Optional[str]], *args, **kwargs):
 
@@ -62,6 +65,7 @@ class Application():
             v.Events.SEARCH:              self.cb_search,
             v.Events.FIND_NEXT:           self.cb_find_next,
             v.Events.FIND_PREV:           lambda: self.cb_find_next(reverse = True),
+            v.Events.GET_XREF:            self.cb_get_xref,
         }
 
         self.current_file_path = None
@@ -98,6 +102,7 @@ class Application():
         self.background_tasks.start_task(self.Task.POPULATE_HEX_AREA)
         
         self.tree_parents = dict()
+        self.xref_offset_map = []
 
         self.view.set_current_file_path("")
         self.search_context = None
@@ -151,6 +156,7 @@ class Application():
                 elif isinstance(queue_item, PyTaiReparseException):
                     self.view.tree_view.reset() # TODO: Access via View API
                     self.tree_parents = dict()
+                    self.xref_offset_map = []
                     return True
                 elif isinstance(queue_item, Exception):
                     raise queue_item
@@ -163,6 +169,8 @@ class Application():
                                                 end_offset = queue_item["end_offset"], 
                                                 is_metavar = queue_item["is_metavar"])
                 self.tree_parents[queue_item["current"]] = handle
+                if queue_item["start_offset"] is not None and queue_item["end_offset"] is not None and parent != "":
+                    self.xref_offset_map.append(self.XRefAttr(queue_item["start_offset"], queue_item["end_offset"], handle))
             return True
         except queue.Empty:
             return True
@@ -188,6 +196,8 @@ class Application():
         if self.background_tasks.all_succeeded():
             self.view.set_status("Loaded")
             self.view.set_current_file_path(self.current_file_path)
+            self.xref_offset_map.sort()
+            self.xref_offset_map_start = [x.start_offset for x in self.xref_offset_map]
 
 
     def cb_refresh(self) -> None:
@@ -260,3 +270,40 @@ class Application():
             self.view.make_visible(None)
             self.view.set_status(f"Search term not found")
             self.view.display_error("Search term not found")
+
+    def cb_get_xref(self, offset: int) -> None:
+        """Given an offset in the file, mark the matching tree element.
+
+        Marks the inner-most tree element which matches the offset.
+
+        Args:
+            offset:
+                Offset within the file.
+        
+        """
+        if offset > len(self.file_mmap):
+            return
+
+        index = bisect.bisect_right(self.xref_offset_map_start, offset)
+
+        match = None
+        
+        try:
+            index -= 1
+            start_offset = self.xref_offset_map[index].start_offset
+        except IndexError:
+            return
+
+        while index >= 0:
+            t = self.xref_offset_map[index]
+            if t.start_offset == start_offset and offset <= t.end_offset and t.start_offset != t.end_offset:
+                match = t
+                index -= 1
+            else:
+                break
+            
+        if match is not None:
+            assert(match.start_offset <= offset <= match.end_offset)
+            self.view.mark_tree_element(match.tree_handle)
+            
+

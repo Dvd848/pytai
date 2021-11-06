@@ -40,6 +40,7 @@ from io import StringIO
 import queue
 
 from .events import *
+from .menus import *
 
 from ..utils import *
 
@@ -111,6 +112,12 @@ class HexAreaView():
 
         self.textbox_hex.bind("<<Selection>>", self._on_hex_selection)
 
+        self.hex_rightclick_menu = HexAreaMenu(self.parent, {
+            HexAreaMenu.Events.GET_XREF: self._get_hex_xref
+        })
+
+        self.textbox_hex.bind("<Button-3>", self._show_rightclick_hex_menu)
+
     def _on_scrollbar(self, *args) -> None:
         """Scroll all text widgets when the scrollbar is moved."""
         for textbox in self.textboxes:
@@ -132,6 +139,30 @@ class HexAreaView():
             self.textbox_ascii.tag_add(TAG_SELECTION, ascii_start, ascii_end)
         except Exception:
             pass
+
+    def _get_hex_xref(self, event) -> None:
+        """Show X-Ref for current offset in Hex Area.
+
+        Args:
+            event:
+                A tkinter event containing the (x,y) coordinates
+                of where the user originally right-clicked to get the X-Ref.
+        """
+        #hex_line, hex_char = map(int, self.textbox_hex.index(tk.CURRENT).split("."))
+        hex_line, hex_char = map(int, self.textbox_hex.index(f"@{event.x},{event.y}").split("."))
+        offset = ((hex_line - 1) * self.BYTES_PER_ROW) + (hex_char // self.REPR_CHARS_PER_BYTE_HEX)
+        self.callbacks[Events.GET_XREF](offset)
+
+    def _show_rightclick_hex_menu(self, event) -> None:
+        """Show the Right-Click menu for the hex area.
+
+        Args:
+            event:
+                A tkinter event containing the (x,y) coordinates
+                of where the user right-clicked to get the X-Ref.
+        """
+        assert(self.textbox_hex.index(tk.CURRENT) == self.textbox_hex.index(f"@{event.x},{event.y}"))
+        self.hex_rightclick_menu.show(event)
         
 
     def reset(self):

@@ -115,6 +115,7 @@ class View(tk.Tk):
         self.add_tree_item = self.tree_view.add_item
         self.populate_hex_view = self.hex_view.populate_hex_view
         self.make_visible = self.hex_view.make_visible
+        self.mark_tree_element = self.tree_view.mark_tree_element
 
         self.reset()
 
@@ -221,6 +222,7 @@ class View(tk.Tk):
         else:
             self.set_status("")
         self.hex_view.mark_range(start_offset, end_offset)
+
 
     def show_loading(self) -> None:
         """Show the loading window."""

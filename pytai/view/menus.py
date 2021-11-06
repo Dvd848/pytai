@@ -31,8 +31,8 @@ import tkinter as tk
 import enum
 
 
-class RegistryDetailsMenu():
-    """Base class for a menu in the details area."""
+class BaseHexAreaMenu():
+    """Base class for a menu in the Hex area."""
     def __init__(self, parent):
         self.parent = parent
 
@@ -84,6 +84,9 @@ class MenuBar(tk.Menu):
         """
         super().__init__(parent)
 
+        if callbacks.keys() != set(self.Events):
+            raise KeyError(f"Callbacks must contain all events in {set(self.Events)} ")
+
         self.callbacks = callbacks
 
         self.commands_require_file = {}
@@ -125,3 +128,38 @@ class MenuBar(tk.Menu):
         for (menu, label), requires_file in self.commands_require_file.items():
             if requires_file:
                 menu.entryconfigure(label, state = target)
+
+class HexAreaMenu(BaseHexAreaMenu):
+    class Events(enum.Enum):
+        """Events that can be triggered by the menu."""
+        
+        # Show cross-reference for current byte
+        GET_XREF = enum.auto()
+
+    def __init__(self, parent, callbacks: Dict[Events, Callable[..., None]]):
+        """Instantiate the class.
+        
+        Args:
+            parent: 
+                Parent tk class.
+                
+            callbacks:
+                Dictionary of callbacks to call when an event from Events occurs
+                
+        """
+        super().__init__(parent)
+
+        self.parent = parent
+
+        self.menu = tk.Menu(self.parent, tearoff = 0)
+
+        if callbacks.keys() != set(self.Events):
+            raise KeyError(f"Callbacks must contain all events in {set(self.Events)} ")
+        self.callbacks = callbacks
+
+        self.menu.add_command(label = "Show X-Ref", command = lambda: self.callbacks[self.Events.GET_XREF](self._current_event))
+
+    def show(self, event) -> None:
+        """Show the menu."""
+        self._current_event = event
+        super().show(event)

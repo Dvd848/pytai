@@ -153,7 +153,7 @@ class TreeAreaView():
         """Reset the key area to its initial state."""
         self.tree.delete(*self.tree.get_children())
         self.address_bar.set_address('')
-
+        
     @property
     def widget(self) -> ttk.Treeview:
         """Return the actual widget."""
@@ -206,6 +206,18 @@ class TreeAreaView():
             return handle
         except tk.TclError as e:
             raise PyTaiViewException from e
+
+    def mark_tree_element(self, handle: str) -> None:
+        """Mark an element in the tree and make it visible.
+
+        Args:
+            handle:
+                A handle to the tree element as returned by add_item()
+        
+        """
+        self.tree.selection_set(handle)
+        self.tree.focus(handle)
+        self.tree.see(handle)
 
     def fix_tkinter_color_tags(self) -> None:
         """A W/A to allow tkinter to display a TreeView's foreground/background."""

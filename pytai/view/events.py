@@ -59,3 +59,6 @@ class Events(enum.Enum):
 
     # Find previous result for search
     FIND_PREV          = enum.auto()
+
+    # Get x-ref
+    GET_XREF           = enum.auto()
