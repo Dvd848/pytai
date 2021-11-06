@@ -27,6 +27,7 @@ import importlib
 import inspect
 import mmap
 import queue
+import bisect
 
 from pathlib import Path
 from typing import Callable, Union, Any, Dict, Tuple, Generator, Optional
@@ -455,3 +456,75 @@ class SearchContext(object):
         return self._term
 
     
+class XRefManager(object):
+    """Class to manage cross-referencing: From a hex offset in the file to a structure."""
+
+    XRefAttr = namedtuple("XRefAttr", "start_offset end_offset tree_handle")
+
+    def __init__(self) -> None:
+        self.xref_offset_map = []
+        self.xref_offset_map_start = []
+
+    def add_range(self, start_offset: int, end_offset: int, tree_handle: Any) -> None:
+        """Register a range of (start, end) to a given tree handle.
+        
+        Args:
+            start_offset:
+                Start offset of the range.
+            end_offset:
+                End offset of the range.
+            tree_handle:
+                Handle in the structure tree which can later be used to mark the structure
+                associated with the given offset
+        """
+        self.xref_offset_map.append(self.XRefAttr(start_offset, end_offset, tree_handle))
+
+    def finalize(self) -> None:
+        """Perform any post-processing needed after all ranges have been added."""
+        self.xref_offset_map.sort()
+        self.xref_offset_map_start = [x.start_offset for x in self.xref_offset_map]
+
+    def get_xref_handle(self, offset: int) -> Optional[Any]:
+        """Given an offset, return the tree handle for the inner-most range to which the offset belongs to.
+        
+        Args:
+            offset:
+                An offset in the binary.
+
+        Returns:
+            A tree handle associated with the inner-most (deepest) range containing the offset, or None if 
+            no such range was found.
+        """
+
+        # Example: 
+        # [(0, 100, h1), (0, 10, h2), (10, 15, h4), (10, 20, h3), (15, 20, h5), (20, 100, h6)]
+        # We will search for offset 12.
+        
+        # Get the index of the tuple to the right of the right-most tuple which has a start offset
+        # under the given offset. In the example: 4 [(15, 20, h5)].
+        index = bisect.bisect_right(self.xref_offset_map_start, offset)
+
+        match = None
+        
+        try:
+            # Move left to the right-most tuple which has a start offset under the given offset.
+            # Int the example: 3 [(10, 20, h3)].
+            index -= 1
+            start_offset = self.xref_offset_map[index].start_offset
+        except IndexError:
+            return
+
+        while index >= 0:
+            # Continue moving left while the start offset is equal and the end offset is after the given offset.
+            # In the example: Stop at 2 [(10, 15, h4)]. This is the inner-most (deepest) structure for 12.
+            t = self.xref_offset_map[index]
+            if t.start_offset == start_offset and offset <= t.end_offset and t.start_offset != t.end_offset:
+                match = t
+                index -= 1
+            else:
+                break
+
+        if match is not None:
+            assert(match.start_offset <= offset <= match.end_offset)
+
+        return match.tree_handle if match is not None else None

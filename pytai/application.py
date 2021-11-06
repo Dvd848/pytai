@@ -30,11 +30,9 @@ License:
 """
 from pathlib import Path
 from typing import Union, Dict, Optional
-from collections import namedtuple
 
 import enum
 import queue
-import bisect
 
 from . import view as v
 from . import model as m
@@ -48,8 +46,6 @@ class Application():
     class Task(enum.Enum):
         BUILD_TREE         = enum.auto()
         POPULATE_HEX_AREA  = enum.auto()
-
-    XRefAttr = namedtuple("XRefAttr", "start_offset end_offset tree_handle")
 
     def __init__(self, file: Optional[str], format: Dict[str, Optional[str]], *args, **kwargs):
 
@@ -82,6 +78,11 @@ class Application():
         """Runs the application."""
         self.view.mainloop()
 
+    def init_per_parse_members(self) -> None:
+        """Initialize members which are coupled with a single parsing attempt."""
+        self.tree_parents = dict()
+        self.xref_manager = m.XRefManager()
+
     def populate_view(self, path_file: Union[str, Path], format: Dict[str, str]) -> None:
         """Populates the View for the given file.
         
@@ -101,8 +102,7 @@ class Application():
         self.background_tasks.start_task(self.Task.BUILD_TREE)
         self.background_tasks.start_task(self.Task.POPULATE_HEX_AREA)
         
-        self.tree_parents = dict()
-        self.xref_offset_map = []
+        self.init_per_parse_members()
 
         self.view.set_current_file_path("")
         self.search_context = None
@@ -155,8 +155,7 @@ class Application():
                     return False
                 elif isinstance(queue_item, PyTaiReparseException):
                     self.view.tree_view.reset() # TODO: Access via View API
-                    self.tree_parents = dict()
-                    self.xref_offset_map = []
+                    self.init_per_parse_members()
                     return True
                 elif isinstance(queue_item, Exception):
                     raise queue_item
@@ -170,7 +169,7 @@ class Application():
                                                 is_metavar = queue_item["is_metavar"])
                 self.tree_parents[queue_item["current"]] = handle
                 if queue_item["start_offset"] is not None and queue_item["end_offset"] is not None and parent != "":
-                    self.xref_offset_map.append(self.XRefAttr(queue_item["start_offset"], queue_item["end_offset"], handle))
+                    self.xref_manager.add_range(queue_item["start_offset"], queue_item["end_offset"], handle)
             return True
         except queue.Empty:
             return True
@@ -191,13 +190,11 @@ class Application():
             self.tree_parents = None
             self.tree_thread_queue = None
             self.view.hide_loading()
-            #self.file_mmap.close()
 
         if self.background_tasks.all_succeeded():
             self.view.set_status("Loaded")
             self.view.set_current_file_path(self.current_file_path)
-            self.xref_offset_map.sort()
-            self.xref_offset_map_start = [x.start_offset for x in self.xref_offset_map]
+            self.xref_manager.finalize()
 
 
     def cb_refresh(self) -> None:
@@ -284,26 +281,9 @@ class Application():
         if offset > len(self.file_mmap):
             return
 
-        index = bisect.bisect_right(self.xref_offset_map_start, offset)
-
-        match = None
-        
-        try:
-            index -= 1
-            start_offset = self.xref_offset_map[index].start_offset
-        except IndexError:
-            return
-
-        while index >= 0:
-            t = self.xref_offset_map[index]
-            if t.start_offset == start_offset and offset <= t.end_offset and t.start_offset != t.end_offset:
-                match = t
-                index -= 1
-            else:
-                break
+        handle = self.xref_manager.get_xref_handle(offset)
             
-        if match is not None:
-            assert(match.start_offset <= offset <= match.end_offset)
-            self.view.mark_tree_element(match.tree_handle)
+        if handle is not None:
+            self.view.mark_tree_element(handle)
             
 
