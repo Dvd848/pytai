@@ -83,6 +83,8 @@ class View(tk.Tk):
             MenuBar.Events.FIND_NEXT:               self.find_next,
             MenuBar.Events.FIND_PREV:               self.find_prev,
             MenuBar.Events.ABOUT:                   self.show_about,
+            MenuBar.Events.EXPAND_TREE:             lambda: self.tree_view.expand_children(True), 
+            MenuBar.Events.COLLAPSE_TREE:           lambda: self.tree_view.expand_children(False)
         })
         self.root.config(menu = self.menubar)
         

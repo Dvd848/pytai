@@ -219,6 +219,22 @@ class TreeAreaView():
         self.tree.focus(handle)
         self.tree.see(handle)
 
+    def expand_children(self, expand: bool, parent: str = '') -> None:
+        """Expand or collapse a sub-tree.
+        
+        Args:
+            expand:
+                True to expand the tree, False to collapse
+
+            parent:
+                ID of the root tree to start from.
+        
+        """
+        self.tree.item(parent, open = expand)
+        for child in self.tree.get_children(parent):
+            self.expand_children(expand, child)
+
+
     def fix_tkinter_color_tags(self) -> None:
         """A W/A to allow tkinter to display a TreeView's foreground/background."""
         def fixed_map(option):

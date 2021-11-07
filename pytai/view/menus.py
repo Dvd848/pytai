@@ -71,6 +71,12 @@ class MenuBar(tk.Menu):
         # User wants to view "about" window
         ABOUT                   = enum.auto()
 
+        # User wants to expand all tree items
+        EXPAND_TREE            = enum.auto()
+
+        # User wants to collapse all tree items
+        COLLAPSE_TREE           = enum.auto()
+
     def __init__(self, parent, callbacks: Dict[Events, Callable[..., None]]):
         """Instantiate the class.
         
@@ -110,6 +116,9 @@ class MenuBar(tk.Menu):
         
         viewmenu = tk.Menu(self, tearoff = 0)
         add_command(viewmenu, True, label = "Refresh", command = lambda: self.callbacks[self.Events.REFRESH](None), accelerator = "F5")
+        viewmenu.add_separator()
+        add_command(viewmenu, True, label = "Expand Tree", command = lambda: self.callbacks[self.Events.EXPAND_TREE]())
+        add_command(viewmenu, True, label = "Collapse Tree", command = lambda: self.callbacks[self.Events.COLLAPSE_TREE]())
         self.add_cascade(label = "View", menu = viewmenu)
 
         helpmenu = tk.Menu(self, tearoff = 0)
