@@ -23,11 +23,13 @@ License:
 """
 import mmap
 import os
-from collections.abc import Iterable
-from typing import Callable, Generator, List, Any, Optional
+import queue
 import inspect
 import enum
 import threading
+
+from collections.abc import Iterable
+from typing import Callable, Generator, List, Any, Optional, Tuple
 
 def memory_map(filename: str, access=mmap.ACCESS_READ) -> mmap.mmap:
     """Map a file to the memory using mmap.
@@ -193,3 +195,48 @@ def get_kaitai_format(file_path: str) -> Optional[str]:
         return "tga"
 
     return None
+
+
+class WorkItem(object):
+    """Class to offload jobs to a worker thread."""
+    def __init__(self) -> None:
+        start_deamon(self._working_thread)
+        
+    def _working_thread(self) -> None:
+        """The worker thread. Takes jobs from the input queue and sends the result to the output queue."""
+        self.input_queue = queue.Queue()
+        self.output_queue = queue.Queue()
+
+        while True:
+            queue_item = self.input_queue.get(block = True)
+            if queue_item is None:
+                return
+
+            handle, function, args = queue_item
+            result = function(*args)
+
+            self.output_queue.put((handle, result))
+
+    def submit_job(self, handle: Any, work_function: Callable, work_args: Tuple) -> None:
+        """Submit a job to the work-item.
+        
+        Args:
+            handle:
+                Unique handle to identify job.
+            work_function:
+                Function to perform the work.
+            work_args:
+                Arguments for the work function.
+        """
+        self.input_queue.put((handle, work_function, work_args))
+
+    def get_done_job(self) -> Tuple[Any, Any]:
+        """Returns a tuple of (handle, result) if a job is done, or None otherwise."""
+        try:
+            return self.output_queue.get(block = False)
+        except queue.Empty:
+            return None
+
+    def stop(self):
+        """Stop the working thread."""
+        self.input_queue.put(None)

@@ -29,10 +29,11 @@ License:
     SOFTWARE.
 """
 from pathlib import Path
-from typing import Union, Dict, Optional
+from typing import Tuple, Union, Dict, Optional
 
 import enum
 import queue
+import random
 
 from . import view as v
 from . import model as m
@@ -70,6 +71,8 @@ class Application():
         self.view = v.View(title = APP_NAME, callbacks = callbacks)
         self.model = m.Model()
 
+        self.work_item = utils.WorkItem()
+
         if (file is not None):
             # Need to run populate_view in the View context, *after* the View mainloop is in action 
             self.view.schedule_function(time_ms = 100, callback = lambda: self.populate_view(file, format))
@@ -82,6 +85,7 @@ class Application():
         """Initialize members which are coupled with a single parsing attempt."""
         self.tree_parents = dict()
         self.xref_manager = m.XRefManager()
+        self.work_item_tasks = dict()
 
     def populate_view(self, path_file: Union[str, Path], format: Dict[str, str]) -> None:
         """Populates the View for the given file.
@@ -194,7 +198,56 @@ class Application():
         if self.background_tasks.all_succeeded():
             self.view.set_status("Loaded")
             self.view.set_current_file_path(self.current_file_path)
-            self.xref_manager.finalize()
+            self._submit_work_item(self.xref_manager.finalize, (), None)
+
+    # TODO: Push into workitem class?
+    def _submit_work_item(self, work_function: Callable, work_args: Tuple, done_callback: Optional[Callable[[Any], None]]) -> None:
+        """Submit a job to the work-item thread together with a callback to be called with the result.
+        
+        Args:
+            work_function:
+                Function to be called in the work-item thread.
+
+            work_args:
+                Arguments for the function.
+
+            done_callback:
+                Callback to be called with the result (or None if not needed).
+        
+        """
+        # A random handle is used to track whether a result belongs to the current session 
+        # or a previous one.
+        handle = random.getrandbits(32)
+
+        pending_work_items = len(self.work_item_tasks) > 0
+        self.work_item_tasks[handle] = done_callback
+
+        self.work_item.submit_job(handle, work_function, work_args)
+
+        if not pending_work_items:
+            # If there weren't already work-item jobs, start polling for the result
+            self.view.start_worker(self._poll_work_item)
+
+    def _poll_work_item(self) -> bool:
+        """Wait for work-item jobs to end and call the callback.
+        
+        Returns:
+            True if there are still pending jobs (function needs to be called again).
+        """
+        item = self.work_item.get_done_job()
+        if item is None:
+            # Nothing to handle currently
+            return len(self.work_item_tasks) > 0
+
+        handle, result = item
+        if handle in self.work_item_tasks:
+            callback = self.work_item_tasks[handle]
+            if callback is not None:
+                callback(result)
+            del self.work_item_tasks[handle]
+        # else: Handle belongs to previous session, just discard
+        
+        return len(self.work_item_tasks) > 0
 
 
     def cb_refresh(self) -> None:
@@ -242,7 +295,6 @@ class Application():
 
     def cb_search(self, term: bytes) -> None:
         """Callback for an event where the user wants to search the binary."""
-        # TODO: Should communicate with GUI thread via queue
         self.search_context = m.SearchContext(self.file_mmap, term)
         self.cb_find_next()
 
@@ -259,14 +311,16 @@ class Application():
             self.view.show_search()
             return
 
-        offset = self.search_context.find_next(reverse)
-        if offset >= 0:
-            self.view.make_visible(offset, length = len(self.search_context.term), highlight = True)
-            self.view.set_status(f"Found at offset {hex(offset)} ({offset})")
-        else:
-            self.view.make_visible(None)
-            self.view.set_status(f"Search term not found")
-            self.view.display_error("Search term not found")
+        def callback(offset):
+            if offset >= 0:
+                self.view.make_visible(offset, length = len(self.search_context.term), highlight = True)
+                self.view.set_status(f"Found at offset {hex(offset)} ({offset})")
+            else:
+                self.view.make_visible(None)
+                self.view.set_status(f"Search term not found")
+                self.view.display_error("Search term not found")
+
+        self._submit_work_item(self.search_context.find_next, (reverse,), callback)
 
     def cb_get_xref(self, offset: int) -> None:
         """Given an offset in the file, mark the matching tree element.
@@ -281,9 +335,8 @@ class Application():
         if offset > len(self.file_mmap):
             return
 
-        handle = self.xref_manager.get_xref_handle(offset)
-            
-        if handle is not None:
-            self.view.mark_tree_element(handle)
-            
+        def callback(handle):
+            if handle is not None:
+                self.view.mark_tree_element(handle)
 
+        self._submit_work_item(self.xref_manager.get_xref_handle, (offset,), callback)
