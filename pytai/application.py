@@ -158,7 +158,7 @@ class Application():
                     self._finalize_load()
                     return False
                 elif isinstance(queue_item, PyTaiReparseException):
-                    self.view.tree_view.reset() # TODO: Access via View API
+                    self.view.reset_tree()
                     self.init_per_parse_members()
                     return True
                 elif isinstance(queue_item, Exception):

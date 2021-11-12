@@ -118,6 +118,7 @@ class View(tk.Tk):
         self.populate_hex_view = self.hex_view.populate_hex_view
         self.make_visible = self.hex_view.make_visible
         self.mark_tree_element = self.tree_view.mark_tree_element
+        self.reset_tree = self.tree_view.reset
 
         self.reset()
 
