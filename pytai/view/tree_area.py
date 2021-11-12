@@ -230,10 +230,12 @@ class TreeAreaView():
                 ID of the root tree to start from.
         
         """
-        self.tree.item(parent, open = expand)
-        for child in self.tree.get_children(parent):
-            self.expand_children(expand, child)
-
+        work_queue = [parent]
+        while len(work_queue) > 0:
+            current = work_queue.pop(0)
+            self.tree.item(current, open = expand)
+            for child in self.tree.get_children(current):
+                work_queue.append(child)
 
     def fix_tkinter_color_tags(self) -> None:
         """A W/A to allow tkinter to display a TreeView's foreground/background."""
