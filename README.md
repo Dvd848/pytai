@@ -1,10 +1,10 @@
 # pytai
 
-`pytai` is a Python-based [Kaitai Struct](https://kaitai.io/) visualizer and HEX viewer. 
+`pytai` is a Python-based [Kaitai Struct](https://kaitai.io/) visualizer and Hex viewer. 
 
 > Kaitai Struct is a declarative language used for describing various binary data structures laid out in files or in memory: i.e. binary file formats, network stream packet formats, etc.
 
-Given a binary file with a supported format, `pytai` can be used to browse the structure of the file and locate its members in the HEX view.
+Given a binary file with a supported format, `pytai` can be used to browse the structure of the file and locate its members in the Hex view.
 
 ## Usage
 
@@ -74,6 +74,12 @@ These are members that are inferred from the binary contents (usually a user-fri
 
 ![Mark Elements 2](/docs/images/meta.png)
 
+### Cross References
+
+It's possible to right-click an area in the Hex output and locate its logical structure in the structure tree.
+
+![Cross Reference](/docs/images/xref.gif)
+
 ## Similar Tools
 
 * [Kaitai Struct: Visualizer](https://github.com/kaitai-io/kaitai_struct_visualizer): Text-based visualizer written in Ruby
@@ -83,6 +89,8 @@ These are members that are inferred from the binary contents (usually a user-fri
 * [Kaitai Struct VSCode](https://marketplace.visualstudio.com/items?itemName=fudgepops.kaitai-struct-vscode): Extension for [VS Code](https://code.visualstudio.com/)
 * [Hobbits](https://github.com/Mahlet-Inc/hobbits): Multi-platform GUI for bit-based analysis, processing, and visualization
 * [PolyFile](https://github.com/trailofbits/polyfile): A utility to identify and map the semantic structure of files
+
+Find more tools under [Awesome Kaitai](https://github.com/kaitai-io/awesome-kaitai) or angea's '[Hex Viewers and Editors](https://twitter.com/i/events/841916822014332930)' list.
 
 ## Requirements
 
@@ -105,6 +113,6 @@ The supported formats were taken from the [Kaitai Struct format gallery repo](ht
 
 ## Known Limitations
 
- * No ability to interactively edit files (not a HEX editor, just a viewer).
+ * No ability to interactively edit files (not a Hex editor, just a viewer).
  * Currently no special optimizations implemented in order to handle very large files.
  * Structure offsets are based on output from Kaitai. Kaitai doesn't fully support bit-field offsets, and therefore the GUI cannot accurately mark bit-field members.
