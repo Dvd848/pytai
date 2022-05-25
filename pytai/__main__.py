@@ -32,9 +32,9 @@ License:
 """
 import argparse
 
-from pytai.application import Application
-from pytai.common import *
-from pytai.utils import get_kaitai_format
+from .application import Application
+from .common import *
+from .utils import get_kaitai_format
 
 def main() -> None:
     allowed_formats = kaitai_formats()

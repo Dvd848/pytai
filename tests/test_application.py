@@ -21,6 +21,7 @@ License:
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 """
+import sys
 import unittest
 import xml.etree.ElementTree as ET
 
@@ -29,17 +30,11 @@ from typing import Union, Callable
 from unittest.mock import patch, MagicMock
 from pathlib import Path
 
-try:
-    from .. import application
-    from .xml_utils import *
-except ImportError:
-    if __name__ == "__main__":
-        import sys
-        sys.exit(f'This script needs to be run from the root folder:\n'
-                 f'python -m pytai.tests.{Path(sys.argv[0]).stem}\n' 
-                 f'python -m unittest pytai.tests.{Path(sys.argv[0]).stem}')
-    else:
-        raise
+thisDir = Path(__file__).parent
+sys.path.insert(0, str(thisDir.parent))
+
+from pytai import application
+from pytai.tests.xml_utils import *
 
 
 class MockView(MagicMock):
