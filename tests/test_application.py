@@ -37,6 +37,8 @@ from pytai import application
 from pytai.tests.xml_utils import *
 
 
+from fileTestSuite.unittest import FileTestSuiteTestCaseMixin
+
 class MockView(MagicMock):
     """Mock class to mock the application's View"""
     def __init__(self, *args, **kwargs):
@@ -59,7 +61,11 @@ class MockView(MagicMock):
         while reschedule:
             reschedule = callback()
 
-class TestOffsets(unittest.TestCase):
+class TestOffsets(unittest.TestCase, FileTestSuiteTestCaseMixin):
+    @property
+    def fileTestSuiteDir(self) -> Path:
+        return thisDir / "resources"
+
     @classmethod
     def setUpClass(cls):
         cls.tmp_path = Path(__file__).resolve().parent / "tmp"
@@ -69,37 +75,22 @@ class TestOffsets(unittest.TestCase):
     def get_resource_path(file_name: str):
         return Path(__file__).resolve().parent / "resources" / file_name
 
-    def generic_test(self, file_type):
-        path = self.get_resource_path(f"{file_type}.{file_type}")
-        format = {"kaitai_format": file_type}
+    def _testProcessorImpl(self, chall_file: Path, resp_file: Path, paramsDict=None) -> None:
+        format = {"kaitai_format": chall_file.stem}
 
         with patch(__name__ + '.application.v.View', MockView()):
-            app = application.Application(file = path, format = format)
+            app = application.Application(file = chall_file, format = format)
 
             with open(self.tmp_path / "actual_output.xml", "w") as o:
                 o.write(xml_to_str(app.view.root))
 
-            expected_xml = xml_from_file(self.get_resource_path(f"{file_type}.xml"))
+            expected_xml = xml_from_file(resp_file)
 
             try:
                 xml_compare(app.view.root, expected_xml)
             except RuntimeError as e:
                 self.fail(str(e))
-    
-    def test_png(self):
-        self.generic_test("png")
 
-    def test_bmp(self):
-        self.generic_test("bmp")
-
-    def test_zip(self):
-        self.generic_test("zip")
-
-    def test_elf(self):
-        self.generic_test("elf")
-
-    def test_wav(self):
-        self.generic_test("wav")
 
 if __name__ == "__main__":
     unittest.main()

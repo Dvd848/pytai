@@ -26,6 +26,9 @@ dependencies = [
     "kaitaistruct >= 0.9"
 ]
 
+[project.optional-dependencies]
+tests = ["fileTestSuite @ git+https://github.com/fileTestSuite/fileTestSuite.py.git"]
+
 [project.urls]
 Homepage = "https://github.com/Dvd848/pytai"
 
