@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=61.2.0", "wheel", "setuptools_scm[toml]>=3.4.3"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pytai"
+readme = "README.md"
+description = "Kaitai Struct: Visualizer and Hex Viewer GUI in Python"
+authors = [{name = "Dvd848"}]
+classifiers = [
+	"Development Status :: 4 - Beta",
+	"Environment :: Other Environment",
+	"Intended Audience :: Developers",
+	"License :: OSI Approved",
+	"License :: OSI Approved :: MIT License",
+	"Operating System :: OS Independent",
+	"Programming Language :: Python",
+	"Programming Language :: Python :: 3",
+	"Programming Language :: Python :: 3 :: Only",
+]
+keywords = ["pytai", "python", "kaitai", "gui"]
+license = {text = "MIT"}
+requires-python = ">=3.6"
+dynamic = ["version"]
+dependencies = [
+    "kaitaistruct >= 0.9"
+]
+
+[project.urls]
+Homepage = "https://github.com/Dvd848/pytai"
+
+[project.scripts]  # todo: gui-scripts
+pytai = "pytai.__main__:main"
+
+[tool.setuptools]
+zip-safe = true
+packages = ["pytai", "pytai.kaitai", "pytai.kaitai.formats", "pytai.view", "pytai.view.assets"]
+
+[tool.setuptools_scm]
