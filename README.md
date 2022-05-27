@@ -85,7 +85,7 @@ These are members that are inferred from the binary contents (usually a user-fri
 
 It's possible to right-click an area in the Hex output and locate its logical structure in the structure tree.
 
-![Cross Reference](/docs/images/xref.gif)
+![Cross Reference](https://github.com/Dvd848/pytai/raw/main/docs/images/xref.gif)
 
 ## Similar Tools
 
