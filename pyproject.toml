@@ -34,7 +34,7 @@ pytai = "pytai.main:main"
 
 [tool.setuptools]
 zip-safe = true
-packages = ["pytai", "pytai.kaitai", "pytai.kaitai.formats", "pytai.view", "pytai.view.assets"]
+packages = ["pytai", "pytai.kaitai", "pytai.kaitai.formats", "pytai.view", "pytai.view.assets", "pytai.tests"]
 
 [tool.setuptools_scm]
 # local_scheme = "no-local-version"
