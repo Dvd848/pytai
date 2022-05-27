@@ -30,7 +30,7 @@ License:
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 """
-from pytai.main import main
+from pytai.__main__ import main
 
 if __name__ == "__main__":
     main()
