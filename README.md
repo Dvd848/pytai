@@ -6,11 +6,19 @@
 
 Given a binary file with a supported format, `pytai` can be used to browse the structure of the file and locate its members in the Hex view.
 
+## Install
+
+```console
+$ pip install pytai-hex
+```
+
+Alternatively, the latest stable version of `pytai.pyz` can be downloaded from the [Releases](https://github.com/Dvd848/pytai/releases) page.
+
 ## Usage
 
 ```console
-$ python3 ./pytai.pyz -h                 
-usage: pytai.pyz [-h] [-kf FORMAT] [file]
+$ pytai -h                 
+usage: pytai [-h] [-kf FORMAT] [file]
 
 pytai: A Python-based Kaitai Struct Visualizer and HEX Viewer
 
@@ -48,31 +56,30 @@ optional arguments:
 Examples:
 
 ```console
-$ python3 ./pytai.pyz
-$ python3 ./pytai.pyz ../../image.png -kf png
+$ pytai
+$ pytai ../../image.png
+$ pytai ../../image.png -kf png
 $ python3 ./pytai.pyz ../../archive.zip -kf zip
 $ python3 __main__.py ../../program.exe -kf dos_mz
 ```
-
-The latest stable version of `pytai.pyz` can be downloaded from the [Releases](https://github.com/Dvd848/pytai/releases) page.
 
 ## Screenshots
 
 ### Main Window
 
-![Main Window](/docs/images/pytai.png)
+![Main Window](https://github.com/Dvd848/pytai/raw/main/docs/images/pytai.png)
 
 ### Marking Elements
 
-![Mark Elements 1](/docs/images/mark1.png)
+![Mark Elements 1](https://github.com/Dvd848/pytai/raw/main/docs/images/mark1.png)
 
-![Mark Elements 2](/docs/images/mark2.png)
+![Mark Elements 2](https://github.com/Dvd848/pytai/raw/main/docs/images/mark2.png)
 
 ### Metadata Members
 
 These are members that are inferred from the binary contents (usually a user-friendly display for explicit data).
 
-![Mark Elements 2](/docs/images/meta.png)
+![Mark Elements 2](https://github.com/Dvd848/pytai/raw/main/docs/images/meta.png)
 
 ### Cross References
 
