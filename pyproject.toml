@@ -3,7 +3,7 @@ requires = ["setuptools>=61.2.0", "wheel", "setuptools_scm[toml]>=3.4.3"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "pytai"
+name = "pytai-hex"
 readme = "README.md"
 description = "Kaitai Struct: Visualizer and Hex Viewer GUI in Python"
 authors = [{name = "Dvd848"}]
@@ -37,3 +37,4 @@ zip-safe = true
 packages = ["pytai", "pytai.kaitai", "pytai.kaitai.formats", "pytai.view", "pytai.view.assets"]
 
 [tool.setuptools_scm]
+# local_scheme = "no-local-version"
