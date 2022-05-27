@@ -30,7 +30,7 @@ dependencies = [
 Homepage = "https://github.com/Dvd848/pytai"
 
 [project.scripts]  # todo: gui-scripts
-pytai = "pytai.__main__:main"
+pytai = "pytai.main:main"
 
 [tool.setuptools]
 zip-safe = true
