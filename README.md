@@ -123,3 +123,9 @@ The supported formats were taken from the [Kaitai Struct format gallery repo](ht
  * No ability to interactively edit files (not a Hex editor, just a viewer).
  * Currently no special optimizations implemented in order to handle very large files.
  * Structure offsets are based on output from Kaitai. Kaitai doesn't fully support bit-field offsets, and therefore the GUI cannot accurately mark bit-field members.
+
+## Contributions
+
+Contributions in the form of pull requests, comments, suggestions and issue reports are welcome! 
+
+As a general guideline, this project attempts to minimize the amount of external dependencies which it relies on. The preference of the project is to avoid adding external dependencies except for cases which involve complex logic that can be significantly simplified using a popular package.
