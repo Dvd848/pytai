@@ -126,13 +126,12 @@
 
 # This is a generated file! Please edit source .ksy file and use kaitai-struct-compiler to rebuild
 
-from pkg_resources import parse_version
 import kaitaistruct
 from kaitaistruct import KaitaiStruct, KaitaiStream, BytesIO
 import collections
 
 
-if parse_version(kaitaistruct.__version__) < parse_version('0.9'):
+if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 9):
     raise Exception("Incompatible Kaitai Struct Python API: 0.9 or later is required, but you have %s" % (kaitaistruct.__version__))
 
 class AndroidBootldrHuawei(KaitaiStruct):
@@ -154,6 +153,14 @@ class AndroidBootldrHuawei(KaitaiStruct):
     
     .. seealso::
        Source - https://android.googlesource.com/device/huawei/angler/+/673cfb9/releasetools.py
+    
+    
+    .. seealso::
+       Source - https://source.codeaurora.org/quic/la/device/qcom/common/tree/meta_image/meta_format.h?h=LA.UM.6.1.1&id=a68d284aee85
+    
+    
+    .. seealso::
+       Source - https://source.codeaurora.org/quic/la/device/qcom/common/tree/meta_image/meta_image.c?h=LA.UM.6.1.1&id=a68d284aee85
     """
     SEQ_FIELDS = ["meta_header", "header_ext", "image_header"]
     def __init__(self, _io, _parent=None, _root=None):
@@ -268,18 +275,32 @@ class AndroidBootldrHuawei(KaitaiStruct):
             self._debug['len_body']['end'] = self._io.pos()
 
         @property
+        def is_used(self):
+            """
+            .. seealso::
+               Source - https://source.codeaurora.org/quic/la/device/qcom/common/tree/meta_image/meta_image.c?h=LA.UM.6.1.1&id=a68d284aee85#n119
+            """
+            if hasattr(self, '_m_is_used'):
+                return self._m_is_used
+
+            self._m_is_used =  ((self.ofs_body != 0) and (self.len_body != 0)) 
+            return getattr(self, '_m_is_used', None)
+
+        @property
         def body(self):
             if hasattr(self, '_m_body'):
-                return self._m_body if hasattr(self, '_m_body') else None
+                return self._m_body
 
-            io = self._root._io
-            _pos = io.pos()
-            io.seek(self.ofs_body)
-            self._debug['_m_body']['start'] = io.pos()
-            self._m_body = io.read_bytes(self.len_body)
-            self._debug['_m_body']['end'] = io.pos()
-            io.seek(_pos)
-            return self._m_body if hasattr(self, '_m_body') else None
+            if self.is_used:
+                io = self._root._io
+                _pos = io.pos()
+                io.seek(self.ofs_body)
+                self._debug['_m_body']['start'] = io.pos()
+                self._m_body = io.read_bytes(self.len_body)
+                self._debug['_m_body']['end'] = io.pos()
+                io.seek(_pos)
+
+            return getattr(self, '_m_body', None)
 
 
 

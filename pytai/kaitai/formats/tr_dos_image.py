@@ -126,14 +126,13 @@
 
 # This is a generated file! Please edit source .ksy file and use kaitai-struct-compiler to rebuild
 
-from pkg_resources import parse_version
 import kaitaistruct
 from kaitaistruct import KaitaiStruct, KaitaiStream, BytesIO
 from enum import Enum
 import collections
 
 
-if parse_version(kaitaistruct.__version__) < parse_version('0.9'):
+if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 9):
     raise Exception("Incompatible Kaitai Struct Python API: 0.9 or later is required, but you have %s" % (kaitaistruct.__version__))
 
 class TrDosImage(KaitaiStruct):
@@ -246,18 +245,18 @@ class TrDosImage(KaitaiStruct):
         @property
         def num_tracks(self):
             if hasattr(self, '_m_num_tracks'):
-                return self._m_num_tracks if hasattr(self, '_m_num_tracks') else None
+                return self._m_num_tracks
 
             self._m_num_tracks = (40 if (self.disk_type.value & 1) != 0 else 80)
-            return self._m_num_tracks if hasattr(self, '_m_num_tracks') else None
+            return getattr(self, '_m_num_tracks', None)
 
         @property
         def num_sides(self):
             if hasattr(self, '_m_num_sides'):
-                return self._m_num_sides if hasattr(self, '_m_num_sides') else None
+                return self._m_num_sides
 
             self._m_num_sides = (1 if (self.disk_type.value & 8) != 0 else 2)
-            return self._m_num_sides if hasattr(self, '_m_num_sides') else None
+            return getattr(self, '_m_num_sides', None)
 
 
     class PositionAndLengthCode(KaitaiStruct):
@@ -293,7 +292,7 @@ class TrDosImage(KaitaiStruct):
         @property
         def first_byte(self):
             if hasattr(self, '_m_first_byte'):
-                return self._m_first_byte if hasattr(self, '_m_first_byte') else None
+                return self._m_first_byte
 
             _pos = self._io.pos()
             self._io.seek(0)
@@ -301,7 +300,7 @@ class TrDosImage(KaitaiStruct):
             self._m_first_byte = self._io.read_u1()
             self._debug['_m_first_byte']['end'] = self._io.pos()
             self._io.seek(_pos)
-            return self._m_first_byte if hasattr(self, '_m_first_byte') else None
+            return getattr(self, '_m_first_byte', None)
 
 
     class PositionAndLengthPrint(KaitaiStruct):
@@ -404,23 +403,23 @@ class TrDosImage(KaitaiStruct):
         @property
         def is_deleted(self):
             if hasattr(self, '_m_is_deleted'):
-                return self._m_is_deleted if hasattr(self, '_m_is_deleted') else None
+                return self._m_is_deleted
 
             self._m_is_deleted = self.name.first_byte == 1
-            return self._m_is_deleted if hasattr(self, '_m_is_deleted') else None
+            return getattr(self, '_m_is_deleted', None)
 
         @property
         def is_terminator(self):
             if hasattr(self, '_m_is_terminator'):
-                return self._m_is_terminator if hasattr(self, '_m_is_terminator') else None
+                return self._m_is_terminator
 
             self._m_is_terminator = self.name.first_byte == 0
-            return self._m_is_terminator if hasattr(self, '_m_is_terminator') else None
+            return getattr(self, '_m_is_terminator', None)
 
         @property
         def contents(self):
             if hasattr(self, '_m_contents'):
-                return self._m_contents if hasattr(self, '_m_contents') else None
+                return self._m_contents
 
             _pos = self._io.pos()
             self._io.seek((((self.starting_track * 256) * 16) + (self.starting_sector * 256)))
@@ -428,13 +427,13 @@ class TrDosImage(KaitaiStruct):
             self._m_contents = self._io.read_bytes((self.length_sectors * 256))
             self._debug['_m_contents']['end'] = self._io.pos()
             self._io.seek(_pos)
-            return self._m_contents if hasattr(self, '_m_contents') else None
+            return getattr(self, '_m_contents', None)
 
 
     @property
     def volume_info(self):
         if hasattr(self, '_m_volume_info'):
-            return self._m_volume_info if hasattr(self, '_m_volume_info') else None
+            return self._m_volume_info
 
         _pos = self._io.pos()
         self._io.seek(2048)
@@ -443,6 +442,6 @@ class TrDosImage(KaitaiStruct):
         self._m_volume_info._read()
         self._debug['_m_volume_info']['end'] = self._io.pos()
         self._io.seek(_pos)
-        return self._m_volume_info if hasattr(self, '_m_volume_info') else None
+        return getattr(self, '_m_volume_info', None)
 
 

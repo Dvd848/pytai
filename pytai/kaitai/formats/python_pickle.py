@@ -126,14 +126,13 @@
 
 # This is a generated file! Please edit source .ksy file and use kaitai-struct-compiler to rebuild
 
-from pkg_resources import parse_version
 import kaitaistruct
 from kaitaistruct import KaitaiStruct, KaitaiStream, BytesIO
 from enum import Enum
 import collections
 
 
-if parse_version(kaitaistruct.__version__) < parse_version('0.9'):
+if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 9):
     raise Exception("Incompatible Kaitai Struct Python API: 0.9 or later is required, but you have %s" % (kaitaistruct.__version__))
 
 class PythonPickle(KaitaiStruct):
@@ -195,7 +194,7 @@ class PythonPickle(KaitaiStruct):
         empty_list = 93
         append = 97
         build = 98
-        global = 99
+        global_opcode = 99
         dict = 100
         appends = 101
         get = 103
@@ -725,6 +724,9 @@ class PythonPickle(KaitaiStruct):
             elif _on == PythonPickle.Opcode.reduce:
                 self.arg = PythonPickle.NoArg(self._io, self, self._root)
                 self.arg._read()
+            elif _on == PythonPickle.Opcode.global_opcode:
+                self.arg = PythonPickle.StringnlNoescapePair(self._io, self, self._root)
+                self.arg._read()
             elif _on == PythonPickle.Opcode.binput:
                 self.arg = self._io.read_u1()
             elif _on == PythonPickle.Opcode.memoize:
@@ -760,9 +762,6 @@ class PythonPickle(KaitaiStruct):
                 self.arg._read()
             elif _on == PythonPickle.Opcode.binget:
                 self.arg = self._io.read_u1()
-            elif _on == PythonPickle.Opcode.global:
-                self.arg = PythonPickle.StringnlNoescapePair(self._io, self, self._root)
-                self.arg._read()
             elif _on == PythonPickle.Opcode.dict:
                 self.arg = PythonPickle.NoArg(self._io, self, self._root)
                 self.arg._read()

@@ -24,13 +24,12 @@
 
 # This is a generated file! Please edit source .ksy file and use kaitai-struct-compiler to rebuild
 
-from pkg_resources import parse_version
 import kaitaistruct
 from kaitaistruct import KaitaiStruct, KaitaiStream, BytesIO
 import collections
 
 
-if parse_version(kaitaistruct.__version__) < parse_version('0.9'):
+if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 9):
     raise Exception("Incompatible Kaitai Struct Python API: 0.9 or later is required, but you have %s" % (kaitaistruct.__version__))
 
 import bytes_with_io
@@ -231,7 +230,7 @@ class ResourceFork(KaitaiStruct):
                 as they are stored in the file.
                 """
                 if hasattr(self, '_m_as_int'):
-                    return self._m_as_int if hasattr(self, '_m_as_int') else None
+                    return self._m_as_int
 
                 _pos = self._io.pos()
                 self._io.seek(0)
@@ -239,7 +238,7 @@ class ResourceFork(KaitaiStruct):
                 self._m_as_int = self._io.read_u2be()
                 self._debug['_m_as_int']['end'] = self._io.pos()
                 self._io.seek(_pos)
-                return self._m_as_int if hasattr(self, '_m_as_int') else None
+                return getattr(self, '_m_as_int', None)
 
 
         class TypeListAndReferenceLists(KaitaiStruct):
@@ -280,14 +279,14 @@ class ResourceFork(KaitaiStruct):
                     self.num_types_m1 = self._io.read_u2be()
                     self._debug['num_types_m1']['end'] = self._io.pos()
                     self._debug['entries']['start'] = self._io.pos()
-                    self.entries = [None] * (self.num_types)
+                    self.entries = []
                     for i in range(self.num_types):
                         if not 'arr' in self._debug['entries']:
                             self._debug['entries']['arr'] = []
                         self._debug['entries']['arr'].append({'start': self._io.pos()})
                         _t_entries = ResourceFork.ResourceMap.TypeListAndReferenceLists.TypeList.TypeListEntry(self._io, self, self._root)
                         _t_entries._read()
-                        self.entries[i] = _t_entries
+                        self.entries.append(_t_entries)
                         self._debug['entries']['arr'][i]['end'] = self._io.pos()
 
                     self._debug['entries']['end'] = self._io.pos()
@@ -319,17 +318,17 @@ class ResourceFork(KaitaiStruct):
                     def num_references(self):
                         """The number of resources in the reference list for this type."""
                         if hasattr(self, '_m_num_references'):
-                            return self._m_num_references if hasattr(self, '_m_num_references') else None
+                            return self._m_num_references
 
                         self._m_num_references = ((self.num_references_m1 + 1) % 65536)
-                        return self._m_num_references if hasattr(self, '_m_num_references') else None
+                        return getattr(self, '_m_num_references', None)
 
                     @property
                     def reference_list(self):
                         """The resource reference list for this resource type.
                         """
                         if hasattr(self, '_m_reference_list'):
-                            return self._m_reference_list if hasattr(self, '_m_reference_list') else None
+                            return self._m_reference_list
 
                         io = self._parent._parent._io
                         _pos = io.pos()
@@ -339,17 +338,17 @@ class ResourceFork(KaitaiStruct):
                         self._m_reference_list._read()
                         self._debug['_m_reference_list']['end'] = io.pos()
                         io.seek(_pos)
-                        return self._m_reference_list if hasattr(self, '_m_reference_list') else None
+                        return getattr(self, '_m_reference_list', None)
 
 
                 @property
                 def num_types(self):
                     """The number of resource types in this list."""
                     if hasattr(self, '_m_num_types'):
-                        return self._m_num_types if hasattr(self, '_m_num_types') else None
+                        return self._m_num_types
 
                     self._m_num_types = ((self.num_types_m1 + 1) % 65536)
-                    return self._m_num_types if hasattr(self, '_m_num_types') else None
+                    return getattr(self, '_m_num_types', None)
 
 
             class ReferenceList(KaitaiStruct):
@@ -369,14 +368,14 @@ class ResourceFork(KaitaiStruct):
 
                 def _read(self):
                     self._debug['references']['start'] = self._io.pos()
-                    self.references = [None] * (self.num_references)
+                    self.references = []
                     for i in range(self.num_references):
                         if not 'arr' in self._debug['references']:
                             self._debug['references']['arr'] = []
                         self._debug['references']['arr'].append({'start': self._io.pos()})
                         _t_references = ResourceFork.ResourceMap.TypeListAndReferenceLists.ReferenceList.Reference(self._io, self, self._root)
                         _t_references._read()
-                        self.references[i] = _t_references
+                        self.references.append(_t_references)
                         self._debug['references']['arr'][i]['end'] = self._io.pos()
 
                     self._debug['references']['end'] = self._io.pos()
@@ -454,7 +453,7 @@ class ResourceFork(KaitaiStruct):
                             as they are stored in the file.
                             """
                             if hasattr(self, '_m_as_int'):
-                                return self._m_as_int if hasattr(self, '_m_as_int') else None
+                                return self._m_as_int
 
                             _pos = self._io.pos()
                             self._io.seek(0)
@@ -462,7 +461,7 @@ class ResourceFork(KaitaiStruct):
                             self._m_as_int = self._io.read_u1()
                             self._debug['_m_as_int']['end'] = self._io.pos()
                             self._io.seek(_pos)
-                            return self._m_as_int if hasattr(self, '_m_as_int') else None
+                            return getattr(self, '_m_as_int', None)
 
 
                     @property
@@ -470,7 +469,7 @@ class ResourceFork(KaitaiStruct):
                         """The name (if any) of the resource described by this reference.
                         """
                         if hasattr(self, '_m_name'):
-                            return self._m_name if hasattr(self, '_m_name') else None
+                            return self._m_name
 
                         if self.ofs_name != 65535:
                             io = self._root.resource_map.names_with_io._io
@@ -482,14 +481,14 @@ class ResourceFork(KaitaiStruct):
                             self._debug['_m_name']['end'] = io.pos()
                             io.seek(_pos)
 
-                        return self._m_name if hasattr(self, '_m_name') else None
+                        return getattr(self, '_m_name', None)
 
                     @property
                     def data_block(self):
                         """The data block containing the data for the resource described by this reference.
                         """
                         if hasattr(self, '_m_data_block'):
-                            return self._m_data_block if hasattr(self, '_m_data_block') else None
+                            return self._m_data_block
 
                         io = self._root.data_blocks_with_io._io
                         _pos = io.pos()
@@ -499,7 +498,7 @@ class ResourceFork(KaitaiStruct):
                         self._m_data_block._read()
                         self._debug['_m_data_block']['end'] = io.pos()
                         io.seek(_pos)
-                        return self._m_data_block if hasattr(self, '_m_data_block') else None
+                        return getattr(self, '_m_data_block', None)
 
 
 
@@ -532,7 +531,7 @@ class ResourceFork(KaitaiStruct):
         def type_list_and_reference_lists(self):
             """The resource map's resource type list, followed by the resource reference list area."""
             if hasattr(self, '_m_type_list_and_reference_lists'):
-                return self._m_type_list_and_reference_lists if hasattr(self, '_m_type_list_and_reference_lists') else None
+                return self._m_type_list_and_reference_lists
 
             _pos = self._io.pos()
             self._io.seek(self.ofs_type_list)
@@ -543,7 +542,7 @@ class ResourceFork(KaitaiStruct):
             self._m_type_list_and_reference_lists._read()
             self._debug['_m_type_list_and_reference_lists']['end'] = self._io.pos()
             self._io.seek(_pos)
-            return self._m_type_list_and_reference_lists if hasattr(self, '_m_type_list_and_reference_lists') else None
+            return getattr(self, '_m_type_list_and_reference_lists', None)
 
         @property
         def names_with_io(self):
@@ -551,7 +550,7 @@ class ResourceFork(KaitaiStruct):
             unless you need access to this instance's `_io`.
             """
             if hasattr(self, '_m_names_with_io'):
-                return self._m_names_with_io if hasattr(self, '_m_names_with_io') else None
+                return self._m_names_with_io
 
             _pos = self._io.pos()
             self._io.seek(self.ofs_names)
@@ -562,16 +561,16 @@ class ResourceFork(KaitaiStruct):
             self._m_names_with_io._read()
             self._debug['_m_names_with_io']['end'] = self._io.pos()
             self._io.seek(_pos)
-            return self._m_names_with_io if hasattr(self, '_m_names_with_io') else None
+            return getattr(self, '_m_names_with_io', None)
 
         @property
         def names(self):
             """Storage area for the names of all resources."""
             if hasattr(self, '_m_names'):
-                return self._m_names if hasattr(self, '_m_names') else None
+                return self._m_names
 
             self._m_names = self.names_with_io.data
-            return self._m_names if hasattr(self, '_m_names') else None
+            return getattr(self, '_m_names', None)
 
 
     @property
@@ -580,7 +579,7 @@ class ResourceFork(KaitaiStruct):
         unless you need access to this instance's `_io`.
         """
         if hasattr(self, '_m_data_blocks_with_io'):
-            return self._m_data_blocks_with_io if hasattr(self, '_m_data_blocks_with_io') else None
+            return self._m_data_blocks_with_io
 
         _pos = self._io.pos()
         self._io.seek(self.header.ofs_data_blocks)
@@ -591,7 +590,7 @@ class ResourceFork(KaitaiStruct):
         self._m_data_blocks_with_io._read()
         self._debug['_m_data_blocks_with_io']['end'] = self._io.pos()
         self._io.seek(_pos)
-        return self._m_data_blocks_with_io if hasattr(self, '_m_data_blocks_with_io') else None
+        return getattr(self, '_m_data_blocks_with_io', None)
 
     @property
     def data_blocks(self):
@@ -610,16 +609,16 @@ class ResourceFork(KaitaiStruct):
         or when resources are added or grown so that more space is needed in the data area.
         """
         if hasattr(self, '_m_data_blocks'):
-            return self._m_data_blocks if hasattr(self, '_m_data_blocks') else None
+            return self._m_data_blocks
 
         self._m_data_blocks = self.data_blocks_with_io.data
-        return self._m_data_blocks if hasattr(self, '_m_data_blocks') else None
+        return getattr(self, '_m_data_blocks', None)
 
     @property
     def resource_map(self):
         """The resource file's resource map."""
         if hasattr(self, '_m_resource_map'):
-            return self._m_resource_map if hasattr(self, '_m_resource_map') else None
+            return self._m_resource_map
 
         _pos = self._io.pos()
         self._io.seek(self.header.ofs_resource_map)
@@ -630,6 +629,6 @@ class ResourceFork(KaitaiStruct):
         self._m_resource_map._read()
         self._debug['_m_resource_map']['end'] = self._io.pos()
         self._io.seek(_pos)
-        return self._m_resource_map if hasattr(self, '_m_resource_map') else None
+        return getattr(self, '_m_resource_map', None)
 
 

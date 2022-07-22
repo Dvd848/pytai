@@ -24,14 +24,13 @@
 
 # This is a generated file! Please edit source .ksy file and use kaitai-struct-compiler to rebuild
 
-from pkg_resources import parse_version
 import kaitaistruct
 from kaitaistruct import KaitaiStruct, KaitaiStream, BytesIO
 from enum import Enum
 import collections
 
 
-if parse_version(kaitaistruct.__version__) < parse_version('0.9'):
+if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 9):
     raise Exception("Incompatible Kaitai Struct Python API: 0.9 or later is required, but you have %s" % (kaitaistruct.__version__))
 
 class Dicom(KaitaiStruct):
@@ -218,7 +217,7 @@ class Dicom(KaitaiStruct):
         other_failures_sequence = 528794
         studies_containing_other_referenced_instances_sequence = 528896
         related_series_sequence = 528976
-        lossy_image_compression = 532752
+        lossy_image_compression_retired = 532752
         derivation_description = 532753
         source_image_sequence = 532754
         stage_name = 532768
@@ -4199,34 +4198,34 @@ class Dicom(KaitaiStruct):
         @property
         def is_forced_implicit(self):
             if hasattr(self, '_m_is_forced_implicit'):
-                return self._m_is_forced_implicit if hasattr(self, '_m_is_forced_implicit') else None
+                return self._m_is_forced_implicit
 
             self._m_is_forced_implicit = self.tag_group == 65534
-            return self._m_is_forced_implicit if hasattr(self, '_m_is_forced_implicit') else None
+            return getattr(self, '_m_is_forced_implicit', None)
 
         @property
         def is_long_len(self):
             if hasattr(self, '_m_is_long_len'):
-                return self._m_is_long_len if hasattr(self, '_m_is_long_len') else None
+                return self._m_is_long_len
 
             self._m_is_long_len =  ((self.is_forced_implicit) or (self.vr == u"OB") or (self.vr == u"OD") or (self.vr == u"OF") or (self.vr == u"OL") or (self.vr == u"OW") or (self.vr == u"SQ") or (self.vr == u"UC") or (self.vr == u"UR") or (self.vr == u"UT") or (self.vr == u"UN")) 
-            return self._m_is_long_len if hasattr(self, '_m_is_long_len') else None
+            return getattr(self, '_m_is_long_len', None)
 
         @property
         def is_transfer_syntax_change_implicit(self):
             if hasattr(self, '_m_is_transfer_syntax_change_implicit'):
-                return self._m_is_transfer_syntax_change_implicit if hasattr(self, '_m_is_transfer_syntax_change_implicit') else None
+                return self._m_is_transfer_syntax_change_implicit
 
             self._m_is_transfer_syntax_change_implicit = False
-            return self._m_is_transfer_syntax_change_implicit if hasattr(self, '_m_is_transfer_syntax_change_implicit') else None
+            return getattr(self, '_m_is_transfer_syntax_change_implicit', None)
 
         @property
         def tag(self):
             if hasattr(self, '_m_tag'):
-                return self._m_tag if hasattr(self, '_m_tag') else None
+                return self._m_tag
 
             self._m_tag = KaitaiStream.resolve_enum(Dicom.Tags, ((self.tag_group << 16) | self.tag_elem))
-            return self._m_tag if hasattr(self, '_m_tag') else None
+            return getattr(self, '_m_tag', None)
 
 
     class TDataElementImplicit(KaitaiStruct):
@@ -4308,42 +4307,42 @@ class Dicom(KaitaiStruct):
         @property
         def tag(self):
             if hasattr(self, '_m_tag'):
-                return self._m_tag if hasattr(self, '_m_tag') else None
+                return self._m_tag
 
             self._m_tag = KaitaiStream.resolve_enum(Dicom.Tags, ((self.tag_group << 16) | self.tag_elem))
-            return self._m_tag if hasattr(self, '_m_tag') else None
+            return getattr(self, '_m_tag', None)
 
         @property
         def is_transfer_syntax_change_explicit(self):
             if hasattr(self, '_m_is_transfer_syntax_change_explicit'):
-                return self._m_is_transfer_syntax_change_explicit if hasattr(self, '_m_is_transfer_syntax_change_explicit') else None
+                return self._m_is_transfer_syntax_change_explicit
 
             self._m_is_transfer_syntax_change_explicit = self.p_is_transfer_syntax_change_explicit
-            return self._m_is_transfer_syntax_change_explicit if hasattr(self, '_m_is_transfer_syntax_change_explicit') else None
+            return getattr(self, '_m_is_transfer_syntax_change_explicit', None)
 
         @property
         def is_long_len(self):
             if hasattr(self, '_m_is_long_len'):
-                return self._m_is_long_len if hasattr(self, '_m_is_long_len') else None
+                return self._m_is_long_len
 
             self._m_is_long_len =  ((self.is_forced_explicit) and ( ((self.vr == u"OB") or (self.vr == u"OD") or (self.vr == u"OF") or (self.vr == u"OL") or (self.vr == u"OW") or (self.vr == u"SQ") or (self.vr == u"UC") or (self.vr == u"UR") or (self.vr == u"UT") or (self.vr == u"UN")) )) 
-            return self._m_is_long_len if hasattr(self, '_m_is_long_len') else None
+            return getattr(self, '_m_is_long_len', None)
 
         @property
         def p_is_transfer_syntax_change_explicit(self):
             if hasattr(self, '_m_p_is_transfer_syntax_change_explicit'):
-                return self._m_p_is_transfer_syntax_change_explicit if hasattr(self, '_m_p_is_transfer_syntax_change_explicit') else None
+                return self._m_p_is_transfer_syntax_change_explicit
 
             self._m_p_is_transfer_syntax_change_explicit = self.value == b"\x31\x2E\x32\x2E\x38\x34\x30\x2E\x31\x30\x30\x30\x38\x2E\x31\x2E\x32\x2E\x31\x00"
-            return self._m_p_is_transfer_syntax_change_explicit if hasattr(self, '_m_p_is_transfer_syntax_change_explicit') else None
+            return getattr(self, '_m_p_is_transfer_syntax_change_explicit', None)
 
         @property
         def is_forced_explicit(self):
             if hasattr(self, '_m_is_forced_explicit'):
-                return self._m_is_forced_explicit if hasattr(self, '_m_is_forced_explicit') else None
+                return self._m_is_forced_explicit
 
             self._m_is_forced_explicit = self.tag_group == 2
-            return self._m_is_forced_explicit if hasattr(self, '_m_is_forced_explicit') else None
+            return getattr(self, '_m_is_forced_explicit', None)
 
 
     class SeqItem(KaitaiStruct):

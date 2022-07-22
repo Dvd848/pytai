@@ -126,14 +126,13 @@
 
 # This is a generated file! Please edit source .ksy file and use kaitai-struct-compiler to rebuild
 
-from pkg_resources import parse_version
 import kaitaistruct
 from kaitaistruct import KaitaiStruct, KaitaiStream, BytesIO
 from enum import Enum
 import collections
 
 
-if parse_version(kaitaistruct.__version__) < parse_version('0.9'):
+if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 9):
     raise Exception("Incompatible Kaitai Struct Python API: 0.9 or later is required, but you have %s" % (kaitaistruct.__version__))
 
 class WindowsMinidump(KaitaiStruct):
@@ -173,7 +172,7 @@ class WindowsMinidump(KaitaiStruct):
         token = 19
         java_script_data = 20
         system_memory_info = 21
-        process_vm_vounters = 22
+        process_vm_counters = 22
         ipt_trace = 23
         thread_names = 24
         ce_null = 32768
@@ -254,14 +253,14 @@ class WindowsMinidump(KaitaiStruct):
             self.num_threads = self._io.read_u4le()
             self._debug['num_threads']['end'] = self._io.pos()
             self._debug['threads']['start'] = self._io.pos()
-            self.threads = [None] * (self.num_threads)
+            self.threads = []
             for i in range(self.num_threads):
                 if not 'arr' in self._debug['threads']:
                     self._debug['threads']['arr'] = []
                 self._debug['threads']['arr'].append({'start': self._io.pos()})
                 _t_threads = WindowsMinidump.Thread(self._io, self, self._root)
                 _t_threads._read()
-                self.threads[i] = _t_threads
+                self.threads.append(_t_threads)
                 self._debug['threads']['arr'][i]['end'] = self._io.pos()
 
             self._debug['threads']['end'] = self._io.pos()
@@ -290,7 +289,7 @@ class WindowsMinidump(KaitaiStruct):
         @property
         def data(self):
             if hasattr(self, '_m_data'):
-                return self._m_data if hasattr(self, '_m_data') else None
+                return self._m_data
 
             io = self._root._io
             _pos = io.pos()
@@ -299,7 +298,7 @@ class WindowsMinidump(KaitaiStruct):
             self._m_data = io.read_bytes(self.len_data)
             self._debug['_m_data']['end'] = io.pos()
             io.seek(_pos)
-            return self._m_data if hasattr(self, '_m_data') else None
+            return getattr(self, '_m_data', None)
 
 
     class MinidumpString(KaitaiStruct):
@@ -387,7 +386,7 @@ class WindowsMinidump(KaitaiStruct):
         @property
         def service_pack(self):
             if hasattr(self, '_m_service_pack'):
-                return self._m_service_pack if hasattr(self, '_m_service_pack') else None
+                return self._m_service_pack
 
             if self.ofs_service_pack > 0:
                 io = self._root._io
@@ -399,7 +398,7 @@ class WindowsMinidump(KaitaiStruct):
                 self._debug['_m_service_pack']['end'] = io.pos()
                 io.seek(_pos)
 
-            return self._m_service_pack if hasattr(self, '_m_service_pack') else None
+            return getattr(self, '_m_service_pack', None)
 
 
     class ExceptionRecord(KaitaiStruct):
@@ -434,12 +433,12 @@ class WindowsMinidump(KaitaiStruct):
             self.reserved = self._io.read_u4le()
             self._debug['reserved']['end'] = self._io.pos()
             self._debug['params']['start'] = self._io.pos()
-            self.params = [None] * (15)
+            self.params = []
             for i in range(15):
                 if not 'arr' in self._debug['params']:
                     self._debug['params']['arr'] = []
                 self._debug['params']['arr'].append({'start': self._io.pos()})
-                self.params[i] = self._io.read_u8le()
+                self.params.append(self._io.read_u8le())
                 self._debug['params']['arr'][i]['end'] = self._io.pos()
 
             self._debug['params']['end'] = self._io.pos()
@@ -519,7 +518,7 @@ class WindowsMinidump(KaitaiStruct):
         @property
         def data(self):
             if hasattr(self, '_m_data'):
-                return self._m_data if hasattr(self, '_m_data') else None
+                return self._m_data
 
             _pos = self._io.pos()
             self._io.seek(self.ofs_data)
@@ -554,7 +553,7 @@ class WindowsMinidump(KaitaiStruct):
                 self._m_data = self._io.read_bytes(self.len_data)
             self._debug['_m_data']['end'] = self._io.pos()
             self._io.seek(_pos)
-            return self._m_data if hasattr(self, '_m_data') else None
+            return getattr(self, '_m_data', None)
 
 
     class Thread(KaitaiStruct):
@@ -612,14 +611,14 @@ class WindowsMinidump(KaitaiStruct):
             self.num_mem_ranges = self._io.read_u4le()
             self._debug['num_mem_ranges']['end'] = self._io.pos()
             self._debug['mem_ranges']['start'] = self._io.pos()
-            self.mem_ranges = [None] * (self.num_mem_ranges)
+            self.mem_ranges = []
             for i in range(self.num_mem_ranges):
                 if not 'arr' in self._debug['mem_ranges']:
                     self._debug['mem_ranges']['arr'] = []
                 self._debug['mem_ranges']['arr'].append({'start': self._io.pos()})
                 _t_mem_ranges = WindowsMinidump.MemoryDescriptor(self._io, self, self._root)
                 _t_mem_ranges._read()
-                self.mem_ranges[i] = _t_mem_ranges
+                self.mem_ranges.append(_t_mem_ranges)
                 self._debug['mem_ranges']['arr'][i]['end'] = self._io.pos()
 
             self._debug['mem_ranges']['end'] = self._io.pos()
@@ -679,23 +678,23 @@ class WindowsMinidump(KaitaiStruct):
     @property
     def streams(self):
         if hasattr(self, '_m_streams'):
-            return self._m_streams if hasattr(self, '_m_streams') else None
+            return self._m_streams
 
         _pos = self._io.pos()
         self._io.seek(self.ofs_streams)
         self._debug['_m_streams']['start'] = self._io.pos()
-        self._m_streams = [None] * (self.num_streams)
+        self._m_streams = []
         for i in range(self.num_streams):
             if not 'arr' in self._debug['_m_streams']:
                 self._debug['_m_streams']['arr'] = []
             self._debug['_m_streams']['arr'].append({'start': self._io.pos()})
             _t__m_streams = WindowsMinidump.Dir(self._io, self, self._root)
             _t__m_streams._read()
-            self._m_streams[i] = _t__m_streams
+            self._m_streams.append(_t__m_streams)
             self._debug['_m_streams']['arr'][i]['end'] = self._io.pos()
 
         self._debug['_m_streams']['end'] = self._io.pos()
         self._io.seek(_pos)
-        return self._m_streams if hasattr(self, '_m_streams') else None
+        return getattr(self, '_m_streams', None)
 
 

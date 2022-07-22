@@ -24,13 +24,12 @@
 
 # This is a generated file! Please edit source .ksy file and use kaitai-struct-compiler to rebuild
 
-from pkg_resources import parse_version
 import kaitaistruct
 from kaitaistruct import KaitaiStruct, KaitaiStream, BytesIO
 import collections
 
 
-if parse_version(kaitaistruct.__version__) < parse_version('0.9'):
+if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 9):
     raise Exception("Incompatible Kaitai Struct Python API: 0.9 or later is required, but you have %s" % (kaitaistruct.__version__))
 
 class DcmpVariableLengthInteger(KaitaiStruct):
@@ -54,7 +53,7 @@ class DcmpVariableLengthInteger(KaitaiStruct):
     but technically any of the larger formats could be used as well.
     
     .. seealso::
-       Source - https://github.com/dgelessus/python-rsrcfork/tree/master/rsrcfork/compress/common.py
+       Source - https://github.com/dgelessus/python-rsrcfork/blob/f891a6e/src/rsrcfork/compress/common.py
     """
     SEQ_FIELDS = ["first", "more"]
     def __init__(self, _io, _parent=None, _root=None):
@@ -82,9 +81,9 @@ class DcmpVariableLengthInteger(KaitaiStruct):
         """The decoded value of the variable-length integer.
         """
         if hasattr(self, '_m_value'):
-            return self._m_value if hasattr(self, '_m_value') else None
+            return self._m_value
 
         self._m_value = (self.more if self.first == 255 else ((((self.first << 8) | self.more) - 49152) if self.first >= 128 else self.first))
-        return self._m_value if hasattr(self, '_m_value') else None
+        return getattr(self, '_m_value', None)
 
 
