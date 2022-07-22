@@ -15,7 +15,7 @@
       rm -rf dist
       ```
 
-   1. Ensure that all changes are committed:
+   1. Ensure that all changes are committed and pushed to GitHub:
       ```
       git status
       ```
@@ -53,6 +53,11 @@
       pip install --index-url https://test.pypi.org/simple/ --no-deps pytai-hex
       ```
 
+   1. Test release:
+      ```
+      pytai
+      ```
+
    1. Uninstall release:
       ```
       pip uninstall pytai-hex
@@ -66,6 +71,11 @@
    1. Install new release from `pypi`:
       ```
       pip install pytai-hex
+      ```
+
+   1. Test release:
+      ```
+      pytai
       ```
 
    1. Deactivate virtual environment:
