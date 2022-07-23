@@ -26,6 +26,7 @@ import importlib.resources
 from typing import List
 
 APP_NAME = "pytai"
+PACKAGE_NAME = "pytai-hex"
 
 SUBFOLDER_KAITAI = "kaitai"
 SUBFOLDER_FORMATS = "formats"
@@ -50,3 +51,28 @@ def kaitai_formats() -> List[str]:
         if file.suffix == ".py" and not file.stem.startswith("__"):
             res.append(file.stem)
     return res
+
+def get_version() -> str:
+    try:
+        from importlib import metadata
+        version = metadata.version(PACKAGE_NAME)
+        if not version:
+            raise ValueError("Can't find version from importlib metadata")
+        return version
+    except (ImportError, ValueError):
+        pass
+
+    try:
+        from .version import __version__ # type: ignore
+        return __version__
+    except ImportError:
+        pass
+
+    try:
+        import setuptools_scm
+        version = setuptools_scm.get_version(root="..", relative_to=__file__)
+        return version
+    except (ImportError, LookupError):
+        pass
+
+    return ""

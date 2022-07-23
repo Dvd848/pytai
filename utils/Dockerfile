@@ -22,4 +22,4 @@ RUN curl -LO https://github.com/kaitai-io/kaitai_struct_compiler/releases/downlo
 WORKDIR /home/pytai/shared/utils
 
 ### Build: docker build -t pytai .
-### Run  : docker run -it --mount type=bind,source="$PWD/../",target=/home/pytai/shared/ pytai python3 compile_kaitai_formats.py
+### Run  : docker run -it --rm --mount type=bind,source="$PWD/../",target=/home/pytai/shared/ pytai python3 compile_kaitai_formats.py

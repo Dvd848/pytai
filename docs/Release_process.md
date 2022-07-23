@@ -26,6 +26,11 @@
       git tag vX.Y.Z
       ```
 
+   1. Pack release:
+      ```
+      python3 packer.py
+      ```
+
    1. Create Python Virtual Environment:
       ```
       python3 -m venv pytai-env
@@ -97,11 +102,6 @@
    1. Push tag:
       ```
       git push origin --tags
-      ```
-
-   1. Pack release:
-      ```
-      python3 packer.py
       ```
 
    1. Upload `pytai.pyz` to GitHub

@@ -44,6 +44,8 @@ def main() -> None:
                         choices = allowed_formats, metavar="FORMAT", 
                         help='Kaitai Format to use when parsing the file. '
                              f'Current formats found under "{SUBFOLDER_KAITAI}/{SUBFOLDER_FORMATS}" are: {", ".join(allowed_formats)}')
+    parser.add_argument('--version', action='version',
+                        version='%(prog)s {version}'.format(version=get_version()))
     args = parser.parse_args()
 
     

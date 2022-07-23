@@ -402,28 +402,40 @@ class AboutWindow(BaseWindow):
         self.window.transient(self.parent)
         self.window.grab_set()
 
+        row = 0
 
         frame = tk.Frame(self.window, background = background)
 
         title = tk.Label(frame, text = APP_NAME, font=("Arial", 18, 'bold'), background = background)
-        title.grid(row = 0, column = 0, pady = (0, 7))
+        title.grid(row = row, column = 0, pady = (0, 7))
 
+        version_str = get_version()
+        if version_str:
+            row += 1
+            version = tk.Label(frame, text = f"Version: {version_str}", font=("Arial", 8), background = background) 
+            version.grid(row = row, column = 0, pady = (0, 7))
+
+        row += 1
         line1 = tk.Label(frame, text = "A Kaitai Struct Visualizer and Hex Viewer GUI in Python", background = background)
-        line1.grid(row = 1, column = 0, sticky = tk.W)
+        line1.grid(row = row, column = 0, sticky = tk.W)
 
+        row += 1
         link1 = tk.Label(frame, text="https://github.com/Dvd848/pytai", fg="blue", cursor="hand2", background = background)
         link1.bind("<Button-1>", open_link)
-        link1.grid(row = 2, column = 0, sticky = tk.W, pady = (0, 15))
+        link1.grid(row = row, column = 0, sticky = tk.W, pady = (0, 15))
 
+        row += 1
         line2 = tk.Label(frame, text = "Based on structure parsers provided by the Kaitai project", background = background)
-        line2.grid(row = 3, column = 0, sticky = tk.W)
+        line2.grid(row = row, column = 0, sticky = tk.W)
 
+        row += 1
         link2 = tk.Label(frame, text="https://kaitai.io/", fg="blue", cursor="hand2", background = background)
         link2.bind("<Button-1>", open_link)
-        link2.grid(row = 4, column = 0, sticky = tk.W)
+        link2.grid(row = row, column = 0, sticky = tk.W)
 
+        row += 1
         button_close = tk.Button(frame, text = "Close", command = self.close, width = 7)
-        button_close.grid(row = 5, column = 0, columnspan = 2)
+        button_close.grid(row = row, column = 0, columnspan = 2)
 
         frame.pack(padx = 15, pady = 15)
         

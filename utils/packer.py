@@ -24,8 +24,9 @@ License:
 import zipapp
 import argparse
 from pathlib import Path
+import os
 
-def filter(path: Path) -> bool:
+def filter_func(path: Path) -> bool:
     for part in path.parts:
         if part.startswith(".") or part in ["__pycache__", "tmp", "tests", "docs"]:
             return False
@@ -37,12 +38,27 @@ def filter(path: Path) -> bool:
     return True
 
 
-def main(source, target) -> None:
-    zipapp.create_archive(source, target, filter = filter)
-    print(f"File created: {target}")
+def main(source, target, version) -> None:
+    version_file_path = str(Path(source) / "pytai" / "version.py")
+    with open(version_file_path, "w") as version_file:
+        version_file.write(f"__version__ = '{version}'")
+        
+    zipapp.create_archive(source, target, filter = filter_func)
+    os.remove(version_file_path) 
+    print(f"File created: {target}, version: {version}")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Pack pytai to a *.pyz file.')
     args = parser.parse_args()
 
-    main("..", "pytai.pyz")
+    try:
+        import setuptools_scm
+        
+        source = ".."
+        version = setuptools_scm.get_version(root=source, relative_to=__file__)
+        
+        main(source, "pytai.pyz", version)
+    except Exception as e:
+        print(f"Error: {e}")
+    
+    input("Press Enter to continue...")
