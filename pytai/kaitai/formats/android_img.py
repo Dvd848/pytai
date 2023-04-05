@@ -137,7 +137,7 @@ if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 9):
 class AndroidImg(KaitaiStruct):
     """
     .. seealso::
-       Source - https://source.android.com/devices/bootloader/boot-image-header
+       Source - https://source.android.com/docs/core/architecture/bootloader/boot-image-header
     """
     SEQ_FIELDS = ["magic", "kernel", "ramdisk", "second", "tags_load", "page_size", "header_version", "os_version", "name", "cmdline", "sha", "extra_cmdline", "recovery_dtbo", "boot_header_size", "dtb"]
     def __init__(self, _io, _parent=None, _root=None):

@@ -137,7 +137,7 @@ if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 9):
 class Dune2Pak(KaitaiStruct):
     """
     .. seealso::
-       Source - http://www.shikadi.net/moddingwiki/PAK_Format_(Westwood)
+       Source - https://moddingwiki.shikadi.net/wiki/PAK_Format_(Westwood)
     """
     SEQ_FIELDS = ["dir"]
     def __init__(self, _io, _parent=None, _root=None):

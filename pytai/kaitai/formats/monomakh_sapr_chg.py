@@ -136,7 +136,7 @@ if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 9):
 
 class MonomakhSaprChg(KaitaiStruct):
     """CHG is a container format file used by
-    [MONOMAKH-SAPR](https://www.liraland.com/mono/index.php), a software
+    [MONOMAKH-SAPR](https://www.liraland.com/mono/), a software
     package for analysis & design of reinforced concrete multi-storey
     buildings with arbitrary configuration in plan.
     

@@ -74,7 +74,7 @@ class ResourceFork(KaitaiStruct):
     
     
     .. seealso::
-       Inside Macintosh, Volume I, The Resource Manager, Format of a Resource File - http://www.pagetable.com/?p=50
+       Inside Macintosh, Volume I, The Resource Manager, Format of a Resource File - https://www.pagetable.com/?p=50
     
     
     .. seealso::
