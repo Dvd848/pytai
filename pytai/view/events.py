@@ -62,3 +62,6 @@ class Events(enum.Enum):
 
     # Get x-ref
     GET_XREF           = enum.auto()
+
+    # Copy the selection to the clipboard
+    COPY_SELECTION     = enum.auto()

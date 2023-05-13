@@ -29,6 +29,7 @@ from tkinter import messagebox
 
 import tkinter as tk
 import enum
+from ..common import ByteRepresentation
 
 
 class BaseHexAreaMenu():
@@ -172,3 +173,59 @@ class HexAreaMenu(BaseHexAreaMenu):
         """Show the menu."""
         self._current_event = event
         super().show(event)
+
+class TreeItemMenu():
+    """Menu displayed after right-clicking an item in the tree area."""
+
+    class Events(enum.Enum):
+        """Events that can be triggered by the menu."""
+        
+        # User wants to copy the selection to the clipboard
+        COPY = enum.auto()
+
+    def __init__(self, parent, callbacks: Dict[Events, Callable[..., None]]):
+        """Instantiate the class.
+        
+        Args:
+            parent: 
+                Parent tk class.
+                
+            callbacks:
+                Dictionary of callbacks to call when an event from Events occurs
+                
+        """
+        self.parent = parent
+        self.menu = tk.Menu(self.parent, tearoff = 0)
+
+        if callbacks.keys() != set(self.Events):
+            raise KeyError(f"Callbacks must contain all events in {set(self.Events)} ")
+        self.callbacks = callbacks
+
+        copy_menu = tk.Menu(self.parent, tearoff=0)
+        copy_menu.add_command(label="Copy as Hex Array", command=self._copy_hex)
+        copy_menu.add_command(label="Copy as Hex Stream", command=self._copy_hex_stream)
+        copy_menu.add_command(label="Copy as Raw Bytes", command=self._copy_raw_bytes)
+ 
+        self.menu.add_cascade(label = "Copy", menu = copy_menu)
+        
+
+    def show(self, event) -> None:
+        """Show the menu."""
+        self._current_event = event
+
+        try:
+            self.menu.tk_popup(event.x_root, event.y_root)
+        finally:
+            self.menu.grab_release()
+
+    def _copy_hex(self):
+        """Copy the selection as a Hex Array"""
+        self.callbacks[self.Events.COPY](self._current_event, ByteRepresentation.HEX)
+
+    def _copy_hex_stream(self):
+        """Copy the selection as a Hex Stream"""
+        self.callbacks[self.Events.COPY](self._current_event, ByteRepresentation.HEX_STREAM)
+
+    def _copy_raw_bytes(self):
+        """Copy the selection as raw bytes"""
+        self.callbacks[self.Events.COPY](self._current_event, ByteRepresentation.RAW_BYTES)

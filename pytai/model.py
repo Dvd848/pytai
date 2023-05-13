@@ -408,6 +408,29 @@ class Model(object):
         except Exception as e:
             comm_queue.put(PyTaiException(f"Error while parsing file:\n'{str(e)}'"))
 
+    def get_byte_range(self, mmap: mmap.mmap, start_offset: int, end_offset: int, byte_representation: ByteRepresentation):
+        """Retrieve a byte range according to a given representation
+
+        This function returns the byte array in the given range formatted according to the given
+        representation.
+        
+        Args:
+            mmap:
+                Memory map of the file to extract the byte array from.
+            start_offset:
+                Start offset of the given range.
+            end_offset:
+                End offset of the given range.
+            byte_representation:
+                The byte representation to return.
+        """
+        if byte_representation == ByteRepresentation.HEX_STREAM:
+            return mmap[start_offset:end_offset].hex()
+        elif byte_representation == ByteRepresentation.HEX:
+            return mmap[start_offset:end_offset].hex(" ")
+        elif byte_representation == ByteRepresentation.RAW_BYTES:
+            return mmap[start_offset:end_offset]
+
         
 class SearchContext(object):
     """Context for searching within a given binary.

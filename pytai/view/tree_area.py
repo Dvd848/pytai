@@ -39,6 +39,7 @@ from typing import Dict, Callable, Tuple
 
 from .bars import *
 from .events import *
+from .menus import TreeItemMenu
 
 from ..common import *
 
@@ -103,6 +104,10 @@ class TreeItem():
             return (None, None)
 
         return tuple(map(int, range_tag.split(TAG_OFFSET_SEPARATOR)))
+    
+    def is_metavar(self) -> bool:
+        """Returns True if and only if this is a metavar"""
+        return TAG_METAVAR in self._item["tags"]
 
 
 class TreeAreaView():
@@ -139,12 +144,17 @@ class TreeAreaView():
 
         self.tree.pack(side = tk.LEFT, fill = tk.BOTH, expand=True)
         self.tree.bind('<<TreeviewSelect>>', self._item_selected)
+        self.tree.bind('<Button-3>', self._on_right_click)
         self.tree.tag_configure(TAG_METAVAR, foreground = 'gray')
 
         self.vsb = ttk.Scrollbar(self.wrapper, orient = tk.VERTICAL, command = self.tree.yview)
         self.vsb.pack(side = tk.RIGHT, fill = tk.Y)
 
         self.tree.configure(yscrollcommand = self.vsb.set)
+
+        self.right_click_menu = TreeItemMenu(self.parent, {
+            TreeItemMenu.Events.COPY: self._copy
+        })
 
         self.fix_tkinter_color_tags()
 
@@ -171,6 +181,21 @@ class TreeAreaView():
         self.callbacks[Events.STRUCTURE_SELECTED](selected_item.path, *selected_item.range)
         self.address_bar.set_address(selected_item.path)
         
+    def _on_right_click(self, event) -> None:
+        """Handle a right click on a tree item."""
+        item = self.tree.identify('item', event.x, event.y)
+        if item:
+            # Right click was on an actual item (not free space)
+            tree_item = TreeItem(self.tree, item)
+            if not tree_item.is_metavar():
+                self.mark_tree_element(item)
+                self.right_click_menu.show(event)
+
+    def _copy(self, event, byte_representation: ByteRepresentation) -> None:
+        """Copy the selection to the clipboard."""
+        selected_item = self.selected_item
+        self.callbacks[Events.COPY_SELECTION](selected_item.path, *selected_item.range, byte_representation)
+
     def add_item(self, parent_handle: str, name: str, extra_info: str, start_offset: int, end_offset: int, is_metavar: bool) -> str:
         """Add an item to the structure tree.
         

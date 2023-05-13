@@ -24,6 +24,7 @@ License:
 from pathlib import Path
 import importlib.resources
 from typing import List
+import enum
 
 APP_NAME = "pytai"
 PACKAGE_NAME = "pytai-hex"
@@ -76,3 +77,15 @@ def get_version() -> str:
         pass
 
     return ""
+
+class ByteRepresentation(enum.Enum):
+    """Different representations of a byte array"""
+
+    # Hex array: "30 31 32 ..."
+    HEX = enum.auto()
+
+    # Hex stream: "303132 ..."
+    HEX_STREAM = enum.auto()
+
+    # Raw Bytes: "012..."
+    RAW_BYTES = enum.auto()
