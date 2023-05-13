@@ -64,6 +64,7 @@ class Application():
             v.Events.FIND_PREV:           lambda: self.cb_find_next(reverse = True),
             v.Events.GET_XREF:            self.cb_get_xref,
             v.Events.COPY_SELECTION:      self.cb_copy_selection,
+            v.Events.GET_SELECTION:       self.cb_get_selection,
         }
 
         self.current_file_path = None
@@ -268,6 +269,10 @@ class Application():
         byte_array = self.model.get_byte_range(self.file_mmap, start_offset, end_offset, byte_representation)
         self.view.clipboard_clear()
         self.view.clipboard_append(byte_array)
+
+    def cb_get_selection(self, path: str, start_offset: int, end_offset: int) -> None:
+        """Callback for an event where the user wants to return the contents of a tree item as a byte array."""
+        return self.model.get_byte_range(self.file_mmap, start_offset, end_offset, ByteRepresentation.RAW_BYTES)
 
     def cb_goto(self, offset: int) -> None:
         """Callback for an event where the user wants to jump to a given offset."""

@@ -153,7 +153,8 @@ class TreeAreaView():
         self.tree.configure(yscrollcommand = self.vsb.set)
 
         self.right_click_menu = TreeItemMenu(self.parent, {
-            TreeItemMenu.Events.COPY: self._copy
+            TreeItemMenu.Events.COPY: self._copy,
+            TreeItemMenu.Events.SAVE_AS: self._save_as
         })
 
         self.fix_tkinter_color_tags()
@@ -195,6 +196,12 @@ class TreeAreaView():
         """Copy the selection to the clipboard."""
         selected_item = self.selected_item
         self.callbacks[Events.COPY_SELECTION](selected_item.path, *selected_item.range, byte_representation)
+
+    def _save_as(self, event) -> None:
+        """Save the selection to a binary file."""
+        with tk.filedialog.asksaveasfile(mode = 'wb', defaultextension = '.bin', title = 'Export bytes...') as newf:
+            selected_item = self.selected_item
+            newf.write(self.callbacks[Events.GET_SELECTION](selected_item.path, *selected_item.range))
 
     def add_item(self, parent_handle: str, name: str, extra_info: str, start_offset: int, end_offset: int, is_metavar: bool) -> str:
         """Add an item to the structure tree.

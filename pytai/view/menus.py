@@ -182,6 +182,9 @@ class TreeItemMenu():
         
         # User wants to copy the selection to the clipboard
         COPY = enum.auto()
+        
+        # User wants to export the selection to a binary
+        SAVE_AS = enum.auto()
 
     def __init__(self, parent, callbacks: Dict[Events, Callable[..., None]]):
         """Instantiate the class.
@@ -207,6 +210,8 @@ class TreeItemMenu():
         copy_menu.add_command(label="Copy as Raw Bytes", command=self._copy_raw_bytes)
  
         self.menu.add_cascade(label = "Copy", menu = copy_menu)
+        self.menu.add_separator()
+        self.menu.add_command(label ="Save as...", command = self._save_as)
         
 
     def show(self, event) -> None:
@@ -229,3 +234,7 @@ class TreeItemMenu():
     def _copy_raw_bytes(self):
         """Copy the selection as raw bytes"""
         self.callbacks[self.Events.COPY](self._current_event, ByteRepresentation.RAW_BYTES)
+
+    def _save_as(self):
+        """Export the selection to a binary"""
+        self.callbacks[self.Events.SAVE_AS](self._current_event)

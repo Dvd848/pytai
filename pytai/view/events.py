@@ -65,3 +65,6 @@ class Events(enum.Enum):
 
     # Copy the selection to the clipboard
     COPY_SELECTION     = enum.auto()
+
+    # Return the selection as a raw byte array
+    GET_SELECTION      = enum.auto()
