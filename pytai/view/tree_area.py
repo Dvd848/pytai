@@ -149,6 +149,7 @@ class TreeAreaView():
         self.tree.pack(side = tk.LEFT, fill = tk.BOTH, expand=True)
         self.tree.bind('<<TreeviewSelect>>', self._item_selected)
         self.tree.bind('<Button-3>', self._on_right_click)
+        self.tree.bind('<Button-1>', lambda event: self.right_click_menu.hide())
         self.tree.tag_configure(TAG_METAVAR, foreground = 'gray')
 
         self.vsb = ttk.Scrollbar(self.wrapper, orient = tk.VERTICAL, command = self.tree.yview)
@@ -190,14 +191,20 @@ class TreeAreaView():
     def _on_right_click(self, event) -> None:
         """Handle a right click on a tree item."""
         item = self.tree.identify('item', event.x, event.y)
+        show_menu = False
         if item:
             # Right click was on an actual item (not free space)
             tree_item = TreeItem(self.tree, item)
             if not tree_item.is_metavar() and not tree_item.is_root():
-                self.mark_tree_element(item)
-                selected_item = self.selected_item
-                highlighted_colors = self.callbacks[Events.GET_HIGHLIGHTED_COLORS](selected_item.path, *selected_item.range)
-                self.right_click_menu.show(event, highlighted_colors)
+                show_menu = True
+
+        if show_menu:
+            self.mark_tree_element(item)
+            selected_item = self.selected_item
+            highlighted_colors = self.callbacks[Events.GET_HIGHLIGHTED_COLORS](selected_item.path, *selected_item.range)
+            self.right_click_menu.show(event, highlighted_colors)
+        else:
+            self.right_click_menu.hide()
 
     def _copy(self, event, byte_representation: ByteRepresentation) -> None:
         """Copy the selection to the clipboard."""

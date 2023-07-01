@@ -267,6 +267,10 @@ class TreeItemMenu():
         finally:
             self.menu.grab_release()
 
+    def hide(self):
+        """Hide the menu"""
+        self.menu.unpost()
+
     def _copy_hex(self):
         """Copy the selection as a Hex Array"""
         self.callbacks[self.Events.COPY](self._current_event, ByteRepresentation.HEX)
