@@ -202,7 +202,7 @@ class View(tk.Tk):
         """
         messagebox.showerror("Error", msg)
 
-    def mark_range(self, start_offset: int, end_offset: int) -> None:
+    def mark_range(self, start_offset: int, end_offset: int, mark: bool, highlight_type: HighlightType = HighlightType.DEFAULT) -> None:
         """Highlight a range between the given offsets.
         
         Args:
@@ -210,8 +210,13 @@ class View(tk.Tk):
                 Offset to highlight from (absolute index of byte in file)
             end_offset:
                 Offset to highlight to (absolute index of byte in file)
+            mark:
+                True to highlight a range, False to remove the highlight
+            highlight_type:
+                Type of highlight to use. Use HighlightType.DEFAULT for selection, 
+                or HighlightType.CUSTOMx for user triggered custom highlights
         """
-        if start_offset is not None and end_offset is not None:
+        if mark and start_offset is not None and end_offset is not None:
             length = end_offset - start_offset
             
             status = []
@@ -222,10 +227,10 @@ class View(tk.Tk):
             status.append(f"Length: {length} ({hex(length)}) bytes")
 
             self.set_status(" | ".join(status))
+            self.hex_view.mark_range(start_offset, end_offset, mark, highlight_type)
         else:
             self.set_status("")
-        self.hex_view.mark_range(start_offset, end_offset)
-
+            self.hex_view.unmark_range(start_offset, end_offset, highlight_type)
 
     def show_loading(self) -> None:
         """Show the loading window."""

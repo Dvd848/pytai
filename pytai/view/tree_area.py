@@ -108,6 +108,10 @@ class TreeItem():
     def is_metavar(self) -> bool:
         """Returns True if and only if this is a metavar"""
         return TAG_METAVAR in self._item["tags"]
+    
+    def is_root(self) -> bool:
+        """Returns True for the root and False for other nodes"""
+        return self._tree.parent(self._id) == ""
 
 
 class TreeAreaView():
@@ -154,7 +158,8 @@ class TreeAreaView():
 
         self.right_click_menu = TreeItemMenu(self.parent, {
             TreeItemMenu.Events.COPY: self._copy,
-            TreeItemMenu.Events.SAVE_AS: self._save_as
+            TreeItemMenu.Events.SAVE_AS: self._save_as,
+            TreeItemMenu.Events.HIGHLIGHT: self._highlight
         })
 
         self.fix_tkinter_color_tags()
@@ -188,9 +193,11 @@ class TreeAreaView():
         if item:
             # Right click was on an actual item (not free space)
             tree_item = TreeItem(self.tree, item)
-            if not tree_item.is_metavar():
+            if not tree_item.is_metavar() and not tree_item.is_root():
                 self.mark_tree_element(item)
-                self.right_click_menu.show(event)
+                selected_item = self.selected_item
+                highlighted_colors = self.callbacks[Events.GET_HIGHLIGHTED_COLORS](selected_item.path, *selected_item.range)
+                self.right_click_menu.show(event, highlighted_colors)
 
     def _copy(self, event, byte_representation: ByteRepresentation) -> None:
         """Copy the selection to the clipboard."""
@@ -202,6 +209,11 @@ class TreeAreaView():
         with tk.filedialog.asksaveasfile(mode = 'wb', defaultextension = '.bin', title = 'Export bytes...') as newf:
             selected_item = self.selected_item
             newf.write(self.callbacks[Events.GET_SELECTION](selected_item.path, *selected_item.range))
+
+    def _highlight(self, event, highlight_type: HighlightType, mark: bool) -> None:
+        """Highlight the selection with a custom color."""
+        selected_item = self.selected_item
+        self.callbacks[Events.HIGHLIGHT_SELECTION](selected_item.path, *selected_item.range, highlight_type, mark)
 
     def add_item(self, parent_handle: str, name: str, extra_info: str, start_offset: int, end_offset: int, is_metavar: bool) -> str:
         """Add an item to the structure tree.

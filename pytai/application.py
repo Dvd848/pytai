@@ -53,18 +53,20 @@ class Application():
         # These callbacks are used to notify the application
         #  of events from the view
         callbacks = {
-            v.Events.REFRESH:             self.cb_refresh,
-            v.Events.STRUCTURE_SELECTED:  self.cb_structure_selected,
-            v.Events.GOTO:                self.cb_goto,
-            v.Events.OPEN:                self.cb_open,
-            v.Events.GET_CWD:             self.cb_get_cwd,
-            v.Events.CANCEL_LOAD:         self.cb_cancel_load,
-            v.Events.SEARCH:              self.cb_search,
-            v.Events.FIND_NEXT:           self.cb_find_next,
-            v.Events.FIND_PREV:           lambda: self.cb_find_next(reverse = True),
-            v.Events.GET_XREF:            self.cb_get_xref,
-            v.Events.COPY_SELECTION:      self.cb_copy_selection,
-            v.Events.GET_SELECTION:       self.cb_get_selection,
+            v.Events.REFRESH:                self.cb_refresh,
+            v.Events.STRUCTURE_SELECTED:     self.cb_structure_selected,
+            v.Events.GOTO:                   self.cb_goto,
+            v.Events.OPEN:                   self.cb_open,
+            v.Events.GET_CWD:                self.cb_get_cwd,
+            v.Events.CANCEL_LOAD:            self.cb_cancel_load,
+            v.Events.SEARCH:                 self.cb_search,
+            v.Events.FIND_NEXT:              self.cb_find_next,
+            v.Events.FIND_PREV:              lambda: self.cb_find_next(reverse = True),
+            v.Events.GET_XREF:               self.cb_get_xref,
+            v.Events.COPY_SELECTION:         self.cb_copy_selection,
+            v.Events.GET_SELECTION:          self.cb_get_selection,
+            v.Events.HIGHLIGHT_SELECTION:    self.cb_highlight_selection,
+            v.Events.GET_HIGHLIGHTED_COLORS: self.cb_get_highlighted_colors,
         }
 
         self.current_file_path = None
@@ -72,6 +74,8 @@ class Application():
 
         self.view = v.View(title = APP_NAME, callbacks = callbacks)
         self.model = m.Model()
+
+        self.highlight_context = {ht: set() for ht in HighlightType if HighlightType.is_custom(ht)}
 
         self.work_item = utils.WorkItem()
 
@@ -261,7 +265,8 @@ class Application():
 
     def cb_structure_selected(self, path: str, start_offset: int, end_offset: int) -> None:
         """Callback for an event where the user selects a structure from the tree."""
-        self.view.mark_range(start_offset, end_offset)
+        self.view.mark_range(None, None, mark = False, highlight_type = HighlightType.DEFAULT)
+        self.view.mark_range(start_offset, end_offset, mark = True, highlight_type = HighlightType.DEFAULT)
         self.view.make_visible(start_offset)
 
     def cb_copy_selection(self, path: str, start_offset: int, end_offset: int, byte_representation: ByteRepresentation) -> None:
@@ -273,6 +278,34 @@ class Application():
     def cb_get_selection(self, path: str, start_offset: int, end_offset: int) -> None:
         """Callback for an event where the user wants to return the contents of a tree item as a byte array."""
         return self.model.get_byte_range(self.file_mmap, start_offset, end_offset, ByteRepresentation.RAW_BYTES)
+    
+    def cb_highlight_selection(self, path: str, start_offset: int, end_offset: int, highlight_type: HighlightType, mark: bool) -> None:
+        """Callback for an event where the user wants to highlight/un-highlight the selection.
+        
+        Args:
+            path:
+                Path to the selection.
+            
+            start_offset:
+                Start offset of the selection
+
+            end_offset:
+                End offset of the selection
+
+            highlight_type:
+                The type of the highlighter to use
+
+            mark:
+                True if the request is to highlight the selection, False if to un-highlight
+
+        """
+
+        if self.model.process_highlight(start_offset, end_offset, mark, highlight_type):
+            self.view.mark_range(start_offset, end_offset, mark, highlight_type)
+
+    def cb_get_highlighted_colors(self, path: str, start_offset: int, end_offset: int) -> Dict[HighlightType, HighlightDetails]:
+        """Returns details for which highlighters are used in this selection."""
+        return self.model.get_highlighted_colors(start_offset, end_offset)
 
     def cb_goto(self, offset: int) -> None:
         """Callback for an event where the user wants to jump to a given offset."""

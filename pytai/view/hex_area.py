@@ -42,14 +42,21 @@ import queue
 from .events import *
 from .menus import *
 
+from ..common import *
 from ..utils import *
 
 TAG_JUSTIFY_RIGHT = 'justify_right'
 TAG_HIGHLIGHT = 'highlight'
 TAG_SELECTION = 'selection'
 TAG_GOTO = 'goto'
+TAG_HIGHLIGHT_CUSTOM1 = 'highlight_c1'
+TAG_HIGHLIGHT_CUSTOM2 = 'highlight_c2'
+TAG_HIGHLIGHT_CUSTOM3 = 'highlight_c3'
 
-TAGS = [TAG_JUSTIFY_RIGHT, TAG_HIGHLIGHT, TAG_SELECTION, TAG_GOTO]
+TAGS = [
+    TAG_JUSTIFY_RIGHT, TAG_HIGHLIGHT, TAG_SELECTION, TAG_GOTO, 
+    TAG_HIGHLIGHT_CUSTOM1, TAG_HIGHLIGHT_CUSTOM2, TAG_HIGHLIGHT_CUSTOM3
+]
 
 class HexAreaView():
     """Implements the view for the hex area."""
@@ -88,13 +95,19 @@ class HexAreaView():
         self.textbox_hex = tk.Text(self.main_frame, width = 47, padx = 10, wrap = tk.NONE, bd = 0)
         self.textbox_hex.pack(side=tk.LEFT, fill=tk.Y, expand=False)
 
-        self.textbox_hex.tag_config(TAG_HIGHLIGHT, background='gold3')
+        self.textbox_hex.tag_config(TAG_HIGHLIGHT_CUSTOM1, background='khaki1')
+        self.textbox_hex.tag_config(TAG_HIGHLIGHT_CUSTOM2, background='DarkSeaGreen1')
+        self.textbox_hex.tag_config(TAG_HIGHLIGHT_CUSTOM3, background='thistle1')
+        self.textbox_hex.tag_config(TAG_HIGHLIGHT, background='gold3') # Must be last of highlight tags
         self.textbox_hex.tag_config(TAG_GOTO, background='lightcyan')
 
         self.textbox_ascii = tk.Text(self.main_frame, width = 17, padx = 10, wrap = tk.NONE, bd = 0)
         self.textbox_ascii.pack(side=tk.LEFT, fill=tk.Y, expand=False)
 
-        self.textbox_ascii.tag_config(TAG_HIGHLIGHT, background='gold3')
+        self.textbox_ascii.tag_config(TAG_HIGHLIGHT_CUSTOM1, background='khaki1')
+        self.textbox_ascii.tag_config(TAG_HIGHLIGHT_CUSTOM2, background='DarkSeaGreen1')
+        self.textbox_ascii.tag_config(TAG_HIGHLIGHT_CUSTOM3, background='thistle1')
+        self.textbox_ascii.tag_config(TAG_HIGHLIGHT, background='gold3') # Must be last of highlight tags
         self.textbox_ascii.tag_config(TAG_SELECTION, background='lightgray')
 
 
@@ -307,8 +320,32 @@ class HexAreaView():
         line = (offset // cls.BYTES_PER_ROW) + 1 # Line is 1-based
         column = ((offset % cls.BYTES_PER_ROW) * chars_per_byte)
         return f"{line}.{column + adjust_column}"
+    
+    @staticmethod
+    def _highlight_to_tag(highlight_type: HighlightType):
+        """Mapping of highlighter to tag."""
+        tag = {
+            HighlightType.DEFAULT: TAG_HIGHLIGHT,
+            HighlightType.CUSTOM1: TAG_HIGHLIGHT_CUSTOM1,    
+            HighlightType.CUSTOM2: TAG_HIGHLIGHT_CUSTOM2,
+            HighlightType.CUSTOM3: TAG_HIGHLIGHT_CUSTOM3    
+        }.get(highlight_type)
 
-    def mark_range(self, start_offset: int, end_offset: int) -> None:
+        return tag
+
+    def unmark_range(self, start_offset: int, end_offset: int, highlight_type: HighlightType = HighlightType.DEFAULT) -> None:
+        """Unmarks the given range for the given highlighter."""
+        tag = self._highlight_to_tag(highlight_type)
+
+        self.textbox_hex.tag_remove(tag, 
+            self._offset_to_line_column(self.REPR_CHARS_PER_BYTE_HEX, start_offset) if start_offset is not None else "1.0", 
+            self._offset_to_line_column(self.REPR_CHARS_PER_BYTE_HEX, end_offset, -1) if end_offset is not None else tk.END)
+        self.textbox_ascii.tag_remove(tag, 
+            self._offset_to_line_column(self.REPR_CHARS_PER_BYTE_ASCII, start_offset) if start_offset is not None else "1.0", 
+            self._offset_to_line_column(self.REPR_CHARS_PER_BYTE_ASCII, end_offset) if end_offset is not None else tk.END)
+
+
+    def mark_range(self, start_offset: int, end_offset: int, mark: bool, highlight_type: HighlightType = HighlightType.DEFAULT) -> None:
         """Highlight a range between the given offsets, and optionally jump to it.
         
         Args:
@@ -316,18 +353,21 @@ class HexAreaView():
                 Offset to highlight from (absolute index of byte in file)
             end_offset:
                 Offset to highlight to (absolute index of byte in file)
+            highlight_type:
+                Type of highlight to use. Use HighlightType.DEFAULT for selection, 
+                or HighlightType.CUSTOMx for user triggered custom highlights
         """
-        self.textbox_hex.tag_remove(TAG_HIGHLIGHT, "1.0", tk.END)
-        self.textbox_ascii.tag_remove(TAG_HIGHLIGHT, "1.0", tk.END)
+
+        tag = self._highlight_to_tag(highlight_type)
 
         if start_offset is not None and end_offset is not None:
             # Mark in hex view:
-            self.textbox_hex.tag_add(TAG_HIGHLIGHT, 
+            self.textbox_hex.tag_add(tag, 
                                      self._offset_to_line_column(self.REPR_CHARS_PER_BYTE_HEX, start_offset), 
                                      self._offset_to_line_column(self.REPR_CHARS_PER_BYTE_HEX, end_offset, -1)) # Remove trailing space
 
             # Mark in ASCII view:
-            self.textbox_ascii.tag_add(TAG_HIGHLIGHT, 
+            self.textbox_ascii.tag_add(tag, 
                                        self._offset_to_line_column(self.REPR_CHARS_PER_BYTE_ASCII, start_offset), 
                                        self._offset_to_line_column(self.REPR_CHARS_PER_BYTE_ASCII, end_offset))
 

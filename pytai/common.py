@@ -24,6 +24,7 @@ License:
 from pathlib import Path
 import importlib.resources
 from typing import List
+from collections import namedtuple
 import enum
 
 APP_NAME = "pytai"
@@ -89,3 +90,28 @@ class ByteRepresentation(enum.Enum):
 
     # Raw Bytes: "012..."
     RAW_BYTES = enum.auto()
+
+class HighlightType(enum.Enum):
+    """Represents different highlight types"""
+
+    # The default highlighter used when clicking an element:
+    DEFAULT = enum.auto() 
+
+    # Custom highlighters that can be used to highlight custom areas:
+    CUSTOM1 = enum.auto()
+    CUSTOM2 = enum.auto()
+    CUSTOM3 = enum.auto()
+
+    @classmethod
+    def is_custom(cls, highlight_type: "HighlightType"):
+        """Returns whether the given highlighter is a custom highlighter"""
+        return highlight_type != cls.DEFAULT
+    
+# Details about a highlighted selection:
+#  is_active (boolean): Whether the selection is currently highlighted
+#  is_exact_match (boolean): If the selection is highlighted, this variable
+#                            reflects whether the highlight is due to being
+#                            an exact match (the user explicitly requested
+#                            to highlight this range) or whether it's highlighted
+#                            since the user requested to highlight a parent range.
+HighlightDetails = namedtuple("HighlightDetails", "is_active is_exact_match")

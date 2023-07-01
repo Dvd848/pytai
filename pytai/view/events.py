@@ -68,3 +68,9 @@ class Events(enum.Enum):
 
     # Return the selection as a raw byte array
     GET_SELECTION      = enum.auto()
+
+    # Highlight the selection with a custom color
+    HIGHLIGHT_SELECTION      = enum.auto()
+
+    # Get the active/inactive highlighters for the given selection
+    GET_HIGHLIGHTED_COLORS   = enum.auto()

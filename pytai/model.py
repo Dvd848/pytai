@@ -296,6 +296,7 @@ class Model(object):
 
     def __init__(self):
         self.parsers = {}
+        self.highlight_context = {ht: set() for ht in HighlightType if HighlightType.is_custom(ht)}
 
     def get_parser(self, **kwargs) -> Parser:
         """Return a parser to parse the required files.
@@ -431,6 +432,97 @@ class Model(object):
         elif byte_representation == ByteRepresentation.RAW_BYTES:
             return mmap[start_offset:end_offset]
 
+    @staticmethod    
+    def _s1_contains_s2(s1: Tuple[int, int], s2: Tuple[int, int]):
+        """Returns whether the range in s1 is contained withing the range in s2"""
+        return s1[0] <= s2[0] and s1[1] >= s2[1]
+        
+    def process_highlight(self, start_offset: int, end_offset: int, mark: bool, highlight_type: HighlightType) -> bool:       
+        """Handle a highlight/un-highlight request.
+
+        If the request is to highlight a range:
+            Iterate all existing highlighted ranges. 
+            If the requested range is already within a previously-highlighted range: Nothing to do.
+            If the requested range contains a previously-highlighted range: Remove the old one in 
+            favor of the new one.
+            If the requested range does not overlap an existing range: Just add the new one.
+        If the request is to remove a range:
+            Just remove it, since we make sure during addition that there's no overlap between
+            added ranges.
+
+        Args:
+            start_offset:
+                The start offset for the requested range.
+
+            end_offset:
+                The end offset for the requested range.
+
+            mark:
+                True if the request is to highlight the range, False to un-highlight
+
+            highlight_type:
+                The highlight type
+
+        Returns:
+            False if no action was needed, True otherwise.
+        
+        """
+        this_segment = (start_offset, end_offset)
+        if mark:
+            new_set = set()
+            for segment in self.highlight_context[highlight_type]:
+                if self._s1_contains_s2(segment, this_segment):
+                    return False
+                elif not self._s1_contains_s2(this_segment, segment):
+                    new_set.add(segment)
+            new_set.add(this_segment)
+            self.highlight_context[highlight_type] = new_set
+            return True
+        else:
+            res = this_segment in self.highlight_context[highlight_type]
+            if res:
+                self.highlight_context[highlight_type].remove(this_segment)
+            return res
+
+    def get_highlighted_colors(self, start_offset: int, end_offset: int) -> Dict[HighlightType, HighlightDetails]:
+        """Return the highlighted colors for the given range.
+
+        Args:
+            start_offset:
+                The start offset for the requested range.
+
+            end_offset:
+                The end offset for the requested range
+
+        Returns:
+            A mapping between highlight types and the following information:
+                - Whether the given highlighter is active for the range
+                - If it is active, whether the range was explicitly highlighted itself,
+                  or whether it is highlighted as a result of being included in a larger
+                  highlighted range.
+
+        """
+        res = {}
+        this_segment = (start_offset, end_offset)
+        for ht in HighlightType:
+            if not HighlightType.is_custom(ht):
+                continue
+            
+            is_active = False
+            is_exact_match = False
+
+            for segment in self.highlight_context[ht]:
+                if segment == this_segment:
+                    is_active = True
+                    is_exact_match = True
+                    break
+                elif self._s1_contains_s2(segment, this_segment):
+                    is_active = True
+                    break
+            
+            res[ht] = HighlightDetails(is_active = is_active, is_exact_match = is_exact_match)
+        return res
+    
         
 class SearchContext(object):
     """Context for searching within a given binary.
