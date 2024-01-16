@@ -87,7 +87,7 @@ def compile_kaitai_formats() -> None:
         print(f"\nThe following unknown licenses were encountered:\n{unknown_licenses}")
             
 def main():
-    parser = argparse.ArgumentParser(description='Cloand and compile Kaitai formats')
+    parser = argparse.ArgumentParser(description='Clone and compile Kaitai formats')
     parser.add_argument("-s", "--skip-clone", action = "store_true", default = False, help = "Skip cloning the Kaitai struct repo")
     args = parser.parse_args()
 

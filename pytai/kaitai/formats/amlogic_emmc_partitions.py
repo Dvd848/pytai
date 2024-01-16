@@ -134,23 +134,26 @@ import collections
 if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 9):
     raise Exception("Incompatible Kaitai Struct Python API: 0.9 or later is required, but you have %s" % (kaitaistruct.__version__))
 
-class VlqBase128Be(KaitaiStruct):
-    """A variable-length unsigned integer using base128 encoding. 1-byte groups
-    consist of 1-bit flag of continuation and 7-bit value chunk, and are ordered
-    "most significant group first", i.e. in "big-endian" manner.
+class AmlogicEmmcPartitions(KaitaiStruct):
+    """This is an unnamed and undocumented partition table format implemented by
+    the bootloader and kernel that Amlogic provides for their Linux SoCs (Meson
+    series at least, and probably others). They appear to use this rather than GPT,
+    the industry standard, because their BootROM loads and executes the next stage
+    loader from offset 512 (0x200) on the eMMC, which is exactly where the GPT
+    header would have to start. So instead of changing their BootROM, Amlogic
+    devised this partition table, which lives at an offset of 36MiB (0x240_0000)
+    on the eMMC and so doesn't conflict. This parser expects as input just the
+    partition table from that offset. The maximum number of partitions in a table
+    is 32, which corresponds to a maximum table size of 1304 bytes (0x518).
     
-    This particular encoding is specified and used in:
+    .. seealso::
+       Source - http://aml-code.amlogic.com/kernel/common.git/tree/include/linux/mmc/emmc_partitions.h?id=18a4a87072ababf76ea08c8539e939b5b8a440ef
     
-    * Standard MIDI file format
-    * ASN.1 BER encoding
-    * RAR 5.0 file format
     
-    More information on this encoding is available at
-    <https://en.wikipedia.org/wiki/Variable-length_quantity>
-    
-    This particular implementation supports serialized values to up 8 bytes long.
+    .. seealso::
+       Source - http://aml-code.amlogic.com/kernel/common.git/tree/drivers/amlogic/mmc/emmc_partitions.c?id=18a4a87072ababf76ea08c8539e939b5b8a440ef
     """
-    SEQ_FIELDS = ["groups"]
+    SEQ_FIELDS = ["magic", "version", "num_partitions", "checksum", "partitions"]
     def __init__(self, _io, _parent=None, _root=None):
         self._io = _io
         self._parent = _parent
@@ -158,27 +161,39 @@ class VlqBase128Be(KaitaiStruct):
         self._debug = collections.defaultdict(dict)
 
     def _read(self):
-        self._debug['groups']['start'] = self._io.pos()
-        self.groups = []
-        i = 0
-        while True:
-            if not 'arr' in self._debug['groups']:
-                self._debug['groups']['arr'] = []
-            self._debug['groups']['arr'].append({'start': self._io.pos()})
-            _t_groups = VlqBase128Be.Group(self._io, self, self._root)
-            _t_groups._read()
-            _ = _t_groups
-            self.groups.append(_)
-            self._debug['groups']['arr'][len(self.groups) - 1]['end'] = self._io.pos()
-            if not (_.has_next):
-                break
-            i += 1
-        self._debug['groups']['end'] = self._io.pos()
+        self._debug['magic']['start'] = self._io.pos()
+        self.magic = self._io.read_bytes(4)
+        self._debug['magic']['end'] = self._io.pos()
+        if not self.magic == b"\x4D\x50\x54\x00":
+            raise kaitaistruct.ValidationNotEqualError(b"\x4D\x50\x54\x00", self.magic, self._io, u"/seq/0")
+        self._debug['version']['start'] = self._io.pos()
+        self.version = (KaitaiStream.bytes_terminate(self._io.read_bytes(12), 0, False)).decode(u"UTF-8")
+        self._debug['version']['end'] = self._io.pos()
+        self._debug['num_partitions']['start'] = self._io.pos()
+        self.num_partitions = self._io.read_s4le()
+        self._debug['num_partitions']['end'] = self._io.pos()
+        if not self.num_partitions >= 1:
+            raise kaitaistruct.ValidationLessThanError(1, self.num_partitions, self._io, u"/seq/2")
+        if not self.num_partitions <= 32:
+            raise kaitaistruct.ValidationGreaterThanError(32, self.num_partitions, self._io, u"/seq/2")
+        self._debug['checksum']['start'] = self._io.pos()
+        self.checksum = self._io.read_u4le()
+        self._debug['checksum']['end'] = self._io.pos()
+        self._debug['partitions']['start'] = self._io.pos()
+        self.partitions = []
+        for i in range(self.num_partitions):
+            if not 'arr' in self._debug['partitions']:
+                self._debug['partitions']['arr'] = []
+            self._debug['partitions']['arr'].append({'start': self._io.pos()})
+            _t_partitions = AmlogicEmmcPartitions.Partition(self._io, self, self._root)
+            _t_partitions._read()
+            self.partitions.append(_t_partitions)
+            self._debug['partitions']['arr'][i]['end'] = self._io.pos()
 
-    class Group(KaitaiStruct):
-        """One byte group, clearly divided into 7-bit "value" chunk and 1-bit "continuation" flag.
-        """
-        SEQ_FIELDS = ["has_next", "value"]
+        self._debug['partitions']['end'] = self._io.pos()
+
+    class Partition(KaitaiStruct):
+        SEQ_FIELDS = ["name", "size", "offset", "flags", "padding"]
         def __init__(self, _io, _parent=None, _root=None):
             self._io = _io
             self._parent = _parent
@@ -186,29 +201,44 @@ class VlqBase128Be(KaitaiStruct):
             self._debug = collections.defaultdict(dict)
 
         def _read(self):
-            self._debug['has_next']['start'] = self._io.pos()
-            self.has_next = self._io.read_bits_int_be(1) != 0
-            self._debug['has_next']['end'] = self._io.pos()
-            self._debug['value']['start'] = self._io.pos()
-            self.value = self._io.read_bits_int_be(7)
-            self._debug['value']['end'] = self._io.pos()
+            self._debug['name']['start'] = self._io.pos()
+            self.name = (KaitaiStream.bytes_terminate(self._io.read_bytes(16), 0, False)).decode(u"UTF-8")
+            self._debug['name']['end'] = self._io.pos()
+            self._debug['size']['start'] = self._io.pos()
+            self.size = self._io.read_u8le()
+            self._debug['size']['end'] = self._io.pos()
+            self._debug['offset']['start'] = self._io.pos()
+            self.offset = self._io.read_u8le()
+            self._debug['offset']['end'] = self._io.pos()
+            self._debug['flags']['start'] = self._io.pos()
+            self._raw_flags = self._io.read_bytes(4)
+            _io__raw_flags = KaitaiStream(BytesIO(self._raw_flags))
+            self.flags = AmlogicEmmcPartitions.Partition.PartFlags(_io__raw_flags, self, self._root)
+            self.flags._read()
+            self._debug['flags']['end'] = self._io.pos()
+            self._debug['padding']['start'] = self._io.pos()
+            self.padding = self._io.read_bytes(4)
+            self._debug['padding']['end'] = self._io.pos()
+
+        class PartFlags(KaitaiStruct):
+            SEQ_FIELDS = ["is_code", "is_cache", "is_data"]
+            def __init__(self, _io, _parent=None, _root=None):
+                self._io = _io
+                self._parent = _parent
+                self._root = _root if _root else self
+                self._debug = collections.defaultdict(dict)
+
+            def _read(self):
+                self._debug['is_code']['start'] = self._io.pos()
+                self.is_code = self._io.read_bits_int_le(1) != 0
+                self._debug['is_code']['end'] = self._io.pos()
+                self._debug['is_cache']['start'] = self._io.pos()
+                self.is_cache = self._io.read_bits_int_le(1) != 0
+                self._debug['is_cache']['end'] = self._io.pos()
+                self._debug['is_data']['start'] = self._io.pos()
+                self.is_data = self._io.read_bits_int_le(1) != 0
+                self._debug['is_data']['end'] = self._io.pos()
 
 
-    @property
-    def last(self):
-        if hasattr(self, '_m_last'):
-            return self._m_last
-
-        self._m_last = (len(self.groups) - 1)
-        return getattr(self, '_m_last', None)
-
-    @property
-    def value(self):
-        """Resulting value as normal integer."""
-        if hasattr(self, '_m_value'):
-            return self._m_value
-
-        self._m_value = (((((((self.groups[self.last].value + ((self.groups[(self.last - 1)].value << 7) if self.last >= 1 else 0)) + ((self.groups[(self.last - 2)].value << 14) if self.last >= 2 else 0)) + ((self.groups[(self.last - 3)].value << 21) if self.last >= 3 else 0)) + ((self.groups[(self.last - 4)].value << 28) if self.last >= 4 else 0)) + ((self.groups[(self.last - 5)].value << 35) if self.last >= 5 else 0)) + ((self.groups[(self.last - 6)].value << 42) if self.last >= 6 else 0)) + ((self.groups[(self.last - 7)].value << 49) if self.last >= 7 else 0))
-        return getattr(self, '_m_value', None)
 
 

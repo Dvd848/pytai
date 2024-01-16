@@ -183,7 +183,7 @@ class VlqBase128Le(KaitaiStruct):
     class Group(KaitaiStruct):
         """One byte group, clearly divided into 7-bit "value" chunk and 1-bit "continuation" flag.
         """
-        SEQ_FIELDS = ["b"]
+        SEQ_FIELDS = ["has_next", "value"]
         def __init__(self, _io, _parent=None, _root=None):
             self._io = _io
             self._parent = _parent
@@ -191,27 +191,12 @@ class VlqBase128Le(KaitaiStruct):
             self._debug = collections.defaultdict(dict)
 
         def _read(self):
-            self._debug['b']['start'] = self._io.pos()
-            self.b = self._io.read_u1()
-            self._debug['b']['end'] = self._io.pos()
-
-        @property
-        def has_next(self):
-            """If true, then we have more bytes to read."""
-            if hasattr(self, '_m_has_next'):
-                return self._m_has_next
-
-            self._m_has_next = (self.b & 128) != 0
-            return getattr(self, '_m_has_next', None)
-
-        @property
-        def value(self):
-            """The 7-bit (base128) numeric value chunk of this group."""
-            if hasattr(self, '_m_value'):
-                return self._m_value
-
-            self._m_value = (self.b & 127)
-            return getattr(self, '_m_value', None)
+            self._debug['has_next']['start'] = self._io.pos()
+            self.has_next = self._io.read_bits_int_be(1) != 0
+            self._debug['has_next']['end'] = self._io.pos()
+            self._debug['value']['start'] = self._io.pos()
+            self.value = self._io.read_bits_int_be(7)
+            self._debug['value']['end'] = self._io.pos()
 
 
     @property

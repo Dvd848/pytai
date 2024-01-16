@@ -452,17 +452,17 @@ class Pcap(KaitaiStruct):
             self._debug['body']['start'] = self._io.pos()
             _on = self._root.hdr.network
             if _on == Pcap.Linktype.ppi:
-                self._raw_body = self._io.read_bytes(self.incl_len)
+                self._raw_body = self._io.read_bytes((self.incl_len if self.incl_len < self._root.hdr.snaplen else self._root.hdr.snaplen))
                 _io__raw_body = KaitaiStream(BytesIO(self._raw_body))
                 self.body = packet_ppi.PacketPpi(_io__raw_body)
                 self.body._read()
             elif _on == Pcap.Linktype.ethernet:
-                self._raw_body = self._io.read_bytes(self.incl_len)
+                self._raw_body = self._io.read_bytes((self.incl_len if self.incl_len < self._root.hdr.snaplen else self._root.hdr.snaplen))
                 _io__raw_body = KaitaiStream(BytesIO(self._raw_body))
                 self.body = ethernet_frame.EthernetFrame(_io__raw_body)
                 self.body._read()
             else:
-                self.body = self._io.read_bytes(self.incl_len)
+                self.body = self._io.read_bytes((self.incl_len if self.incl_len < self._root.hdr.snaplen else self._root.hdr.snaplen))
             self._debug['body']['end'] = self._io.pos()
 
 

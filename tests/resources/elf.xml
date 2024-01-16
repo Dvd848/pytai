@@ -16,10 +16,10 @@
       <node name="section_header_offset" extra_info="14688 (0x3960)" start_offset="40" end_offset="48" is_metavar="False"/>
       <node name="flags" extra_info="Byte Array (Length: 4)" start_offset="48" end_offset="52" is_metavar="False"/>
       <node name="e_ehsize" extra_info="64 (0x40)" start_offset="52" end_offset="54" is_metavar="False"/>
-      <node name="program_header_entry_size" extra_info="56 (0x38)" start_offset="54" end_offset="56" is_metavar="False"/>
-      <node name="qty_program_header" extra_info="11 (0xb)" start_offset="56" end_offset="58" is_metavar="False"/>
-      <node name="section_header_entry_size" extra_info="64 (0x40)" start_offset="58" end_offset="60" is_metavar="False"/>
-      <node name="qty_section_header" extra_info="30 (0x1e)" start_offset="60" end_offset="62" is_metavar="False"/>
+      <node name="len_program_headers" extra_info="56 (0x38)" start_offset="54" end_offset="56" is_metavar="False"/>
+      <node name="num_program_headers" extra_info="11 (0xb)" start_offset="56" end_offset="58" is_metavar="False"/>
+      <node name="len_section_headers" extra_info="64 (0x40)" start_offset="58" end_offset="60" is_metavar="False"/>
+      <node name="num_section_headers" extra_info="30 (0x1e)" start_offset="60" end_offset="62" is_metavar="False"/>
       <node name="section_names_idx" extra_info="29 (0x1d)" start_offset="62" end_offset="64" is_metavar="False"/>
       <node name="program_headers" extra_info="" start_offset="64" end_offset="680" is_metavar="True">
          <node name="[0]" extra_info="" start_offset="64" end_offset="120" is_metavar="False">
