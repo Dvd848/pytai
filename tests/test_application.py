@@ -76,7 +76,7 @@ class TestOffsets(unittest.TestCase):
         with patch(__name__ + '.application.v.View', MockView()):
             app = application.Application(file = path, format = format)
 
-            with open(self.tmp_path / "actual_output.xml", "w") as o:
+            with open(self.tmp_path / "actual_output.xml", "w", encoding="utf-8") as o:
                 o.write(xml_to_str(app.view.root))
 
             expected_xml = xml_from_file(self.get_resource_path(f"{file_type}.xml"))
@@ -100,6 +100,9 @@ class TestOffsets(unittest.TestCase):
 
     def test_wav(self):
         self.generic_test("wav")
+
+    def test_ttf(self):
+        self.generic_test("ttf")
 
 if __name__ == "__main__":
     unittest.main()

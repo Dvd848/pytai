@@ -28,6 +28,7 @@ import kaitaistruct
 from kaitaistruct import KaitaiStruct, KaitaiStream, BytesIO
 import collections
 from enum import Enum
+import string
 
 
 if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 9):
@@ -276,7 +277,11 @@ class Ttf(KaitaiStruct):
                 _pos = io.pos()
                 io.seek((self._parent.ofs_strings + self.ofs_str))
                 self._debug['_m_ascii_value']['start'] = io.pos()
-                self._m_ascii_value = (io.read_bytes(self.len_str)).decode(u"ascii")
+                try:
+                    self._m_ascii_value = (io.read_bytes(self.len_str)).decode(u"ascii")
+                    self._m_ascii_value = ''.join(filter(lambda x:x in string.printable, self._m_ascii_value))
+                except UnicodeDecodeError:
+                    self._m_ascii_value = ''
                 self._debug['_m_ascii_value']['end'] = io.pos()
                 io.seek(_pos)
                 return getattr(self, '_m_ascii_value', None)
@@ -290,7 +295,10 @@ class Ttf(KaitaiStruct):
                 _pos = io.pos()
                 io.seek((self._parent.ofs_strings + self.ofs_str))
                 self._debug['_m_unicode_value']['start'] = io.pos()
-                self._m_unicode_value = (io.read_bytes(self.len_str)).decode(u"utf-16be")
+                try:
+                    self._m_unicode_value = (io.read_bytes(self.len_str)).decode(u"utf-16be")
+                except UnicodeDecodeError:
+                    self._m_unicode_value = ''
                 self._debug['_m_unicode_value']['end'] = io.pos()
                 io.seek(_pos)
                 return getattr(self, '_m_unicode_value', None)
@@ -1714,7 +1722,7 @@ class Ttf(KaitaiStruct):
                     self.value = Ttf.Cmap.Subtable.TrimmedTableMapping(_io__raw_value, self, self._root)
                     self.value._read()
                 else:
-                    self.value = self._io.read_bytes((self.length - 6))
+                    self.value = self._io.read_bytes(max(self.length - 6, 0))
                 self._debug['value']['end'] = self._io.pos()
 
             class ByteEncodingTable(KaitaiStruct):

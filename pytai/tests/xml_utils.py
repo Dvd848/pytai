@@ -106,5 +106,5 @@ def xml_to_str(root: ET.ElementTree) -> str:
 
 def xml_from_file(path: str) -> ET.ElementTree:
     """Return XML ElementTree from given file path"""
-    with open(path) as f:
+    with open(path, encoding="utf-8") as f:
         return ET.fromstring(f.read())
