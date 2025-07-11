@@ -106,6 +106,8 @@ class Parser(object):
             return item
         elif isinstance(item, int):
             return f"{item} ({hex(item)})"
+        elif isinstance(item, float):
+            return f"{item}"
         elif isinstance(item, Enum):
             return item.name
         else:
