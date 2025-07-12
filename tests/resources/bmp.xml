@@ -33,56 +33,56 @@
             <node name="endpoint_red" extra_info="" start_offset="74" end_offset="86" is_metavar="False">
                <node name="x" extra_info="" start_offset="74" end_offset="78" is_metavar="False">
                   <node name="raw" extra_info="0 (0x0)" start_offset="74" end_offset="78" is_metavar="False"/>
-                  <node name="value" extra_info="" start_offset="None" end_offset="None" is_metavar="True"/>
+                  <node name="value" extra_info="0.0" start_offset="None" end_offset="None" is_metavar="True"/>
                </node>
                <node name="y" extra_info="" start_offset="78" end_offset="82" is_metavar="False">
                   <node name="raw" extra_info="0 (0x0)" start_offset="78" end_offset="82" is_metavar="False"/>
-                  <node name="value" extra_info="" start_offset="None" end_offset="None" is_metavar="True"/>
+                  <node name="value" extra_info="0.0" start_offset="None" end_offset="None" is_metavar="True"/>
                </node>
                <node name="z" extra_info="" start_offset="82" end_offset="86" is_metavar="False">
                   <node name="raw" extra_info="0 (0x0)" start_offset="82" end_offset="86" is_metavar="False"/>
-                  <node name="value" extra_info="" start_offset="None" end_offset="None" is_metavar="True"/>
+                  <node name="value" extra_info="0.0" start_offset="None" end_offset="None" is_metavar="True"/>
                </node>
             </node>
             <node name="endpoint_green" extra_info="" start_offset="86" end_offset="98" is_metavar="False">
                <node name="x" extra_info="" start_offset="86" end_offset="90" is_metavar="False">
                   <node name="raw" extra_info="0 (0x0)" start_offset="86" end_offset="90" is_metavar="False"/>
-                  <node name="value" extra_info="" start_offset="None" end_offset="None" is_metavar="True"/>
+                  <node name="value" extra_info="0.0" start_offset="None" end_offset="None" is_metavar="True"/>
                </node>
                <node name="y" extra_info="" start_offset="90" end_offset="94" is_metavar="False">
                   <node name="raw" extra_info="0 (0x0)" start_offset="90" end_offset="94" is_metavar="False"/>
-                  <node name="value" extra_info="" start_offset="None" end_offset="None" is_metavar="True"/>
+                  <node name="value" extra_info="0.0" start_offset="None" end_offset="None" is_metavar="True"/>
                </node>
                <node name="z" extra_info="" start_offset="94" end_offset="98" is_metavar="False">
                   <node name="raw" extra_info="0 (0x0)" start_offset="94" end_offset="98" is_metavar="False"/>
-                  <node name="value" extra_info="" start_offset="None" end_offset="None" is_metavar="True"/>
+                  <node name="value" extra_info="0.0" start_offset="None" end_offset="None" is_metavar="True"/>
                </node>
             </node>
             <node name="endpoint_blue" extra_info="" start_offset="98" end_offset="110" is_metavar="False">
                <node name="x" extra_info="" start_offset="98" end_offset="102" is_metavar="False">
                   <node name="raw" extra_info="0 (0x0)" start_offset="98" end_offset="102" is_metavar="False"/>
-                  <node name="value" extra_info="" start_offset="None" end_offset="None" is_metavar="True"/>
+                  <node name="value" extra_info="0.0" start_offset="None" end_offset="None" is_metavar="True"/>
                </node>
                <node name="y" extra_info="" start_offset="102" end_offset="106" is_metavar="False">
                   <node name="raw" extra_info="0 (0x0)" start_offset="102" end_offset="106" is_metavar="False"/>
-                  <node name="value" extra_info="" start_offset="None" end_offset="None" is_metavar="True"/>
+                  <node name="value" extra_info="0.0" start_offset="None" end_offset="None" is_metavar="True"/>
                </node>
                <node name="z" extra_info="" start_offset="106" end_offset="110" is_metavar="False">
                   <node name="raw" extra_info="2 (0x2)" start_offset="106" end_offset="110" is_metavar="False"/>
-                  <node name="value" extra_info="" start_offset="None" end_offset="None" is_metavar="True"/>
+                  <node name="value" extra_info="1.862645149230957e-09" start_offset="None" end_offset="None" is_metavar="True"/>
                </node>
             </node>
             <node name="gamma_red" extra_info="" start_offset="110" end_offset="114" is_metavar="False">
                <node name="raw" extra_info="0 (0x0)" start_offset="110" end_offset="114" is_metavar="False"/>
-               <node name="value" extra_info="" start_offset="None" end_offset="None" is_metavar="True"/>
+               <node name="value" extra_info="0.0" start_offset="None" end_offset="None" is_metavar="True"/>
             </node>
             <node name="gamma_blue" extra_info="" start_offset="114" end_offset="118" is_metavar="False">
                <node name="raw" extra_info="0 (0x0)" start_offset="114" end_offset="118" is_metavar="False"/>
-               <node name="value" extra_info="" start_offset="None" end_offset="None" is_metavar="True"/>
+               <node name="value" extra_info="0.0" start_offset="None" end_offset="None" is_metavar="True"/>
             </node>
             <node name="gamma_green" extra_info="" start_offset="118" end_offset="122" is_metavar="False">
                <node name="raw" extra_info="0 (0x0)" start_offset="118" end_offset="122" is_metavar="False"/>
-               <node name="value" extra_info="" start_offset="None" end_offset="None" is_metavar="True"/>
+               <node name="value" extra_info="0.0" start_offset="None" end_offset="None" is_metavar="True"/>
             </node>
          </node>
          <node name="extends_bitmap_v4" extra_info="True (0x1)" start_offset="None" end_offset="None" is_metavar="True"/>
