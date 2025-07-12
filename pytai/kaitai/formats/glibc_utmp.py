@@ -187,7 +187,7 @@ class GlibcUtmp(KaitaiStruct):
             self.ut_type = KaitaiStream.resolve_enum(GlibcUtmp.EntryType, self._io.read_s4le())
             self._debug['ut_type']['end'] = self._io.pos()
             self._debug['pid']['start'] = self._io.pos()
-            self.pid = self._io.read_u4le()
+            self.pid = self._io.read_s4le()
             self._debug['pid']['end'] = self._io.pos()
             self._debug['line']['start'] = self._io.pos()
             self.line = (self._io.read_bytes(32)).decode(u"UTF-8")
@@ -229,7 +229,7 @@ class GlibcUtmp(KaitaiStruct):
 
         def _read(self):
             self._debug['sec']['start'] = self._io.pos()
-            self.sec = self._io.read_s4le()
+            self.sec = self._io.read_u4le()
             self._debug['sec']['end'] = self._io.pos()
             self._debug['usec']['start'] = self._io.pos()
             self.usec = self._io.read_s4le()

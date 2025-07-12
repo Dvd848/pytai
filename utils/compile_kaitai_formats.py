@@ -77,7 +77,7 @@ def compile_kaitai_formats() -> None:
                     print(f"      Error: {result.stdout}")
                     continue
 
-            elif license in ["GFDL-1.3-or-later", "GPL-2.0-or-later", "GPL-3.0-or-later"]:
+            elif license in ["GFDL-1.3-or-later", "GPL-2.0-or-later", "GPL-3.0-or-later", "LGPL-2.1"]:
                 print(f"  [X] {ksy_path.stem}: Incompatible license ({license}), skipping...")
             else:
                 print(f"  [?] {ksy_path.stem}: Unknown license ({license}), skipping...")
