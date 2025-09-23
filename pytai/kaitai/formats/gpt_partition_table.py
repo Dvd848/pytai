@@ -125,14 +125,15 @@
 
 
 # This is a generated file! Please edit source .ksy file and use kaitai-struct-compiler to rebuild
+# type: ignore
 
 import kaitaistruct
 from kaitaistruct import KaitaiStruct, KaitaiStream, BytesIO
 import collections
 
 
-if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 9):
-    raise Exception("Incompatible Kaitai Struct Python API: 0.9 or later is required, but you have %s" % (kaitaistruct.__version__))
+if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 11):
+    raise Exception("Incompatible Kaitai Struct Python API: 0.11 or later is required, but you have %s" % (kaitaistruct.__version__))
 
 class GptPartitionTable(KaitaiStruct):
     """
@@ -141,20 +142,34 @@ class GptPartitionTable(KaitaiStruct):
     """
     SEQ_FIELDS = []
     def __init__(self, _io, _parent=None, _root=None):
-        self._io = _io
+        super(GptPartitionTable, self).__init__(_io)
         self._parent = _parent
-        self._root = _root if _root else self
+        self._root = _root or self
         self._debug = collections.defaultdict(dict)
 
     def _read(self):
         pass
 
+
+    def _fetch_instances(self):
+        pass
+        _ = self.backup
+        if hasattr(self, '_m_backup'):
+            pass
+            self._m_backup._fetch_instances()
+
+        _ = self.primary
+        if hasattr(self, '_m_primary'):
+            pass
+            self._m_primary._fetch_instances()
+
+
     class PartitionEntry(KaitaiStruct):
         SEQ_FIELDS = ["type_guid", "guid", "first_lba", "last_lba", "attributes", "name"]
         def __init__(self, _io, _parent=None, _root=None):
-            self._io = _io
+            super(GptPartitionTable.PartitionEntry, self).__init__(_io)
             self._parent = _parent
-            self._root = _root if _root else self
+            self._root = _root
             self._debug = collections.defaultdict(dict)
 
         def _read(self):
@@ -178,12 +193,16 @@ class GptPartitionTable(KaitaiStruct):
             self._debug['name']['end'] = self._io.pos()
 
 
+        def _fetch_instances(self):
+            pass
+
+
     class PartitionHeader(KaitaiStruct):
         SEQ_FIELDS = ["signature", "revision", "header_size", "crc32_header", "reserved", "current_lba", "backup_lba", "first_usable_lba", "last_usable_lba", "disk_guid", "entries_start", "entries_count", "entries_size", "crc32_array"]
         def __init__(self, _io, _parent=None, _root=None):
-            self._io = _io
+            super(GptPartitionTable.PartitionHeader, self).__init__(_io)
             self._parent = _parent
-            self._root = _root if _root else self
+            self._root = _root
             self._debug = collections.defaultdict(dict)
 
         def _read(self):
@@ -232,6 +251,18 @@ class GptPartitionTable(KaitaiStruct):
             self.crc32_array = self._io.read_u4le()
             self._debug['crc32_array']['end'] = self._io.pos()
 
+
+        def _fetch_instances(self):
+            pass
+            _ = self.entries
+            if hasattr(self, '_m_entries'):
+                pass
+                for i in range(len(self._m_entries)):
+                    pass
+                    self._m_entries[i]._fetch_instances()
+
+
+
         @property
         def entries(self):
             if hasattr(self, '_m_entries'):
@@ -239,19 +270,20 @@ class GptPartitionTable(KaitaiStruct):
 
             io = self._root._io
             _pos = io.pos()
-            io.seek((self.entries_start * self._root.sector_size))
+            io.seek(self.entries_start * self._root.sector_size)
             self._debug['_m_entries']['start'] = io.pos()
+            self._debug['_m_entries']['arr'] = []
             self._raw__m_entries = []
             self._m_entries = []
             for i in range(self.entries_count):
-                if not 'arr' in self._debug['_m_entries']:
-                    self._debug['_m_entries']['arr'] = []
                 self._debug['_m_entries']['arr'].append({'start': io.pos()})
                 self._raw__m_entries.append(io.read_bytes(self.entries_size))
                 _io__raw__m_entries = KaitaiStream(BytesIO(self._raw__m_entries[i]))
                 _t__m_entries = GptPartitionTable.PartitionEntry(_io__raw__m_entries, self, self._root)
-                _t__m_entries._read()
-                self._m_entries.append(_t__m_entries)
+                try:
+                    _t__m_entries._read()
+                finally:
+                    self._m_entries.append(_t__m_entries)
                 self._debug['_m_entries']['arr'][i]['end'] = io.pos()
 
             self._debug['_m_entries']['end'] = io.pos()
@@ -260,12 +292,19 @@ class GptPartitionTable(KaitaiStruct):
 
 
     @property
-    def sector_size(self):
-        if hasattr(self, '_m_sector_size'):
-            return self._m_sector_size
+    def backup(self):
+        if hasattr(self, '_m_backup'):
+            return self._m_backup
 
-        self._m_sector_size = 512
-        return getattr(self, '_m_sector_size', None)
+        io = self._root._io
+        _pos = io.pos()
+        io.seek(self._io.size() - self._root.sector_size)
+        self._debug['_m_backup']['start'] = io.pos()
+        self._m_backup = GptPartitionTable.PartitionHeader(io, self, self._root)
+        self._m_backup._read()
+        self._debug['_m_backup']['end'] = io.pos()
+        io.seek(_pos)
+        return getattr(self, '_m_backup', None)
 
     @property
     def primary(self):
@@ -283,18 +322,11 @@ class GptPartitionTable(KaitaiStruct):
         return getattr(self, '_m_primary', None)
 
     @property
-    def backup(self):
-        if hasattr(self, '_m_backup'):
-            return self._m_backup
+    def sector_size(self):
+        if hasattr(self, '_m_sector_size'):
+            return self._m_sector_size
 
-        io = self._root._io
-        _pos = io.pos()
-        io.seek((self._io.size() - self._root.sector_size))
-        self._debug['_m_backup']['start'] = io.pos()
-        self._m_backup = GptPartitionTable.PartitionHeader(io, self, self._root)
-        self._m_backup._read()
-        self._debug['_m_backup']['end'] = io.pos()
-        io.seek(_pos)
-        return getattr(self, '_m_backup', None)
+        self._m_sector_size = 512
+        return getattr(self, '_m_sector_size', None)
 
 

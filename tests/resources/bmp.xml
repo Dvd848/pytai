@@ -85,22 +85,22 @@
                <node name="value" extra_info="0.0" start_offset="None" end_offset="None" is_metavar="True"/>
             </node>
          </node>
-         <node name="extends_bitmap_v4" extra_info="True (0x1)" start_offset="None" end_offset="None" is_metavar="True"/>
-         <node name="extends_os2_2x_bitmap" extra_info="False (0x0)" start_offset="None" end_offset="None" is_metavar="True"/>
-         <node name="uses_fixed_palette" extra_info="False (0x0)" start_offset="None" end_offset="None" is_metavar="True"/>
-         <node name="extends_bitmap_info" extra_info="True (0x1)" start_offset="None" end_offset="None" is_metavar="True"/>
-         <node name="image_height" extra_info="1 (0x1)" start_offset="None" end_offset="None" is_metavar="True"/>
-         <node name="is_core_header" extra_info="False (0x0)" start_offset="None" end_offset="None" is_metavar="True"/>
-         <node name="extends_bitmap_v5" extra_info="False (0x0)" start_offset="None" end_offset="None" is_metavar="True"/>
-         <node name="is_color_mask_here" extra_info="True (0x1)" start_offset="None" end_offset="None" is_metavar="True"/>
          <node name="bottom_up" extra_info="True (0x1)" start_offset="None" end_offset="None" is_metavar="True"/>
+         <node name="extends_bitmap_info" extra_info="True (0x1)" start_offset="None" end_offset="None" is_metavar="True"/>
+         <node name="extends_bitmap_v4" extra_info="True (0x1)" start_offset="None" end_offset="None" is_metavar="True"/>
+         <node name="extends_bitmap_v5" extra_info="False (0x0)" start_offset="None" end_offset="None" is_metavar="True"/>
+         <node name="extends_os2_2x_bitmap" extra_info="False (0x0)" start_offset="None" end_offset="None" is_metavar="True"/>
+         <node name="image_height" extra_info="1 (0x1)" start_offset="None" end_offset="None" is_metavar="True"/>
+         <node name="is_color_mask_here" extra_info="True (0x1)" start_offset="None" end_offset="None" is_metavar="True"/>
+         <node name="is_core_header" extra_info="False (0x0)" start_offset="None" end_offset="None" is_metavar="True"/>
+         <node name="uses_fixed_palette" extra_info="False (0x0)" start_offset="None" end_offset="None" is_metavar="True"/>
       </node>
-      <node name="is_color_mask_given" extra_info="False (0x0)" start_offset="None" end_offset="None" is_metavar="True"/>
-      <node name="color_mask_blue" extra_info="255 (0xff)" start_offset="None" end_offset="None" is_metavar="True"/>
       <node name="color_mask_alpha" extra_info="0 (0x0)" start_offset="None" end_offset="None" is_metavar="True"/>
+      <node name="color_mask_blue" extra_info="255 (0xff)" start_offset="None" end_offset="None" is_metavar="True"/>
       <node name="color_mask_green" extra_info="65280 (0xff00)" start_offset="None" end_offset="None" is_metavar="True"/>
-      <node name="is_color_mask_here" extra_info="False (0x0)" start_offset="None" end_offset="None" is_metavar="True"/>
       <node name="color_mask_red" extra_info="16711680 (0xff0000)" start_offset="None" end_offset="None" is_metavar="True"/>
+      <node name="is_color_mask_given" extra_info="False (0x0)" start_offset="None" end_offset="None" is_metavar="True"/>
+      <node name="is_color_mask_here" extra_info="False (0x0)" start_offset="None" end_offset="None" is_metavar="True"/>
    </node>
    <node name="bitmap" extra_info="" start_offset="122" end_offset="130" is_metavar="False"/>
 </root>

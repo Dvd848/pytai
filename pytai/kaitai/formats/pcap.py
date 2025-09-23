@@ -125,18 +125,19 @@
 
 
 # This is a generated file! Please edit source .ksy file and use kaitai-struct-compiler to rebuild
+# type: ignore
 
 import kaitaistruct
 from kaitaistruct import KaitaiStruct, KaitaiStream, BytesIO
-from enum import Enum
+import ethernet_frame
+import packet_ppi
+from enum import IntEnum
 import collections
 
 
-if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 9):
-    raise Exception("Incompatible Kaitai Struct Python API: 0.9 or later is required, but you have %s" % (kaitaistruct.__version__))
+if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 11):
+    raise Exception("Incompatible Kaitai Struct Python API: 0.11 or later is required, but you have %s" % (kaitaistruct.__version__))
 
-import ethernet_frame
-import packet_ppi
 class Pcap(KaitaiStruct):
     """PCAP (named after libpcap / winpcap) is a popular format for saving
     network traffic grabbed by network sniffers. It is typically
@@ -147,7 +148,7 @@ class Pcap(KaitaiStruct):
        Source - https://wiki.wireshark.org/Development/LibpcapFileFormat
     """
 
-    class Linktype(Enum):
+    class Linktype(IntEnum):
         null_linktype = 0
         ethernet = 1
         exp_ethernet = 2
@@ -359,9 +360,9 @@ class Pcap(KaitaiStruct):
         fira_uci = 299
     SEQ_FIELDS = ["hdr", "packets"]
     def __init__(self, _io, _parent=None, _root=None):
-        self._io = _io
+        super(Pcap, self).__init__(_io)
         self._parent = _parent
-        self._root = _root if _root else self
+        self._root = _root or self
         self._debug = collections.defaultdict(dict)
 
     def _read(self):
@@ -370,19 +371,29 @@ class Pcap(KaitaiStruct):
         self.hdr._read()
         self._debug['hdr']['end'] = self._io.pos()
         self._debug['packets']['start'] = self._io.pos()
+        self._debug['packets']['arr'] = []
         self.packets = []
         i = 0
         while not self._io.is_eof():
-            if not 'arr' in self._debug['packets']:
-                self._debug['packets']['arr'] = []
             self._debug['packets']['arr'].append({'start': self._io.pos()})
             _t_packets = Pcap.Packet(self._io, self, self._root)
-            _t_packets._read()
-            self.packets.append(_t_packets)
+            try:
+                _t_packets._read()
+            finally:
+                self.packets.append(_t_packets)
             self._debug['packets']['arr'][len(self.packets) - 1]['end'] = self._io.pos()
             i += 1
 
         self._debug['packets']['end'] = self._io.pos()
+
+
+    def _fetch_instances(self):
+        pass
+        self.hdr._fetch_instances()
+        for i in range(len(self.packets)):
+            pass
+            self.packets[i]._fetch_instances()
+
 
     class Header(KaitaiStruct):
         """
@@ -391,9 +402,9 @@ class Pcap(KaitaiStruct):
         """
         SEQ_FIELDS = ["magic_number", "version_major", "version_minor", "thiszone", "sigfigs", "snaplen", "network"]
         def __init__(self, _io, _parent=None, _root=None):
-            self._io = _io
+            super(Pcap.Header, self).__init__(_io)
             self._parent = _parent
-            self._root = _root if _root else self
+            self._root = _root
             self._debug = collections.defaultdict(dict)
 
         def _read(self):
@@ -424,6 +435,10 @@ class Pcap(KaitaiStruct):
             self._debug['network']['end'] = self._io.pos()
 
 
+        def _fetch_instances(self):
+            pass
+
+
     class Packet(KaitaiStruct):
         """
         .. seealso::
@@ -431,9 +446,9 @@ class Pcap(KaitaiStruct):
         """
         SEQ_FIELDS = ["ts_sec", "ts_usec", "incl_len", "orig_len", "body"]
         def __init__(self, _io, _parent=None, _root=None):
-            self._io = _io
+            super(Pcap.Packet, self).__init__(_io)
             self._parent = _parent
-            self._root = _root if _root else self
+            self._root = _root
             self._debug = collections.defaultdict(dict)
 
         def _read(self):
@@ -451,19 +466,35 @@ class Pcap(KaitaiStruct):
             self._debug['orig_len']['end'] = self._io.pos()
             self._debug['body']['start'] = self._io.pos()
             _on = self._root.hdr.network
-            if _on == Pcap.Linktype.ppi:
-                self._raw_body = self._io.read_bytes((self.incl_len if self.incl_len < self._root.hdr.snaplen else self._root.hdr.snaplen))
-                _io__raw_body = KaitaiStream(BytesIO(self._raw_body))
-                self.body = packet_ppi.PacketPpi(_io__raw_body)
-                self.body._read()
-            elif _on == Pcap.Linktype.ethernet:
+            if _on == Pcap.Linktype.ethernet:
+                pass
                 self._raw_body = self._io.read_bytes((self.incl_len if self.incl_len < self._root.hdr.snaplen else self._root.hdr.snaplen))
                 _io__raw_body = KaitaiStream(BytesIO(self._raw_body))
                 self.body = ethernet_frame.EthernetFrame(_io__raw_body)
                 self.body._read()
+            elif _on == Pcap.Linktype.ppi:
+                pass
+                self._raw_body = self._io.read_bytes((self.incl_len if self.incl_len < self._root.hdr.snaplen else self._root.hdr.snaplen))
+                _io__raw_body = KaitaiStream(BytesIO(self._raw_body))
+                self.body = packet_ppi.PacketPpi(_io__raw_body)
+                self.body._read()
             else:
+                pass
                 self.body = self._io.read_bytes((self.incl_len if self.incl_len < self._root.hdr.snaplen else self._root.hdr.snaplen))
             self._debug['body']['end'] = self._io.pos()
+
+
+        def _fetch_instances(self):
+            pass
+            _on = self._root.hdr.network
+            if _on == Pcap.Linktype.ethernet:
+                pass
+                self.body._fetch_instances()
+            elif _on == Pcap.Linktype.ppi:
+                pass
+                self.body._fetch_instances()
+            else:
+                pass
 
 
 

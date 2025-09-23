@@ -104,12 +104,12 @@ class Parser(object):
             return f"Byte Array (Length: {len(item)})"
         elif isinstance(item, str):
             return item
+        elif isinstance(item, Enum):
+            return item.name
         elif isinstance(item, int):
             return f"{item} ({hex(item)})"
         elif isinstance(item, float):
             return f"{item}"
-        elif isinstance(item, Enum):
-            return item.name
         else:
             return ""
 

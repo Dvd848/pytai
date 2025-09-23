@@ -125,14 +125,15 @@
 
 
 # This is a generated file! Please edit source .ksy file and use kaitai-struct-compiler to rebuild
+# type: ignore
 
 import kaitaistruct
 from kaitaistruct import KaitaiStruct, KaitaiStream, BytesIO
 import collections
 
 
-if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 9):
-    raise Exception("Incompatible Kaitai Struct Python API: 0.9 or later is required, but you have %s" % (kaitaistruct.__version__))
+if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 11):
+    raise Exception("Incompatible Kaitai Struct Python API: 0.11 or later is required, but you have %s" % (kaitaistruct.__version__))
 
 class Zisofs(KaitaiStruct):
     """zisofs is a compression format for files on ISO9660 file system. It has
@@ -151,9 +152,9 @@ class Zisofs(KaitaiStruct):
     """
     SEQ_FIELDS = ["header", "block_pointers"]
     def __init__(self, _io, _parent=None, _root=None):
-        self._io = _io
+        super(Zisofs, self).__init__(_io)
         self._parent = _parent
-        self._root = _root if _root else self
+        self._root = _root or self
         self._debug = collections.defaultdict(dict)
 
     def _read(self):
@@ -164,22 +165,81 @@ class Zisofs(KaitaiStruct):
         self.header._read()
         self._debug['header']['end'] = self._io.pos()
         self._debug['block_pointers']['start'] = self._io.pos()
+        self._debug['block_pointers']['arr'] = []
         self.block_pointers = []
-        for i in range((self.header.num_blocks + 1)):
-            if not 'arr' in self._debug['block_pointers']:
-                self._debug['block_pointers']['arr'] = []
+        for i in range(self.header.num_blocks + 1):
             self._debug['block_pointers']['arr'].append({'start': self._io.pos()})
             self.block_pointers.append(self._io.read_u4le())
             self._debug['block_pointers']['arr'][i]['end'] = self._io.pos()
 
         self._debug['block_pointers']['end'] = self._io.pos()
 
+
+    def _fetch_instances(self):
+        pass
+        self.header._fetch_instances()
+        for i in range(len(self.block_pointers)):
+            pass
+
+        _ = self.blocks
+        if hasattr(self, '_m_blocks'):
+            pass
+            for i in range(len(self._m_blocks)):
+                pass
+                self._m_blocks[i]._fetch_instances()
+
+
+
+    class Block(KaitaiStruct):
+        SEQ_FIELDS = []
+        def __init__(self, ofs_start, ofs_end, _io, _parent=None, _root=None):
+            super(Zisofs.Block, self).__init__(_io)
+            self._parent = _parent
+            self._root = _root
+            self.ofs_start = ofs_start
+            self.ofs_end = ofs_end
+            self._debug = collections.defaultdict(dict)
+
+        def _read(self):
+            pass
+
+
+        def _fetch_instances(self):
+            pass
+            _ = self.data
+            if hasattr(self, '_m_data'):
+                pass
+
+
+        @property
+        def data(self):
+            if hasattr(self, '_m_data'):
+                return self._m_data
+
+            io = self._root._io
+            _pos = io.pos()
+            io.seek(self.ofs_start)
+            self._debug['_m_data']['start'] = io.pos()
+            self._m_data = io.read_bytes(self.len_data)
+            self._debug['_m_data']['end'] = io.pos()
+            io.seek(_pos)
+            return getattr(self, '_m_data', None)
+
+        @property
+        def len_data(self):
+            if hasattr(self, '_m_len_data'):
+                return self._m_len_data
+
+            self._m_len_data = self.ofs_end - self.ofs_start
+            return getattr(self, '_m_len_data', None)
+
+
     class Header(KaitaiStruct):
         SEQ_FIELDS = ["magic", "uncompressed_size", "len_header", "block_size_log2", "reserved"]
         def __init__(self, _io, _parent=None, _root=None):
-            self._io = _io
+            super(Zisofs.Header, self).__init__(_io)
             self._parent = _parent
-            self._root = _root if _root else self
+            self._root = _root
             self._debug = collections.defaultdict(dict)
 
         def _read(self):
@@ -207,12 +267,16 @@ class Zisofs(KaitaiStruct):
             if not self.reserved == b"\x00\x00":
                 raise kaitaistruct.ValidationNotEqualError(b"\x00\x00", self.reserved, self._io, u"/types/header/seq/4")
 
+
+        def _fetch_instances(self):
+            pass
+
         @property
         def block_size(self):
             if hasattr(self, '_m_block_size'):
                 return self._m_block_size
 
-            self._m_block_size = (1 << self.block_size_log2)
+            self._m_block_size = 1 << self.block_size_log2
             return getattr(self, '_m_block_size', None)
 
         @property
@@ -221,44 +285,8 @@ class Zisofs(KaitaiStruct):
             if hasattr(self, '_m_num_blocks'):
                 return self._m_num_blocks
 
-            self._m_num_blocks = (self.uncompressed_size // self.block_size + (1 if (self.uncompressed_size % self.block_size) != 0 else 0))
+            self._m_num_blocks = self.uncompressed_size // self.block_size + (1 if self.uncompressed_size % self.block_size != 0 else 0)
             return getattr(self, '_m_num_blocks', None)
-
-
-    class Block(KaitaiStruct):
-        SEQ_FIELDS = []
-        def __init__(self, ofs_start, ofs_end, _io, _parent=None, _root=None):
-            self._io = _io
-            self._parent = _parent
-            self._root = _root if _root else self
-            self.ofs_start = ofs_start
-            self.ofs_end = ofs_end
-            self._debug = collections.defaultdict(dict)
-
-        def _read(self):
-            pass
-
-        @property
-        def len_data(self):
-            if hasattr(self, '_m_len_data'):
-                return self._m_len_data
-
-            self._m_len_data = (self.ofs_end - self.ofs_start)
-            return getattr(self, '_m_len_data', None)
-
-        @property
-        def data(self):
-            if hasattr(self, '_m_data'):
-                return self._m_data
-
-            io = self._root._io
-            _pos = io.pos()
-            io.seek(self.ofs_start)
-            self._debug['_m_data']['start'] = io.pos()
-            self._m_data = io.read_bytes(self.len_data)
-            self._debug['_m_data']['end'] = io.pos()
-            io.seek(_pos)
-            return getattr(self, '_m_data', None)
 
 
     @property
@@ -267,14 +295,15 @@ class Zisofs(KaitaiStruct):
             return self._m_blocks
 
         self._debug['_m_blocks']['start'] = self._io.pos()
+        self._debug['_m_blocks']['arr'] = []
         self._m_blocks = []
         for i in range(self.header.num_blocks):
-            if not 'arr' in self._debug['_m_blocks']:
-                self._debug['_m_blocks']['arr'] = []
             self._debug['_m_blocks']['arr'].append({'start': self._io.pos()})
-            _t__m_blocks = Zisofs.Block(self.block_pointers[i], self.block_pointers[(i + 1)], self._io, self, self._root)
-            _t__m_blocks._read()
-            self._m_blocks.append(_t__m_blocks)
+            _t__m_blocks = Zisofs.Block(self.block_pointers[i], self.block_pointers[i + 1], self._io, self, self._root)
+            try:
+                _t__m_blocks._read()
+            finally:
+                self._m_blocks.append(_t__m_blocks)
             self._debug['_m_blocks']['arr'][i]['end'] = self._io.pos()
 
         self._debug['_m_blocks']['end'] = self._io.pos()

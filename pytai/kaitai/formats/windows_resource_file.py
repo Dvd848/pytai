@@ -125,15 +125,16 @@
 
 
 # This is a generated file! Please edit source .ksy file and use kaitai-struct-compiler to rebuild
+# type: ignore
 
 import kaitaistruct
 from kaitaistruct import KaitaiStruct, KaitaiStream, BytesIO
 import collections
-from enum import Enum
+from enum import IntEnum
 
 
-if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 9):
-    raise Exception("Incompatible Kaitai Struct Python API: 0.9 or later is required, but you have %s" % (kaitaistruct.__version__))
+if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 11):
+    raise Exception("Incompatible Kaitai Struct Python API: 0.11 or later is required, but you have %s" % (kaitaistruct.__version__))
 
 class WindowsResourceFile(KaitaiStruct):
     """Windows resource file (.res) are binary bundles of
@@ -163,26 +164,35 @@ class WindowsResourceFile(KaitaiStruct):
     """
     SEQ_FIELDS = ["resources"]
     def __init__(self, _io, _parent=None, _root=None):
-        self._io = _io
+        super(WindowsResourceFile, self).__init__(_io)
         self._parent = _parent
-        self._root = _root if _root else self
+        self._root = _root or self
         self._debug = collections.defaultdict(dict)
 
     def _read(self):
         self._debug['resources']['start'] = self._io.pos()
+        self._debug['resources']['arr'] = []
         self.resources = []
         i = 0
         while not self._io.is_eof():
-            if not 'arr' in self._debug['resources']:
-                self._debug['resources']['arr'] = []
             self._debug['resources']['arr'].append({'start': self._io.pos()})
             _t_resources = WindowsResourceFile.Resource(self._io, self, self._root)
-            _t_resources._read()
-            self.resources.append(_t_resources)
+            try:
+                _t_resources._read()
+            finally:
+                self.resources.append(_t_resources)
             self._debug['resources']['arr'][len(self.resources) - 1]['end'] = self._io.pos()
             i += 1
 
         self._debug['resources']['end'] = self._io.pos()
+
+
+    def _fetch_instances(self):
+        pass
+        for i in range(len(self.resources)):
+            pass
+            self.resources[i]._fetch_instances()
+
 
     class Resource(KaitaiStruct):
         """Each resource has a `type` and a `name`, which can be used to
@@ -193,7 +203,7 @@ class WindowsResourceFile(KaitaiStruct):
            Source - https://learn.microsoft.com/en-us/windows/win32/menurc/resourceheader
         """
 
-        class PredefTypes(Enum):
+        class PredefTypes(IntEnum):
             cursor = 1
             bitmap = 2
             icon = 3
@@ -217,9 +227,9 @@ class WindowsResourceFile(KaitaiStruct):
             manifest = 24
         SEQ_FIELDS = ["value_size", "header_size", "type", "name", "padding1", "format_version", "flags", "language", "value_version", "characteristics", "value", "padding2"]
         def __init__(self, _io, _parent=None, _root=None):
-            self._io = _io
+            super(WindowsResourceFile.Resource, self).__init__(_io)
             self._parent = _parent
-            self._root = _root if _root else self
+            self._root = _root
             self._debug = collections.defaultdict(dict)
 
         def _read(self):
@@ -238,7 +248,7 @@ class WindowsResourceFile(KaitaiStruct):
             self.name._read()
             self._debug['name']['end'] = self._io.pos()
             self._debug['padding1']['start'] = self._io.pos()
-            self.padding1 = self._io.read_bytes(((4 - self._io.pos()) % 4))
+            self.padding1 = self._io.read_bytes((4 - self._io.pos()) % 4)
             self._debug['padding1']['end'] = self._io.pos()
             self._debug['format_version']['start'] = self._io.pos()
             self.format_version = self._io.read_u4le()
@@ -259,8 +269,14 @@ class WindowsResourceFile(KaitaiStruct):
             self.value = self._io.read_bytes(self.value_size)
             self._debug['value']['end'] = self._io.pos()
             self._debug['padding2']['start'] = self._io.pos()
-            self.padding2 = self._io.read_bytes(((4 - self._io.pos()) % 4))
+            self.padding2 = self._io.read_bytes((4 - self._io.pos()) % 4)
             self._debug['padding2']['end'] = self._io.pos()
+
+
+        def _fetch_instances(self):
+            pass
+            self.type._fetch_instances()
+            self.name._fetch_instances()
 
         @property
         def type_as_predef(self):
@@ -272,7 +288,8 @@ class WindowsResourceFile(KaitaiStruct):
             if hasattr(self, '_m_type_as_predef'):
                 return self._m_type_as_predef
 
-            if  ((not (self.type.is_string)) and (self.type.as_numeric <= 255)) :
+            if  (((not (self.type.is_string))) and (self.type.as_numeric <= 255)) :
+                pass
                 self._m_type_as_predef = KaitaiStream.resolve_enum(WindowsResourceFile.Resource.PredefTypes, self.type.as_numeric)
 
             return getattr(self, '_m_type_as_predef', None)
@@ -287,29 +304,31 @@ class WindowsResourceFile(KaitaiStruct):
         """
         SEQ_FIELDS = ["first", "as_numeric", "rest", "noop"]
         def __init__(self, _io, _parent=None, _root=None):
-            self._io = _io
+            super(WindowsResourceFile.UnicodeOrId, self).__init__(_io)
             self._parent = _parent
-            self._root = _root if _root else self
+            self._root = _root
             self._debug = collections.defaultdict(dict)
 
         def _read(self):
             if self.save_pos1 >= 0:
+                pass
                 self._debug['first']['start'] = self._io.pos()
                 self.first = self._io.read_u2le()
                 self._debug['first']['end'] = self._io.pos()
 
-            if not (self.is_string):
+            if (not (self.is_string)):
+                pass
                 self._debug['as_numeric']['start'] = self._io.pos()
                 self.as_numeric = self._io.read_u2le()
                 self._debug['as_numeric']['end'] = self._io.pos()
 
             if self.is_string:
+                pass
                 self._debug['rest']['start'] = self._io.pos()
+                self._debug['rest']['arr'] = []
                 self.rest = []
                 i = 0
                 while True:
-                    if not 'arr' in self._debug['rest']:
-                        self._debug['rest']['arr'] = []
                     self._debug['rest']['arr'].append({'start': self._io.pos()})
                     _ = self._io.read_u2le()
                     self.rest.append(_)
@@ -320,10 +339,58 @@ class WindowsResourceFile(KaitaiStruct):
                 self._debug['rest']['end'] = self._io.pos()
 
             if  ((self.is_string) and (self.save_pos2 >= 0)) :
+                pass
                 self._debug['noop']['start'] = self._io.pos()
                 self.noop = self._io.read_bytes(0)
                 self._debug['noop']['end'] = self._io.pos()
 
+
+
+        def _fetch_instances(self):
+            pass
+            if self.save_pos1 >= 0:
+                pass
+
+            if (not (self.is_string)):
+                pass
+
+            if self.is_string:
+                pass
+                for i in range(len(self.rest)):
+                    pass
+
+
+            if  ((self.is_string) and (self.save_pos2 >= 0)) :
+                pass
+
+            _ = self.as_string
+            if hasattr(self, '_m_as_string'):
+                pass
+
+
+        @property
+        def as_string(self):
+            if hasattr(self, '_m_as_string'):
+                return self._m_as_string
+
+            if self.is_string:
+                pass
+                _pos = self._io.pos()
+                self._io.seek(self.save_pos1)
+                self._debug['_m_as_string']['start'] = self._io.pos()
+                self._m_as_string = (self._io.read_bytes((self.save_pos2 - self.save_pos1) - 2)).decode(u"UTF-16LE")
+                self._debug['_m_as_string']['end'] = self._io.pos()
+                self._io.seek(_pos)
+
+            return getattr(self, '_m_as_string', None)
+
+        @property
+        def is_string(self):
+            if hasattr(self, '_m_is_string'):
+                return self._m_is_string
+
+            self._m_is_string = self.first != 65535
+            return getattr(self, '_m_is_string', None)
 
         @property
         def save_pos1(self):
@@ -340,29 +407,6 @@ class WindowsResourceFile(KaitaiStruct):
 
             self._m_save_pos2 = self._io.pos()
             return getattr(self, '_m_save_pos2', None)
-
-        @property
-        def is_string(self):
-            if hasattr(self, '_m_is_string'):
-                return self._m_is_string
-
-            self._m_is_string = self.first != 65535
-            return getattr(self, '_m_is_string', None)
-
-        @property
-        def as_string(self):
-            if hasattr(self, '_m_as_string'):
-                return self._m_as_string
-
-            if self.is_string:
-                _pos = self._io.pos()
-                self._io.seek(self.save_pos1)
-                self._debug['_m_as_string']['start'] = self._io.pos()
-                self._m_as_string = (self._io.read_bytes(((self.save_pos2 - self.save_pos1) - 2))).decode(u"UTF-16LE")
-                self._debug['_m_as_string']['end'] = self._io.pos()
-                self._io.seek(_pos)
-
-            return getattr(self, '_m_as_string', None)
 
 
 

@@ -125,22 +125,23 @@
 
 
 # This is a generated file! Please edit source .ksy file and use kaitai-struct-compiler to rebuild
+# type: ignore
 
 import kaitaistruct
 from kaitaistruct import KaitaiStruct, KaitaiStream, BytesIO
+import protocol_body
 import collections
 
 
-if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 9):
-    raise Exception("Incompatible Kaitai Struct Python API: 0.9 or later is required, but you have %s" % (kaitaistruct.__version__))
+if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 11):
+    raise Exception("Incompatible Kaitai Struct Python API: 0.11 or later is required, but you have %s" % (kaitaistruct.__version__))
 
-import protocol_body
 class Ipv6Packet(KaitaiStruct):
     SEQ_FIELDS = ["version", "traffic_class", "flow_label", "payload_length", "next_header_type", "hop_limit", "src_ipv6_addr", "dst_ipv6_addr", "next_header", "rest"]
     def __init__(self, _io, _parent=None, _root=None):
-        self._io = _io
+        super(Ipv6Packet, self).__init__(_io)
         self._parent = _parent
-        self._root = _root if _root else self
+        self._root = _root or self
         self._debug = collections.defaultdict(dict)
 
     def _read(self):
@@ -153,7 +154,6 @@ class Ipv6Packet(KaitaiStruct):
         self._debug['flow_label']['start'] = self._io.pos()
         self.flow_label = self._io.read_bits_int_be(20)
         self._debug['flow_label']['end'] = self._io.pos()
-        self._io.align_to_byte()
         self._debug['payload_length']['start'] = self._io.pos()
         self.payload_length = self._io.read_u2be()
         self._debug['payload_length']['end'] = self._io.pos()
@@ -176,5 +176,10 @@ class Ipv6Packet(KaitaiStruct):
         self._debug['rest']['start'] = self._io.pos()
         self.rest = self._io.read_bytes_full()
         self._debug['rest']['end'] = self._io.pos()
+
+
+    def _fetch_instances(self):
+        pass
+        self.next_header._fetch_instances()
 
 

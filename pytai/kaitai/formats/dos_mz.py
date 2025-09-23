@@ -125,14 +125,15 @@
 
 
 # This is a generated file! Please edit source .ksy file and use kaitai-struct-compiler to rebuild
+# type: ignore
 
 import kaitaistruct
 from kaitaistruct import KaitaiStruct, KaitaiStream, BytesIO
 import collections
 
 
-if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 9):
-    raise Exception("Incompatible Kaitai Struct Python API: 0.9 or later is required, but you have %s" % (kaitaistruct.__version__))
+if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 11):
+    raise Exception("Incompatible Kaitai Struct Python API: 0.11 or later is required, but you have %s" % (kaitaistruct.__version__))
 
 class DosMz(KaitaiStruct):
     """DOS MZ file format is a traditional format for executables in MS-DOS
@@ -149,9 +150,9 @@ class DosMz(KaitaiStruct):
     """
     SEQ_FIELDS = ["header", "body"]
     def __init__(self, _io, _parent=None, _root=None):
-        self._io = _io
+        super(DosMz, self).__init__(_io)
         self._parent = _parent
-        self._root = _root if _root else self
+        self._root = _root or self
         self._debug = collections.defaultdict(dict)
 
     def _read(self):
@@ -163,12 +164,25 @@ class DosMz(KaitaiStruct):
         self.body = self._io.read_bytes(self.header.len_body)
         self._debug['body']['end'] = self._io.pos()
 
+
+    def _fetch_instances(self):
+        pass
+        self.header._fetch_instances()
+        _ = self.relocations
+        if hasattr(self, '_m_relocations'):
+            pass
+            for i in range(len(self._m_relocations)):
+                pass
+                self._m_relocations[i]._fetch_instances()
+
+
+
     class ExeHeader(KaitaiStruct):
         SEQ_FIELDS = ["mz", "rest_of_header"]
         def __init__(self, _io, _parent=None, _root=None):
-            self._io = _io
+            super(DosMz.ExeHeader, self).__init__(_io)
             self._parent = _parent
-            self._root = _root if _root else self
+            self._root = _root
             self._debug = collections.defaultdict(dict)
 
         def _read(self):
@@ -177,24 +191,29 @@ class DosMz(KaitaiStruct):
             self.mz._read()
             self._debug['mz']['end'] = self._io.pos()
             self._debug['rest_of_header']['start'] = self._io.pos()
-            self.rest_of_header = self._io.read_bytes((self.mz.len_header - 28))
+            self.rest_of_header = self._io.read_bytes(self.mz.len_header - 28)
             self._debug['rest_of_header']['end'] = self._io.pos()
+
+
+        def _fetch_instances(self):
+            pass
+            self.mz._fetch_instances()
 
         @property
         def len_body(self):
             if hasattr(self, '_m_len_body'):
                 return self._m_len_body
 
-            self._m_len_body = (((self.mz.num_pages * 512) if self.mz.last_page_extra_bytes == 0 else (((self.mz.num_pages - 1) * 512) + self.mz.last_page_extra_bytes)) - self.mz.len_header)
+            self._m_len_body = (self.mz.num_pages * 512 if self.mz.last_page_extra_bytes == 0 else (self.mz.num_pages - 1) * 512 + self.mz.last_page_extra_bytes) - self.mz.len_header
             return getattr(self, '_m_len_body', None)
 
 
     class MzHeader(KaitaiStruct):
         SEQ_FIELDS = ["magic", "last_page_extra_bytes", "num_pages", "num_relocations", "header_size", "min_allocation", "max_allocation", "initial_ss", "initial_sp", "checksum", "initial_ip", "initial_cs", "ofs_relocations", "overlay_id"]
         def __init__(self, _io, _parent=None, _root=None):
-            self._io = _io
+            super(DosMz.MzHeader, self).__init__(_io)
             self._parent = _parent
-            self._root = _root if _root else self
+            self._root = _root
             self._debug = collections.defaultdict(dict)
 
         def _read(self):
@@ -243,21 +262,25 @@ class DosMz(KaitaiStruct):
             self.overlay_id = self._io.read_u2le()
             self._debug['overlay_id']['end'] = self._io.pos()
 
+
+        def _fetch_instances(self):
+            pass
+
         @property
         def len_header(self):
             if hasattr(self, '_m_len_header'):
                 return self._m_len_header
 
-            self._m_len_header = (self.header_size * 16)
+            self._m_len_header = self.header_size * 16
             return getattr(self, '_m_len_header', None)
 
 
     class Relocation(KaitaiStruct):
         SEQ_FIELDS = ["ofs", "seg"]
         def __init__(self, _io, _parent=None, _root=None):
-            self._io = _io
+            super(DosMz.Relocation, self).__init__(_io)
             self._parent = _parent
-            self._root = _root if _root else self
+            self._root = _root
             self._debug = collections.defaultdict(dict)
 
         def _read(self):
@@ -269,24 +292,30 @@ class DosMz(KaitaiStruct):
             self._debug['seg']['end'] = self._io.pos()
 
 
+        def _fetch_instances(self):
+            pass
+
+
     @property
     def relocations(self):
         if hasattr(self, '_m_relocations'):
             return self._m_relocations
 
         if self.header.mz.ofs_relocations != 0:
+            pass
             io = self.header._io
             _pos = io.pos()
             io.seek(self.header.mz.ofs_relocations)
             self._debug['_m_relocations']['start'] = io.pos()
+            self._debug['_m_relocations']['arr'] = []
             self._m_relocations = []
             for i in range(self.header.mz.num_relocations):
-                if not 'arr' in self._debug['_m_relocations']:
-                    self._debug['_m_relocations']['arr'] = []
                 self._debug['_m_relocations']['arr'].append({'start': io.pos()})
                 _t__m_relocations = DosMz.Relocation(io, self, self._root)
-                _t__m_relocations._read()
-                self._m_relocations.append(_t__m_relocations)
+                try:
+                    _t__m_relocations._read()
+                finally:
+                    self._m_relocations.append(_t__m_relocations)
                 self._debug['_m_relocations']['arr'][i]['end'] = io.pos()
 
             self._debug['_m_relocations']['end'] = io.pos()

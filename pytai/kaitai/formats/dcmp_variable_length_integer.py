@@ -23,14 +23,15 @@
 
 
 # This is a generated file! Please edit source .ksy file and use kaitai-struct-compiler to rebuild
+# type: ignore
 
 import kaitaistruct
 from kaitaistruct import KaitaiStruct, KaitaiStream, BytesIO
 import collections
 
 
-if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 9):
-    raise Exception("Incompatible Kaitai Struct Python API: 0.9 or later is required, but you have %s" % (kaitaistruct.__version__))
+if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 11):
+    raise Exception("Incompatible Kaitai Struct Python API: 0.11 or later is required, but you have %s" % (kaitaistruct.__version__))
 
 class DcmpVariableLengthInteger(KaitaiStruct):
     """A variable-length integer,
@@ -57,9 +58,9 @@ class DcmpVariableLengthInteger(KaitaiStruct):
     """
     SEQ_FIELDS = ["first", "more"]
     def __init__(self, _io, _parent=None, _root=None):
-        self._io = _io
+        super(DcmpVariableLengthInteger, self).__init__(_io)
         self._parent = _parent
-        self._root = _root if _root else self
+        self._root = _root or self
         self._debug = collections.defaultdict(dict)
 
     def _read(self):
@@ -67,13 +68,28 @@ class DcmpVariableLengthInteger(KaitaiStruct):
         self.first = self._io.read_u1()
         self._debug['first']['end'] = self._io.pos()
         if self.first >= 128:
+            pass
             self._debug['more']['start'] = self._io.pos()
             _on = self.first
             if _on == 255:
+                pass
                 self.more = self._io.read_s4be()
             else:
+                pass
                 self.more = self._io.read_u1()
             self._debug['more']['end'] = self._io.pos()
+
+
+
+    def _fetch_instances(self):
+        pass
+        if self.first >= 128:
+            pass
+            _on = self.first
+            if _on == 255:
+                pass
+            else:
+                pass
 
 
     @property
@@ -83,7 +99,7 @@ class DcmpVariableLengthInteger(KaitaiStruct):
         if hasattr(self, '_m_value'):
             return self._m_value
 
-        self._m_value = (self.more if self.first == 255 else ((((self.first << 8) | self.more) - 49152) if self.first >= 128 else self.first))
+        self._m_value = (self.more if self.first == 255 else ((self.first << 8 | self.more) - 49152 if self.first >= 128 else self.first))
         return getattr(self, '_m_value', None)
 
 

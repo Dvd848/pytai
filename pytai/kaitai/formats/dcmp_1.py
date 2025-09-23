@@ -23,17 +23,18 @@
 
 
 # This is a generated file! Please edit source .ksy file and use kaitai-struct-compiler to rebuild
+# type: ignore
 
 import kaitaistruct
 from kaitaistruct import KaitaiStruct, KaitaiStream, BytesIO
-import collections
-from enum import Enum
-
-
-if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 9):
-    raise Exception("Incompatible Kaitai Struct Python API: 0.9 or later is required, but you have %s" % (kaitaistruct.__version__))
-
 import dcmp_variable_length_integer
+import collections
+from enum import IntEnum
+
+
+if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 11):
+    raise Exception("Incompatible Kaitai Struct Python API: 0.11 or later is required, but you have %s" % (kaitaistruct.__version__))
+
 class Dcmp1(KaitaiStruct):
     """Compressed resource data in `'dcmp' (1)` format,
     as stored in compressed resources with header type `8` and decompressor ID `1`.
@@ -64,28 +65,37 @@ class Dcmp1(KaitaiStruct):
     """
     SEQ_FIELDS = ["chunks"]
     def __init__(self, _io, _parent=None, _root=None):
-        self._io = _io
+        super(Dcmp1, self).__init__(_io)
         self._parent = _parent
-        self._root = _root if _root else self
+        self._root = _root or self
         self._debug = collections.defaultdict(dict)
 
     def _read(self):
         self._debug['chunks']['start'] = self._io.pos()
+        self._debug['chunks']['arr'] = []
         self.chunks = []
         i = 0
         while True:
-            if not 'arr' in self._debug['chunks']:
-                self._debug['chunks']['arr'] = []
             self._debug['chunks']['arr'].append({'start': self._io.pos()})
             _t_chunks = Dcmp1.Chunk(self._io, self, self._root)
-            _t_chunks._read()
-            _ = _t_chunks
-            self.chunks.append(_)
+            try:
+                _t_chunks._read()
+            finally:
+                _ = _t_chunks
+                self.chunks.append(_)
             self._debug['chunks']['arr'][len(self.chunks) - 1]['end'] = self._io.pos()
             if _.tag == 255:
                 break
             i += 1
         self._debug['chunks']['end'] = self._io.pos()
+
+
+    def _fetch_instances(self):
+        pass
+        for i in range(len(self.chunks)):
+            pass
+            self.chunks[i]._fetch_instances()
+
 
     class Chunk(KaitaiStruct):
         """A single chunk of compressed data.
@@ -100,7 +110,7 @@ class Dcmp1(KaitaiStruct):
         or expand to different data depending on which chunks came before them.
         """
 
-        class TagKind(Enum):
+        class TagKind(IntEnum):
             invalid = -1
             literal = 0
             backreference = 1
@@ -109,9 +119,9 @@ class Dcmp1(KaitaiStruct):
             end = 4
         SEQ_FIELDS = ["tag", "body"]
         def __init__(self, _io, _parent=None, _root=None):
-            self._io = _io
+            super(Dcmp1.Chunk, self).__init__(_io)
             self._parent = _parent
-            self._root = _root if _root else self
+            self._root = _root
             self._debug = collections.defaultdict(dict)
 
         def _read(self):
@@ -120,22 +130,255 @@ class Dcmp1(KaitaiStruct):
             self._debug['tag']['end'] = self._io.pos()
             self._debug['body']['start'] = self._io.pos()
             _on = (Dcmp1.Chunk.TagKind.literal if  ((self.tag >= 0) and (self.tag <= 31))  else (Dcmp1.Chunk.TagKind.backreference if  ((self.tag >= 32) and (self.tag <= 207))  else (Dcmp1.Chunk.TagKind.literal if  ((self.tag >= 208) and (self.tag <= 209))  else (Dcmp1.Chunk.TagKind.backreference if self.tag == 210 else (Dcmp1.Chunk.TagKind.table_lookup if  ((self.tag >= 213) and (self.tag <= 253))  else (Dcmp1.Chunk.TagKind.extended if self.tag == 254 else (Dcmp1.Chunk.TagKind.end if self.tag == 255 else Dcmp1.Chunk.TagKind.invalid)))))))
-            if _on == Dcmp1.Chunk.TagKind.extended:
+            if _on == Dcmp1.Chunk.TagKind.backreference:
+                pass
+                self.body = Dcmp1.Chunk.BackreferenceBody(self.tag, self._io, self, self._root)
+                self.body._read()
+            elif _on == Dcmp1.Chunk.TagKind.end:
+                pass
+                self.body = Dcmp1.Chunk.EndBody(self._io, self, self._root)
+                self.body._read()
+            elif _on == Dcmp1.Chunk.TagKind.extended:
+                pass
                 self.body = Dcmp1.Chunk.ExtendedBody(self._io, self, self._root)
                 self.body._read()
             elif _on == Dcmp1.Chunk.TagKind.literal:
+                pass
                 self.body = Dcmp1.Chunk.LiteralBody(self.tag, self._io, self, self._root)
                 self.body._read()
-            elif _on == Dcmp1.Chunk.TagKind.end:
-                self.body = Dcmp1.Chunk.EndBody(self._io, self, self._root)
-                self.body._read()
             elif _on == Dcmp1.Chunk.TagKind.table_lookup:
+                pass
                 self.body = Dcmp1.Chunk.TableLookupBody(self.tag, self._io, self, self._root)
                 self.body._read()
-            elif _on == Dcmp1.Chunk.TagKind.backreference:
-                self.body = Dcmp1.Chunk.BackreferenceBody(self.tag, self._io, self, self._root)
-                self.body._read()
             self._debug['body']['end'] = self._io.pos()
+
+
+        def _fetch_instances(self):
+            pass
+            _on = (Dcmp1.Chunk.TagKind.literal if  ((self.tag >= 0) and (self.tag <= 31))  else (Dcmp1.Chunk.TagKind.backreference if  ((self.tag >= 32) and (self.tag <= 207))  else (Dcmp1.Chunk.TagKind.literal if  ((self.tag >= 208) and (self.tag <= 209))  else (Dcmp1.Chunk.TagKind.backreference if self.tag == 210 else (Dcmp1.Chunk.TagKind.table_lookup if  ((self.tag >= 213) and (self.tag <= 253))  else (Dcmp1.Chunk.TagKind.extended if self.tag == 254 else (Dcmp1.Chunk.TagKind.end if self.tag == 255 else Dcmp1.Chunk.TagKind.invalid)))))))
+            if _on == Dcmp1.Chunk.TagKind.backreference:
+                pass
+                self.body._fetch_instances()
+            elif _on == Dcmp1.Chunk.TagKind.end:
+                pass
+                self.body._fetch_instances()
+            elif _on == Dcmp1.Chunk.TagKind.extended:
+                pass
+                self.body._fetch_instances()
+            elif _on == Dcmp1.Chunk.TagKind.literal:
+                pass
+                self.body._fetch_instances()
+            elif _on == Dcmp1.Chunk.TagKind.table_lookup:
+                pass
+                self.body._fetch_instances()
+
+        class BackreferenceBody(KaitaiStruct):
+            """The body of a backreference chunk.
+            
+            This chunk expands to the data stored in a preceding literal chunk,
+            indicated by an index number (`index`).
+            """
+            SEQ_FIELDS = ["index_separate_minus"]
+            def __init__(self, tag, _io, _parent=None, _root=None):
+                super(Dcmp1.Chunk.BackreferenceBody, self).__init__(_io)
+                self._parent = _parent
+                self._root = _root
+                self.tag = tag
+                self._debug = collections.defaultdict(dict)
+
+            def _read(self):
+                if self.is_index_separate:
+                    pass
+                    self._debug['index_separate_minus']['start'] = self._io.pos()
+                    self.index_separate_minus = self._io.read_u1()
+                    self._debug['index_separate_minus']['end'] = self._io.pos()
+
+
+
+            def _fetch_instances(self):
+                pass
+                if self.is_index_separate:
+                    pass
+
+
+            @property
+            def index(self):
+                """The index of the referenced literal chunk.
+                
+                Stored literals are assigned index numbers in the order in which they appear in the compressed data,
+                starting at 0.
+                Non-stored literals are not counted in the numbering and cannot be referenced using backreferences.
+                Once an index is assigned to a stored literal,
+                it is never changed or unassigned for the entire length of the compressed data.
+                
+                As the name indicates,
+                a backreference can only reference stored literal chunks found *before* the backreference,
+                not ones that come after it.
+                """
+                if hasattr(self, '_m_index'):
+                    return self._m_index
+
+                self._m_index = (self.index_separate if self.is_index_separate else self.index_in_tag)
+                return getattr(self, '_m_index', None)
+
+            @property
+            def index_in_tag(self):
+                """The index of the referenced literal chunk,
+                as stored in the tag byte.
+                """
+                if hasattr(self, '_m_index_in_tag'):
+                    return self._m_index_in_tag
+
+                self._m_index_in_tag = self.tag - 32
+                return getattr(self, '_m_index_in_tag', None)
+
+            @property
+            def index_separate(self):
+                """The index of the referenced literal chunk,
+                as stored separately from the tag byte,
+                with the implicit offset corrected for.
+                """
+                if hasattr(self, '_m_index_separate'):
+                    return self._m_index_separate
+
+                if self.is_index_separate:
+                    pass
+                    self._m_index_separate = self.index_separate_minus + 176
+
+                return getattr(self, '_m_index_separate', None)
+
+            @property
+            def is_index_separate(self):
+                """Whether the index is stored separately from the tag.
+                """
+                if hasattr(self, '_m_is_index_separate'):
+                    return self._m_is_index_separate
+
+                self._m_is_index_separate = self.tag == 210
+                return getattr(self, '_m_is_index_separate', None)
+
+
+        class EndBody(KaitaiStruct):
+            """The body of an end chunk.
+            This body is always empty.
+            
+            The last chunk in the compressed data must always be an end chunk.
+            An end chunk cannot appear elsewhere in the compressed data.
+            """
+            SEQ_FIELDS = []
+            def __init__(self, _io, _parent=None, _root=None):
+                super(Dcmp1.Chunk.EndBody, self).__init__(_io)
+                self._parent = _parent
+                self._root = _root
+                self._debug = collections.defaultdict(dict)
+
+            def _read(self):
+                pass
+
+
+            def _fetch_instances(self):
+                pass
+
+
+        class ExtendedBody(KaitaiStruct):
+            """The body of an extended chunk.
+            The meaning of this chunk depends on the extended tag byte stored in the chunk data.
+            """
+            SEQ_FIELDS = ["tag", "body"]
+            def __init__(self, _io, _parent=None, _root=None):
+                super(Dcmp1.Chunk.ExtendedBody, self).__init__(_io)
+                self._parent = _parent
+                self._root = _root
+                self._debug = collections.defaultdict(dict)
+
+            def _read(self):
+                self._debug['tag']['start'] = self._io.pos()
+                self.tag = self._io.read_u1()
+                self._debug['tag']['end'] = self._io.pos()
+                self._debug['body']['start'] = self._io.pos()
+                _on = self.tag
+                if _on == 2:
+                    pass
+                    self.body = Dcmp1.Chunk.ExtendedBody.RepeatBody(self._io, self, self._root)
+                    self.body._read()
+                self._debug['body']['end'] = self._io.pos()
+
+
+            def _fetch_instances(self):
+                pass
+                _on = self.tag
+                if _on == 2:
+                    pass
+                    self.body._fetch_instances()
+
+            class RepeatBody(KaitaiStruct):
+                """The body of a repeat chunk.
+                
+                This chunk expands to the same byte repeated a number of times,
+                i. e. it implements a form of run-length encoding.
+                """
+                SEQ_FIELDS = ["to_repeat_raw", "repeat_count_m1_raw"]
+                def __init__(self, _io, _parent=None, _root=None):
+                    super(Dcmp1.Chunk.ExtendedBody.RepeatBody, self).__init__(_io)
+                    self._parent = _parent
+                    self._root = _root
+                    self._debug = collections.defaultdict(dict)
+
+                def _read(self):
+                    self._debug['to_repeat_raw']['start'] = self._io.pos()
+                    self.to_repeat_raw = dcmp_variable_length_integer.DcmpVariableLengthInteger(self._io)
+                    self.to_repeat_raw._read()
+                    self._debug['to_repeat_raw']['end'] = self._io.pos()
+                    self._debug['repeat_count_m1_raw']['start'] = self._io.pos()
+                    self.repeat_count_m1_raw = dcmp_variable_length_integer.DcmpVariableLengthInteger(self._io)
+                    self.repeat_count_m1_raw._read()
+                    self._debug['repeat_count_m1_raw']['end'] = self._io.pos()
+
+
+                def _fetch_instances(self):
+                    pass
+                    self.to_repeat_raw._fetch_instances()
+                    self.repeat_count_m1_raw._fetch_instances()
+
+                @property
+                def repeat_count(self):
+                    """The number of times to repeat the value.
+                    
+                    This value must be positive.
+                    """
+                    if hasattr(self, '_m_repeat_count'):
+                        return self._m_repeat_count
+
+                    self._m_repeat_count = self.repeat_count_m1 + 1
+                    return getattr(self, '_m_repeat_count', None)
+
+                @property
+                def repeat_count_m1(self):
+                    """The number of times to repeat the value,
+                    minus one.
+                    
+                    This value must not be negative.
+                    """
+                    if hasattr(self, '_m_repeat_count_m1'):
+                        return self._m_repeat_count_m1
+
+                    self._m_repeat_count_m1 = self.repeat_count_m1_raw.value
+                    return getattr(self, '_m_repeat_count_m1', None)
+
+                @property
+                def to_repeat(self):
+                    """The value to repeat.
+                    
+                    Although it is stored as a variable-length integer,
+                    this value must fit into an unsigned 8-bit integer.
+                    """
+                    if hasattr(self, '_m_to_repeat'):
+                        return self._m_to_repeat
+
+                    self._m_to_repeat = self.to_repeat_raw.value
+                    return getattr(self, '_m_to_repeat', None)
+
+
 
         class LiteralBody(KaitaiStruct):
             """The body of a literal data chunk.
@@ -146,14 +389,15 @@ class Dcmp1(KaitaiStruct):
             """
             SEQ_FIELDS = ["len_literal_separate", "literal"]
             def __init__(self, tag, _io, _parent=None, _root=None):
-                self._io = _io
+                super(Dcmp1.Chunk.LiteralBody, self).__init__(_io)
                 self._parent = _parent
-                self._root = _root if _root else self
+                self._root = _root
                 self.tag = tag
                 self._debug = collections.defaultdict(dict)
 
             def _read(self):
                 if self.is_len_literal_separate:
+                    pass
                     self._debug['len_literal_separate']['start'] = self._io.pos()
                     self.len_literal_separate = self._io.read_u1()
                     self._debug['len_literal_separate']['end'] = self._io.pos()
@@ -161,6 +405,13 @@ class Dcmp1(KaitaiStruct):
                 self._debug['literal']['start'] = self._io.pos()
                 self.literal = self._io.read_bytes(self.len_literal)
                 self._debug['literal']['end'] = self._io.pos()
+
+
+            def _fetch_instances(self):
+                pass
+                if self.is_len_literal_separate:
+                    pass
+
 
             @property
             def do_store(self):
@@ -171,25 +422,8 @@ class Dcmp1(KaitaiStruct):
                 if hasattr(self, '_m_do_store'):
                     return self._m_do_store
 
-                self._m_do_store = (self.tag == 209 if self.is_len_literal_separate else (self.tag & 16) != 0)
+                self._m_do_store = (self.tag == 209 if self.is_len_literal_separate else self.tag & 16 != 0)
                 return getattr(self, '_m_do_store', None)
-
-            @property
-            def len_literal_m1_in_tag(self):
-                """The part of the tag byte that indicates the length of the literal data,
-                in bytes,
-                minus one.
-                
-                If the tag byte is 0xd0 or 0xd1,
-                the length is stored in a separate byte after the tag byte and before the literal data.
-                """
-                if hasattr(self, '_m_len_literal_m1_in_tag'):
-                    return self._m_len_literal_m1_in_tag
-
-                if not (self.is_len_literal_separate):
-                    self._m_len_literal_m1_in_tag = (self.tag & 15)
-
-                return getattr(self, '_m_len_literal_m1_in_tag', None)
 
             @property
             def is_len_literal_separate(self):
@@ -213,85 +447,26 @@ class Dcmp1(KaitaiStruct):
                 if hasattr(self, '_m_len_literal'):
                     return self._m_len_literal
 
-                self._m_len_literal = (self.len_literal_separate if self.is_len_literal_separate else (self.len_literal_m1_in_tag + 1))
+                self._m_len_literal = (self.len_literal_separate if self.is_len_literal_separate else self.len_literal_m1_in_tag + 1)
                 return getattr(self, '_m_len_literal', None)
 
-
-        class BackreferenceBody(KaitaiStruct):
-            """The body of a backreference chunk.
-            
-            This chunk expands to the data stored in a preceding literal chunk,
-            indicated by an index number (`index`).
-            """
-            SEQ_FIELDS = ["index_separate_minus"]
-            def __init__(self, tag, _io, _parent=None, _root=None):
-                self._io = _io
-                self._parent = _parent
-                self._root = _root if _root else self
-                self.tag = tag
-                self._debug = collections.defaultdict(dict)
-
-            def _read(self):
-                if self.is_index_separate:
-                    self._debug['index_separate_minus']['start'] = self._io.pos()
-                    self.index_separate_minus = self._io.read_u1()
-                    self._debug['index_separate_minus']['end'] = self._io.pos()
-
-
             @property
-            def is_index_separate(self):
-                """Whether the index is stored separately from the tag.
-                """
-                if hasattr(self, '_m_is_index_separate'):
-                    return self._m_is_index_separate
-
-                self._m_is_index_separate = self.tag == 210
-                return getattr(self, '_m_is_index_separate', None)
-
-            @property
-            def index_in_tag(self):
-                """The index of the referenced literal chunk,
-                as stored in the tag byte.
-                """
-                if hasattr(self, '_m_index_in_tag'):
-                    return self._m_index_in_tag
-
-                self._m_index_in_tag = (self.tag - 32)
-                return getattr(self, '_m_index_in_tag', None)
-
-            @property
-            def index_separate(self):
-                """The index of the referenced literal chunk,
-                as stored separately from the tag byte,
-                with the implicit offset corrected for.
-                """
-                if hasattr(self, '_m_index_separate'):
-                    return self._m_index_separate
-
-                if self.is_index_separate:
-                    self._m_index_separate = (self.index_separate_minus + 176)
-
-                return getattr(self, '_m_index_separate', None)
-
-            @property
-            def index(self):
-                """The index of the referenced literal chunk.
+            def len_literal_m1_in_tag(self):
+                """The part of the tag byte that indicates the length of the literal data,
+                in bytes,
+                minus one.
                 
-                Stored literals are assigned index numbers in the order in which they appear in the compressed data,
-                starting at 0.
-                Non-stored literals are not counted in the numbering and cannot be referenced using backreferences.
-                Once an index is assigned to a stored literal,
-                it is never changed or unassigned for the entire length of the compressed data.
-                
-                As the name indicates,
-                a backreference can only reference stored literal chunks found *before* the backreference,
-                not ones that come after it.
+                If the tag byte is 0xd0 or 0xd1,
+                the length is stored in a separate byte after the tag byte and before the literal data.
                 """
-                if hasattr(self, '_m_index'):
-                    return self._m_index
+                if hasattr(self, '_m_len_literal_m1_in_tag'):
+                    return self._m_len_literal_m1_in_tag
 
-                self._m_index = (self.index_separate if self.is_index_separate else self.index_in_tag)
-                return getattr(self, '_m_index', None)
+                if (not (self.is_len_literal_separate)):
+                    pass
+                    self._m_len_literal_m1_in_tag = self.tag & 15
+
+                return getattr(self, '_m_len_literal_m1_in_tag', None)
 
 
         class TableLookupBody(KaitaiStruct):
@@ -304,13 +479,17 @@ class Dcmp1(KaitaiStruct):
             """
             SEQ_FIELDS = []
             def __init__(self, tag, _io, _parent=None, _root=None):
-                self._io = _io
+                super(Dcmp1.Chunk.TableLookupBody, self).__init__(_io)
                 self._parent = _parent
-                self._root = _root if _root else self
+                self._root = _root
                 self.tag = tag
                 self._debug = collections.defaultdict(dict)
 
             def _read(self):
+                pass
+
+
+            def _fetch_instances(self):
                 pass
 
             @property
@@ -334,111 +513,8 @@ class Dcmp1(KaitaiStruct):
                 if hasattr(self, '_m_value'):
                     return self._m_value
 
-                self._m_value = self.lookup_table[(self.tag - 213)]
+                self._m_value = self.lookup_table[self.tag - 213]
                 return getattr(self, '_m_value', None)
-
-
-        class EndBody(KaitaiStruct):
-            """The body of an end chunk.
-            This body is always empty.
-            
-            The last chunk in the compressed data must always be an end chunk.
-            An end chunk cannot appear elsewhere in the compressed data.
-            """
-            SEQ_FIELDS = []
-            def __init__(self, _io, _parent=None, _root=None):
-                self._io = _io
-                self._parent = _parent
-                self._root = _root if _root else self
-                self._debug = collections.defaultdict(dict)
-
-            def _read(self):
-                pass
-
-
-        class ExtendedBody(KaitaiStruct):
-            """The body of an extended chunk.
-            The meaning of this chunk depends on the extended tag byte stored in the chunk data.
-            """
-            SEQ_FIELDS = ["tag", "body"]
-            def __init__(self, _io, _parent=None, _root=None):
-                self._io = _io
-                self._parent = _parent
-                self._root = _root if _root else self
-                self._debug = collections.defaultdict(dict)
-
-            def _read(self):
-                self._debug['tag']['start'] = self._io.pos()
-                self.tag = self._io.read_u1()
-                self._debug['tag']['end'] = self._io.pos()
-                self._debug['body']['start'] = self._io.pos()
-                _on = self.tag
-                if _on == 2:
-                    self.body = Dcmp1.Chunk.ExtendedBody.RepeatBody(self._io, self, self._root)
-                    self.body._read()
-                self._debug['body']['end'] = self._io.pos()
-
-            class RepeatBody(KaitaiStruct):
-                """The body of a repeat chunk.
-                
-                This chunk expands to the same byte repeated a number of times,
-                i. e. it implements a form of run-length encoding.
-                """
-                SEQ_FIELDS = ["to_repeat_raw", "repeat_count_m1_raw"]
-                def __init__(self, _io, _parent=None, _root=None):
-                    self._io = _io
-                    self._parent = _parent
-                    self._root = _root if _root else self
-                    self._debug = collections.defaultdict(dict)
-
-                def _read(self):
-                    self._debug['to_repeat_raw']['start'] = self._io.pos()
-                    self.to_repeat_raw = dcmp_variable_length_integer.DcmpVariableLengthInteger(self._io)
-                    self.to_repeat_raw._read()
-                    self._debug['to_repeat_raw']['end'] = self._io.pos()
-                    self._debug['repeat_count_m1_raw']['start'] = self._io.pos()
-                    self.repeat_count_m1_raw = dcmp_variable_length_integer.DcmpVariableLengthInteger(self._io)
-                    self.repeat_count_m1_raw._read()
-                    self._debug['repeat_count_m1_raw']['end'] = self._io.pos()
-
-                @property
-                def to_repeat(self):
-                    """The value to repeat.
-                    
-                    Although it is stored as a variable-length integer,
-                    this value must fit into an unsigned 8-bit integer.
-                    """
-                    if hasattr(self, '_m_to_repeat'):
-                        return self._m_to_repeat
-
-                    self._m_to_repeat = self.to_repeat_raw.value
-                    return getattr(self, '_m_to_repeat', None)
-
-                @property
-                def repeat_count_m1(self):
-                    """The number of times to repeat the value,
-                    minus one.
-                    
-                    This value must not be negative.
-                    """
-                    if hasattr(self, '_m_repeat_count_m1'):
-                        return self._m_repeat_count_m1
-
-                    self._m_repeat_count_m1 = self.repeat_count_m1_raw.value
-                    return getattr(self, '_m_repeat_count_m1', None)
-
-                @property
-                def repeat_count(self):
-                    """The number of times to repeat the value.
-                    
-                    This value must be positive.
-                    """
-                    if hasattr(self, '_m_repeat_count'):
-                        return self._m_repeat_count
-
-                    self._m_repeat_count = (self.repeat_count_m1 + 1)
-                    return getattr(self, '_m_repeat_count', None)
-
 
 
 

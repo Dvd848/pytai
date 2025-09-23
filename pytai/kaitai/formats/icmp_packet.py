@@ -125,19 +125,20 @@
 
 
 # This is a generated file! Please edit source .ksy file and use kaitai-struct-compiler to rebuild
+# type: ignore
 
 import kaitaistruct
 from kaitaistruct import KaitaiStruct, KaitaiStream, BytesIO
-from enum import Enum
+from enum import IntEnum
 import collections
 
 
-if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 9):
-    raise Exception("Incompatible Kaitai Struct Python API: 0.9 or later is required, but you have %s" % (kaitaistruct.__version__))
+if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 11):
+    raise Exception("Incompatible Kaitai Struct Python API: 0.11 or later is required, but you have %s" % (kaitaistruct.__version__))
 
 class IcmpPacket(KaitaiStruct):
 
-    class IcmpTypeEnum(Enum):
+    class IcmpTypeEnum(IntEnum):
         echo_reply = 0
         destination_unreachable = 3
         source_quench = 4
@@ -146,9 +147,9 @@ class IcmpPacket(KaitaiStruct):
         time_exceeded = 11
     SEQ_FIELDS = ["icmp_type", "destination_unreachable", "time_exceeded", "echo"]
     def __init__(self, _io, _parent=None, _root=None):
-        self._io = _io
+        super(IcmpPacket, self).__init__(_io)
         self._parent = _parent
-        self._root = _root if _root else self
+        self._root = _root or self
         self._debug = collections.defaultdict(dict)
 
     def _read(self):
@@ -156,27 +157,46 @@ class IcmpPacket(KaitaiStruct):
         self.icmp_type = KaitaiStream.resolve_enum(IcmpPacket.IcmpTypeEnum, self._io.read_u1())
         self._debug['icmp_type']['end'] = self._io.pos()
         if self.icmp_type == IcmpPacket.IcmpTypeEnum.destination_unreachable:
+            pass
             self._debug['destination_unreachable']['start'] = self._io.pos()
             self.destination_unreachable = IcmpPacket.DestinationUnreachableMsg(self._io, self, self._root)
             self.destination_unreachable._read()
             self._debug['destination_unreachable']['end'] = self._io.pos()
 
         if self.icmp_type == IcmpPacket.IcmpTypeEnum.time_exceeded:
+            pass
             self._debug['time_exceeded']['start'] = self._io.pos()
             self.time_exceeded = IcmpPacket.TimeExceededMsg(self._io, self, self._root)
             self.time_exceeded._read()
             self._debug['time_exceeded']['end'] = self._io.pos()
 
         if  ((self.icmp_type == IcmpPacket.IcmpTypeEnum.echo) or (self.icmp_type == IcmpPacket.IcmpTypeEnum.echo_reply)) :
+            pass
             self._debug['echo']['start'] = self._io.pos()
             self.echo = IcmpPacket.EchoMsg(self._io, self, self._root)
             self.echo._read()
             self._debug['echo']['end'] = self._io.pos()
 
 
+
+    def _fetch_instances(self):
+        pass
+        if self.icmp_type == IcmpPacket.IcmpTypeEnum.destination_unreachable:
+            pass
+            self.destination_unreachable._fetch_instances()
+
+        if self.icmp_type == IcmpPacket.IcmpTypeEnum.time_exceeded:
+            pass
+            self.time_exceeded._fetch_instances()
+
+        if  ((self.icmp_type == IcmpPacket.IcmpTypeEnum.echo) or (self.icmp_type == IcmpPacket.IcmpTypeEnum.echo_reply)) :
+            pass
+            self.echo._fetch_instances()
+
+
     class DestinationUnreachableMsg(KaitaiStruct):
 
-        class DestinationUnreachableCode(Enum):
+        class DestinationUnreachableCode(IntEnum):
             net_unreachable = 0
             host_unreachable = 1
             protocol_unreachable = 2
@@ -195,9 +215,9 @@ class IcmpPacket(KaitaiStruct):
             precedence_cuttoff_in_effect = 15
         SEQ_FIELDS = ["code", "checksum"]
         def __init__(self, _io, _parent=None, _root=None):
-            self._io = _io
+            super(IcmpPacket.DestinationUnreachableMsg, self).__init__(_io)
             self._parent = _parent
-            self._root = _root if _root else self
+            self._root = _root
             self._debug = collections.defaultdict(dict)
 
         def _read(self):
@@ -209,33 +229,16 @@ class IcmpPacket(KaitaiStruct):
             self._debug['checksum']['end'] = self._io.pos()
 
 
-    class TimeExceededMsg(KaitaiStruct):
-
-        class TimeExceededCode(Enum):
-            time_to_live_exceeded_in_transit = 0
-            fragment_reassembly_time_exceeded = 1
-        SEQ_FIELDS = ["code", "checksum"]
-        def __init__(self, _io, _parent=None, _root=None):
-            self._io = _io
-            self._parent = _parent
-            self._root = _root if _root else self
-            self._debug = collections.defaultdict(dict)
-
-        def _read(self):
-            self._debug['code']['start'] = self._io.pos()
-            self.code = KaitaiStream.resolve_enum(IcmpPacket.TimeExceededMsg.TimeExceededCode, self._io.read_u1())
-            self._debug['code']['end'] = self._io.pos()
-            self._debug['checksum']['start'] = self._io.pos()
-            self.checksum = self._io.read_u2be()
-            self._debug['checksum']['end'] = self._io.pos()
+        def _fetch_instances(self):
+            pass
 
 
     class EchoMsg(KaitaiStruct):
         SEQ_FIELDS = ["code", "checksum", "identifier", "seq_num", "data"]
         def __init__(self, _io, _parent=None, _root=None):
-            self._io = _io
+            super(IcmpPacket.EchoMsg, self).__init__(_io)
             self._parent = _parent
-            self._root = _root if _root else self
+            self._root = _root
             self._debug = collections.defaultdict(dict)
 
         def _read(self):
@@ -256,6 +259,35 @@ class IcmpPacket(KaitaiStruct):
             self._debug['data']['start'] = self._io.pos()
             self.data = self._io.read_bytes_full()
             self._debug['data']['end'] = self._io.pos()
+
+
+        def _fetch_instances(self):
+            pass
+
+
+    class TimeExceededMsg(KaitaiStruct):
+
+        class TimeExceededCode(IntEnum):
+            time_to_live_exceeded_in_transit = 0
+            fragment_reassembly_time_exceeded = 1
+        SEQ_FIELDS = ["code", "checksum"]
+        def __init__(self, _io, _parent=None, _root=None):
+            super(IcmpPacket.TimeExceededMsg, self).__init__(_io)
+            self._parent = _parent
+            self._root = _root
+            self._debug = collections.defaultdict(dict)
+
+        def _read(self):
+            self._debug['code']['start'] = self._io.pos()
+            self.code = KaitaiStream.resolve_enum(IcmpPacket.TimeExceededMsg.TimeExceededCode, self._io.read_u1())
+            self._debug['code']['end'] = self._io.pos()
+            self._debug['checksum']['start'] = self._io.pos()
+            self.checksum = self._io.read_u2be()
+            self._debug['checksum']['end'] = self._io.pos()
+
+
+        def _fetch_instances(self):
+            pass
 
 
 

@@ -125,98 +125,53 @@
 
 
 # This is a generated file! Please edit source .ksy file and use kaitai-struct-compiler to rebuild
+# type: ignore
 
 import kaitaistruct
 from kaitaistruct import KaitaiStruct, KaitaiStream, BytesIO
-from enum import Enum
+from enum import IntEnum
 import collections
 import zlib
 
 
-if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 9):
-    raise Exception("Incompatible Kaitai Struct Python API: 0.9 or later is required, but you have %s" % (kaitaistruct.__version__))
+if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 11):
+    raise Exception("Incompatible Kaitai Struct Python API: 0.11 or later is required, but you have %s" % (kaitaistruct.__version__))
 
 class Fallout2Dat(KaitaiStruct):
 
-    class Compression(Enum):
+    class Compression(IntEnum):
         none = 0
         zlib = 1
     SEQ_FIELDS = []
     def __init__(self, _io, _parent=None, _root=None):
-        self._io = _io
+        super(Fallout2Dat, self).__init__(_io)
         self._parent = _parent
-        self._root = _root if _root else self
+        self._root = _root or self
         self._debug = collections.defaultdict(dict)
 
     def _read(self):
         pass
 
-    class Pstr(KaitaiStruct):
-        SEQ_FIELDS = ["size", "str"]
-        def __init__(self, _io, _parent=None, _root=None):
-            self._io = _io
-            self._parent = _parent
-            self._root = _root if _root else self
-            self._debug = collections.defaultdict(dict)
 
-        def _read(self):
-            self._debug['size']['start'] = self._io.pos()
-            self.size = self._io.read_u4le()
-            self._debug['size']['end'] = self._io.pos()
-            self._debug['str']['start'] = self._io.pos()
-            self.str = (self._io.read_bytes(self.size)).decode(u"ASCII")
-            self._debug['str']['end'] = self._io.pos()
+    def _fetch_instances(self):
+        pass
+        _ = self.footer
+        if hasattr(self, '_m_footer'):
+            pass
+            self._m_footer._fetch_instances()
 
-
-    class Footer(KaitaiStruct):
-        SEQ_FIELDS = ["index_size", "file_size"]
-        def __init__(self, _io, _parent=None, _root=None):
-            self._io = _io
-            self._parent = _parent
-            self._root = _root if _root else self
-            self._debug = collections.defaultdict(dict)
-
-        def _read(self):
-            self._debug['index_size']['start'] = self._io.pos()
-            self.index_size = self._io.read_u4le()
-            self._debug['index_size']['end'] = self._io.pos()
-            self._debug['file_size']['start'] = self._io.pos()
-            self.file_size = self._io.read_u4le()
-            self._debug['file_size']['end'] = self._io.pos()
-
-
-    class Index(KaitaiStruct):
-        SEQ_FIELDS = ["file_count", "files"]
-        def __init__(self, _io, _parent=None, _root=None):
-            self._io = _io
-            self._parent = _parent
-            self._root = _root if _root else self
-            self._debug = collections.defaultdict(dict)
-
-        def _read(self):
-            self._debug['file_count']['start'] = self._io.pos()
-            self.file_count = self._io.read_u4le()
-            self._debug['file_count']['end'] = self._io.pos()
-            self._debug['files']['start'] = self._io.pos()
-            self.files = []
-            for i in range(self.file_count):
-                if not 'arr' in self._debug['files']:
-                    self._debug['files']['arr'] = []
-                self._debug['files']['arr'].append({'start': self._io.pos()})
-                _t_files = Fallout2Dat.File(self._io, self, self._root)
-                _t_files._read()
-                self.files.append(_t_files)
-                self._debug['files']['arr'][i]['end'] = self._io.pos()
-
-            self._debug['files']['end'] = self._io.pos()
+        _ = self.index
+        if hasattr(self, '_m_index'):
+            pass
+            self._m_index._fetch_instances()
 
 
     class File(KaitaiStruct):
         SEQ_FIELDS = ["name", "flags", "size_unpacked", "size_packed", "offset"]
         def __init__(self, _io, _parent=None, _root=None):
-            self._io = _io
+            super(Fallout2Dat.File, self).__init__(_io)
             self._parent = _parent
-            self._root = _root if _root else self
+            self._root = _root
             self._debug = collections.defaultdict(dict)
 
         def _read(self):
@@ -237,12 +192,37 @@ class Fallout2Dat(KaitaiStruct):
             self.offset = self._io.read_u4le()
             self._debug['offset']['end'] = self._io.pos()
 
+
+        def _fetch_instances(self):
+            pass
+            self.name._fetch_instances()
+            _ = self.contents_raw
+            if hasattr(self, '_m_contents_raw'):
+                pass
+
+            _ = self.contents_zlib
+            if hasattr(self, '_m_contents_zlib'):
+                pass
+
+
+        @property
+        def contents(self):
+            if hasattr(self, '_m_contents'):
+                return self._m_contents
+
+            if  ((self.flags == Fallout2Dat.Compression.zlib) or (self.flags == Fallout2Dat.Compression.none)) :
+                pass
+                self._m_contents = (self.contents_zlib if self.flags == Fallout2Dat.Compression.zlib else self.contents_raw)
+
+            return getattr(self, '_m_contents', None)
+
         @property
         def contents_raw(self):
             if hasattr(self, '_m_contents_raw'):
                 return self._m_contents_raw
 
             if self.flags == Fallout2Dat.Compression.none:
+                pass
                 io = self._root._io
                 _pos = io.pos()
                 io.seek(self.offset)
@@ -259,6 +239,7 @@ class Fallout2Dat(KaitaiStruct):
                 return self._m_contents_zlib
 
             if self.flags == Fallout2Dat.Compression.zlib:
+                pass
                 io = self._root._io
                 _pos = io.pos()
                 io.seek(self.offset)
@@ -270,15 +251,82 @@ class Fallout2Dat(KaitaiStruct):
 
             return getattr(self, '_m_contents_zlib', None)
 
-        @property
-        def contents(self):
-            if hasattr(self, '_m_contents'):
-                return self._m_contents
 
-            if  ((self.flags == Fallout2Dat.Compression.zlib) or (self.flags == Fallout2Dat.Compression.none)) :
-                self._m_contents = (self.contents_zlib if self.flags == Fallout2Dat.Compression.zlib else self.contents_raw)
+    class Footer(KaitaiStruct):
+        SEQ_FIELDS = ["index_size", "file_size"]
+        def __init__(self, _io, _parent=None, _root=None):
+            super(Fallout2Dat.Footer, self).__init__(_io)
+            self._parent = _parent
+            self._root = _root
+            self._debug = collections.defaultdict(dict)
 
-            return getattr(self, '_m_contents', None)
+        def _read(self):
+            self._debug['index_size']['start'] = self._io.pos()
+            self.index_size = self._io.read_u4le()
+            self._debug['index_size']['end'] = self._io.pos()
+            self._debug['file_size']['start'] = self._io.pos()
+            self.file_size = self._io.read_u4le()
+            self._debug['file_size']['end'] = self._io.pos()
+
+
+        def _fetch_instances(self):
+            pass
+
+
+    class Index(KaitaiStruct):
+        SEQ_FIELDS = ["file_count", "files"]
+        def __init__(self, _io, _parent=None, _root=None):
+            super(Fallout2Dat.Index, self).__init__(_io)
+            self._parent = _parent
+            self._root = _root
+            self._debug = collections.defaultdict(dict)
+
+        def _read(self):
+            self._debug['file_count']['start'] = self._io.pos()
+            self.file_count = self._io.read_u4le()
+            self._debug['file_count']['end'] = self._io.pos()
+            self._debug['files']['start'] = self._io.pos()
+            self._debug['files']['arr'] = []
+            self.files = []
+            for i in range(self.file_count):
+                self._debug['files']['arr'].append({'start': self._io.pos()})
+                _t_files = Fallout2Dat.File(self._io, self, self._root)
+                try:
+                    _t_files._read()
+                finally:
+                    self.files.append(_t_files)
+                self._debug['files']['arr'][i]['end'] = self._io.pos()
+
+            self._debug['files']['end'] = self._io.pos()
+
+
+        def _fetch_instances(self):
+            pass
+            for i in range(len(self.files)):
+                pass
+                self.files[i]._fetch_instances()
+
+
+
+    class Pstr(KaitaiStruct):
+        SEQ_FIELDS = ["size", "str"]
+        def __init__(self, _io, _parent=None, _root=None):
+            super(Fallout2Dat.Pstr, self).__init__(_io)
+            self._parent = _parent
+            self._root = _root
+            self._debug = collections.defaultdict(dict)
+
+        def _read(self):
+            self._debug['size']['start'] = self._io.pos()
+            self.size = self._io.read_u4le()
+            self._debug['size']['end'] = self._io.pos()
+            self._debug['str']['start'] = self._io.pos()
+            self.str = (self._io.read_bytes(self.size)).decode(u"ASCII")
+            self._debug['str']['end'] = self._io.pos()
+
+
+        def _fetch_instances(self):
+            pass
 
 
     @property
@@ -287,7 +335,7 @@ class Fallout2Dat(KaitaiStruct):
             return self._m_footer
 
         _pos = self._io.pos()
-        self._io.seek((self._io.size() - 8))
+        self._io.seek(self._io.size() - 8)
         self._debug['_m_footer']['start'] = self._io.pos()
         self._m_footer = Fallout2Dat.Footer(self._io, self, self._root)
         self._m_footer._read()
@@ -301,7 +349,7 @@ class Fallout2Dat(KaitaiStruct):
             return self._m_index
 
         _pos = self._io.pos()
-        self._io.seek(((self._io.size() - 8) - self.footer.index_size))
+        self._io.seek((self._io.size() - 8) - self.footer.index_size)
         self._debug['_m_index']['start'] = self._io.pos()
         self._m_index = Fallout2Dat.Index(self._io, self, self._root)
         self._m_index._read()

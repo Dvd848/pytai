@@ -125,15 +125,16 @@
 
 
 # This is a generated file! Please edit source .ksy file and use kaitai-struct-compiler to rebuild
+# type: ignore
 
 import kaitaistruct
 from kaitaistruct import KaitaiStruct, KaitaiStream, BytesIO
-from enum import Enum
+from enum import IntEnum
 import collections
 
 
-if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 9):
-    raise Exception("Incompatible Kaitai Struct Python API: 0.9 or later is required, but you have %s" % (kaitaistruct.__version__))
+if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 11):
+    raise Exception("Incompatible Kaitai Struct Python API: 0.11 or later is required, but you have %s" % (kaitaistruct.__version__))
 
 class Quake2Md2(KaitaiStruct):
     """The MD2 format is used for 3D animated models in id Sofware's Quake II.
@@ -215,14 +216,14 @@ class Quake2Md2(KaitaiStruct):
        Source - http://wiki.polycount.com/wiki/OldSiteResourcesQuake2FramesList
     """
 
-    class GlPrimitive(Enum):
+    class GlPrimitive(IntEnum):
         triangle_strip = 0
         triangle_fan = 1
     SEQ_FIELDS = ["magic", "version", "skin_width_px", "skin_height_px", "bytes_per_frame", "num_skins", "vertices_per_frame", "num_tex_coords", "num_triangles", "num_gl_cmds", "num_frames", "ofs_skins", "ofs_tex_coords", "ofs_triangles", "ofs_frames", "ofs_gl_cmds", "ofs_eof"]
     def __init__(self, _io, _parent=None, _root=None):
-        self._io = _io
+        super(Quake2Md2, self).__init__(_io)
         self._parent = _parent
-        self._root = _root if _root else self
+        self._root = _root or self
         self._debug = collections.defaultdict(dict)
 
     def _read(self):
@@ -282,38 +283,52 @@ class Quake2Md2(KaitaiStruct):
         self.ofs_eof = self._io.read_u4le()
         self._debug['ofs_eof']['end'] = self._io.pos()
 
-    class Vertex(KaitaiStruct):
-        SEQ_FIELDS = ["position", "normal_index"]
-        def __init__(self, _io, _parent=None, _root=None):
-            self._io = _io
-            self._parent = _parent
-            self._root = _root if _root else self
-            self._debug = collections.defaultdict(dict)
 
-        def _read(self):
-            self._debug['position']['start'] = self._io.pos()
-            self.position = Quake2Md2.CompressedVec(self._io, self, self._root)
-            self.position._read()
-            self._debug['position']['end'] = self._io.pos()
-            self._debug['normal_index']['start'] = self._io.pos()
-            self.normal_index = self._io.read_u1()
-            self._debug['normal_index']['end'] = self._io.pos()
+    def _fetch_instances(self):
+        pass
+        _ = self.frames
+        if hasattr(self, '_m_frames'):
+            pass
+            for i in range(len(self._m_frames)):
+                pass
+                self._m_frames[i]._fetch_instances()
 
-        @property
-        def normal(self):
-            if hasattr(self, '_m_normal'):
-                return self._m_normal
 
-            self._m_normal = self._root.anorms_table[self.normal_index]
-            return getattr(self, '_m_normal', None)
+        _ = self.gl_cmds
+        if hasattr(self, '_m_gl_cmds'):
+            pass
+            self._m_gl_cmds._fetch_instances()
+
+        _ = self.skins
+        if hasattr(self, '_m_skins'):
+            pass
+            for i in range(len(self._m_skins)):
+                pass
+
+
+        _ = self.tex_coords
+        if hasattr(self, '_m_tex_coords'):
+            pass
+            for i in range(len(self._m_tex_coords)):
+                pass
+                self._m_tex_coords[i]._fetch_instances()
+
+
+        _ = self.triangles
+        if hasattr(self, '_m_triangles'):
+            pass
+            for i in range(len(self._m_triangles)):
+                pass
+                self._m_triangles[i]._fetch_instances()
+
 
 
     class CompressedVec(KaitaiStruct):
         SEQ_FIELDS = ["x_compressed", "y_compressed", "z_compressed"]
         def __init__(self, _io, _parent=None, _root=None):
-            self._io = _io
+            super(Quake2Md2.CompressedVec, self).__init__(_io)
             self._parent = _parent
-            self._root = _root if _root else self
+            self._root = _root
             self._debug = collections.defaultdict(dict)
 
         def _read(self):
@@ -327,12 +342,16 @@ class Quake2Md2(KaitaiStruct):
             self.z_compressed = self._io.read_u1()
             self._debug['z_compressed']['end'] = self._io.pos()
 
+
+        def _fetch_instances(self):
+            pass
+
         @property
         def x(self):
             if hasattr(self, '_m_x'):
                 return self._m_x
 
-            self._m_x = ((self.x_compressed * self._parent._parent.scale.x) + self._parent._parent.translate.x)
+            self._m_x = self.x_compressed * self._parent._parent.scale.x + self._parent._parent.translate.x
             return getattr(self, '_m_x', None)
 
         @property
@@ -340,7 +359,7 @@ class Quake2Md2(KaitaiStruct):
             if hasattr(self, '_m_y'):
                 return self._m_y
 
-            self._m_y = ((self.y_compressed * self._parent._parent.scale.y) + self._parent._parent.translate.y)
+            self._m_y = self.y_compressed * self._parent._parent.scale.y + self._parent._parent.translate.y
             return getattr(self, '_m_y', None)
 
         @property
@@ -348,47 +367,16 @@ class Quake2Md2(KaitaiStruct):
             if hasattr(self, '_m_z'):
                 return self._m_z
 
-            self._m_z = ((self.z_compressed * self._parent._parent.scale.z) + self._parent._parent.translate.z)
+            self._m_z = self.z_compressed * self._parent._parent.scale.z + self._parent._parent.translate.z
             return getattr(self, '_m_z', None)
-
-
-    class Triangle(KaitaiStruct):
-        SEQ_FIELDS = ["vertex_indices", "tex_point_indices"]
-        def __init__(self, _io, _parent=None, _root=None):
-            self._io = _io
-            self._parent = _parent
-            self._root = _root if _root else self
-            self._debug = collections.defaultdict(dict)
-
-        def _read(self):
-            self._debug['vertex_indices']['start'] = self._io.pos()
-            self.vertex_indices = []
-            for i in range(3):
-                if not 'arr' in self._debug['vertex_indices']:
-                    self._debug['vertex_indices']['arr'] = []
-                self._debug['vertex_indices']['arr'].append({'start': self._io.pos()})
-                self.vertex_indices.append(self._io.read_u2le())
-                self._debug['vertex_indices']['arr'][i]['end'] = self._io.pos()
-
-            self._debug['vertex_indices']['end'] = self._io.pos()
-            self._debug['tex_point_indices']['start'] = self._io.pos()
-            self.tex_point_indices = []
-            for i in range(3):
-                if not 'arr' in self._debug['tex_point_indices']:
-                    self._debug['tex_point_indices']['arr'] = []
-                self._debug['tex_point_indices']['arr'].append({'start': self._io.pos()})
-                self.tex_point_indices.append(self._io.read_u2le())
-                self._debug['tex_point_indices']['arr'][i]['end'] = self._io.pos()
-
-            self._debug['tex_point_indices']['end'] = self._io.pos()
 
 
     class Frame(KaitaiStruct):
         SEQ_FIELDS = ["scale", "translate", "name", "vertices"]
         def __init__(self, _io, _parent=None, _root=None):
-            self._io = _io
+            super(Quake2Md2.Frame, self).__init__(_io)
             self._parent = _parent
-            self._root = _root if _root else self
+            self._root = _root
             self._debug = collections.defaultdict(dict)
 
         def _read(self):
@@ -401,134 +389,39 @@ class Quake2Md2(KaitaiStruct):
             self.translate._read()
             self._debug['translate']['end'] = self._io.pos()
             self._debug['name']['start'] = self._io.pos()
-            self.name = (KaitaiStream.bytes_terminate(self._io.read_bytes(16), 0, False)).decode(u"ascii")
+            self.name = (KaitaiStream.bytes_terminate(self._io.read_bytes(16), 0, False)).decode(u"ASCII")
             self._debug['name']['end'] = self._io.pos()
             self._debug['vertices']['start'] = self._io.pos()
+            self._debug['vertices']['arr'] = []
             self.vertices = []
             for i in range(self._root.vertices_per_frame):
-                if not 'arr' in self._debug['vertices']:
-                    self._debug['vertices']['arr'] = []
                 self._debug['vertices']['arr'].append({'start': self._io.pos()})
                 _t_vertices = Quake2Md2.Vertex(self._io, self, self._root)
-                _t_vertices._read()
-                self.vertices.append(_t_vertices)
+                try:
+                    _t_vertices._read()
+                finally:
+                    self.vertices.append(_t_vertices)
                 self._debug['vertices']['arr'][i]['end'] = self._io.pos()
 
             self._debug['vertices']['end'] = self._io.pos()
 
 
-    class GlCmdsList(KaitaiStruct):
-        SEQ_FIELDS = ["items"]
-        def __init__(self, _io, _parent=None, _root=None):
-            self._io = _io
-            self._parent = _parent
-            self._root = _root if _root else self
-            self._debug = collections.defaultdict(dict)
+        def _fetch_instances(self):
+            pass
+            self.scale._fetch_instances()
+            self.translate._fetch_instances()
+            for i in range(len(self.vertices)):
+                pass
+                self.vertices[i]._fetch_instances()
 
-        def _read(self):
-            if not (self._io.is_eof()):
-                self._debug['items']['start'] = self._io.pos()
-                self.items = []
-                i = 0
-                while True:
-                    if not 'arr' in self._debug['items']:
-                        self._debug['items']['arr'] = []
-                    self._debug['items']['arr'].append({'start': self._io.pos()})
-                    _t_items = Quake2Md2.GlCmd(self._io, self, self._root)
-                    _t_items._read()
-                    _ = _t_items
-                    self.items.append(_)
-                    self._debug['items']['arr'][len(self.items) - 1]['end'] = self._io.pos()
-                    if _.cmd_num_vertices == 0:
-                        break
-                    i += 1
-                self._debug['items']['end'] = self._io.pos()
-
-
-
-    class TexPoint(KaitaiStruct):
-        SEQ_FIELDS = ["s_px", "t_px"]
-        def __init__(self, _io, _parent=None, _root=None):
-            self._io = _io
-            self._parent = _parent
-            self._root = _root if _root else self
-            self._debug = collections.defaultdict(dict)
-
-        def _read(self):
-            self._debug['s_px']['start'] = self._io.pos()
-            self.s_px = self._io.read_u2le()
-            self._debug['s_px']['end'] = self._io.pos()
-            self._debug['t_px']['start'] = self._io.pos()
-            self.t_px = self._io.read_u2le()
-            self._debug['t_px']['end'] = self._io.pos()
-
-        @property
-        def s_normalized(self):
-            if hasattr(self, '_m_s_normalized'):
-                return self._m_s_normalized
-
-            self._m_s_normalized = ((self.s_px + 0.0) / self._root.skin_width_px)
-            return getattr(self, '_m_s_normalized', None)
-
-        @property
-        def t_normalized(self):
-            if hasattr(self, '_m_t_normalized'):
-                return self._m_t_normalized
-
-            self._m_t_normalized = ((self.t_px + 0.0) / self._root.skin_height_px)
-            return getattr(self, '_m_t_normalized', None)
-
-
-    class Vec3f(KaitaiStruct):
-        SEQ_FIELDS = ["x", "y", "z"]
-        def __init__(self, _io, _parent=None, _root=None):
-            self._io = _io
-            self._parent = _parent
-            self._root = _root if _root else self
-            self._debug = collections.defaultdict(dict)
-
-        def _read(self):
-            self._debug['x']['start'] = self._io.pos()
-            self.x = self._io.read_f4le()
-            self._debug['x']['end'] = self._io.pos()
-            self._debug['y']['start'] = self._io.pos()
-            self.y = self._io.read_f4le()
-            self._debug['y']['end'] = self._io.pos()
-            self._debug['z']['start'] = self._io.pos()
-            self.z = self._io.read_f4le()
-            self._debug['z']['end'] = self._io.pos()
-
-
-    class GlVertex(KaitaiStruct):
-        SEQ_FIELDS = ["tex_coords_normalized", "vertex_index"]
-        def __init__(self, _io, _parent=None, _root=None):
-            self._io = _io
-            self._parent = _parent
-            self._root = _root if _root else self
-            self._debug = collections.defaultdict(dict)
-
-        def _read(self):
-            self._debug['tex_coords_normalized']['start'] = self._io.pos()
-            self.tex_coords_normalized = []
-            for i in range(2):
-                if not 'arr' in self._debug['tex_coords_normalized']:
-                    self._debug['tex_coords_normalized']['arr'] = []
-                self._debug['tex_coords_normalized']['arr'].append({'start': self._io.pos()})
-                self.tex_coords_normalized.append(self._io.read_f4le())
-                self._debug['tex_coords_normalized']['arr'][i]['end'] = self._io.pos()
-
-            self._debug['tex_coords_normalized']['end'] = self._io.pos()
-            self._debug['vertex_index']['start'] = self._io.pos()
-            self.vertex_index = self._io.read_u4le()
-            self._debug['vertex_index']['end'] = self._io.pos()
 
 
     class GlCmd(KaitaiStruct):
         SEQ_FIELDS = ["cmd_num_vertices", "vertices"]
         def __init__(self, _io, _parent=None, _root=None):
-            self._io = _io
+            super(Quake2Md2.GlCmd, self).__init__(_io)
             self._parent = _parent
-            self._root = _root if _root else self
+            self._root = _root
             self._debug = collections.defaultdict(dict)
 
         def _read(self):
@@ -536,17 +429,26 @@ class Quake2Md2(KaitaiStruct):
             self.cmd_num_vertices = self._io.read_s4le()
             self._debug['cmd_num_vertices']['end'] = self._io.pos()
             self._debug['vertices']['start'] = self._io.pos()
+            self._debug['vertices']['arr'] = []
             self.vertices = []
             for i in range(self.num_vertices):
-                if not 'arr' in self._debug['vertices']:
-                    self._debug['vertices']['arr'] = []
                 self._debug['vertices']['arr'].append({'start': self._io.pos()})
                 _t_vertices = Quake2Md2.GlVertex(self._io, self, self._root)
-                _t_vertices._read()
-                self.vertices.append(_t_vertices)
+                try:
+                    _t_vertices._read()
+                finally:
+                    self.vertices.append(_t_vertices)
                 self._debug['vertices']['arr'][i]['end'] = self._io.pos()
 
             self._debug['vertices']['end'] = self._io.pos()
+
+
+        def _fetch_instances(self):
+            pass
+            for i in range(len(self.vertices)):
+                pass
+                self.vertices[i]._fetch_instances()
+
 
         @property
         def num_vertices(self):
@@ -565,6 +467,217 @@ class Quake2Md2(KaitaiStruct):
             return getattr(self, '_m_primitive', None)
 
 
+    class GlCmdsList(KaitaiStruct):
+        SEQ_FIELDS = ["items"]
+        def __init__(self, _io, _parent=None, _root=None):
+            super(Quake2Md2.GlCmdsList, self).__init__(_io)
+            self._parent = _parent
+            self._root = _root
+            self._debug = collections.defaultdict(dict)
+
+        def _read(self):
+            if (not (self._io.is_eof())):
+                pass
+                self._debug['items']['start'] = self._io.pos()
+                self._debug['items']['arr'] = []
+                self.items = []
+                i = 0
+                while True:
+                    self._debug['items']['arr'].append({'start': self._io.pos()})
+                    _t_items = Quake2Md2.GlCmd(self._io, self, self._root)
+                    try:
+                        _t_items._read()
+                    finally:
+                        _ = _t_items
+                        self.items.append(_)
+                    self._debug['items']['arr'][len(self.items) - 1]['end'] = self._io.pos()
+                    if _.cmd_num_vertices == 0:
+                        break
+                    i += 1
+                self._debug['items']['end'] = self._io.pos()
+
+
+
+        def _fetch_instances(self):
+            pass
+            if (not (self._io.is_eof())):
+                pass
+                for i in range(len(self.items)):
+                    pass
+                    self.items[i]._fetch_instances()
+
+
+
+
+    class GlVertex(KaitaiStruct):
+        SEQ_FIELDS = ["tex_coords_normalized", "vertex_index"]
+        def __init__(self, _io, _parent=None, _root=None):
+            super(Quake2Md2.GlVertex, self).__init__(_io)
+            self._parent = _parent
+            self._root = _root
+            self._debug = collections.defaultdict(dict)
+
+        def _read(self):
+            self._debug['tex_coords_normalized']['start'] = self._io.pos()
+            self._debug['tex_coords_normalized']['arr'] = []
+            self.tex_coords_normalized = []
+            for i in range(2):
+                self._debug['tex_coords_normalized']['arr'].append({'start': self._io.pos()})
+                self.tex_coords_normalized.append(self._io.read_f4le())
+                self._debug['tex_coords_normalized']['arr'][i]['end'] = self._io.pos()
+
+            self._debug['tex_coords_normalized']['end'] = self._io.pos()
+            self._debug['vertex_index']['start'] = self._io.pos()
+            self.vertex_index = self._io.read_u4le()
+            self._debug['vertex_index']['end'] = self._io.pos()
+
+
+        def _fetch_instances(self):
+            pass
+            for i in range(len(self.tex_coords_normalized)):
+                pass
+
+
+
+    class TexPoint(KaitaiStruct):
+        SEQ_FIELDS = ["s_px", "t_px"]
+        def __init__(self, _io, _parent=None, _root=None):
+            super(Quake2Md2.TexPoint, self).__init__(_io)
+            self._parent = _parent
+            self._root = _root
+            self._debug = collections.defaultdict(dict)
+
+        def _read(self):
+            self._debug['s_px']['start'] = self._io.pos()
+            self.s_px = self._io.read_u2le()
+            self._debug['s_px']['end'] = self._io.pos()
+            self._debug['t_px']['start'] = self._io.pos()
+            self.t_px = self._io.read_u2le()
+            self._debug['t_px']['end'] = self._io.pos()
+
+
+        def _fetch_instances(self):
+            pass
+
+        @property
+        def s_normalized(self):
+            if hasattr(self, '_m_s_normalized'):
+                return self._m_s_normalized
+
+            self._m_s_normalized = (self.s_px + 0.0) / self._root.skin_width_px
+            return getattr(self, '_m_s_normalized', None)
+
+        @property
+        def t_normalized(self):
+            if hasattr(self, '_m_t_normalized'):
+                return self._m_t_normalized
+
+            self._m_t_normalized = (self.t_px + 0.0) / self._root.skin_height_px
+            return getattr(self, '_m_t_normalized', None)
+
+
+    class Triangle(KaitaiStruct):
+        SEQ_FIELDS = ["vertex_indices", "tex_point_indices"]
+        def __init__(self, _io, _parent=None, _root=None):
+            super(Quake2Md2.Triangle, self).__init__(_io)
+            self._parent = _parent
+            self._root = _root
+            self._debug = collections.defaultdict(dict)
+
+        def _read(self):
+            self._debug['vertex_indices']['start'] = self._io.pos()
+            self._debug['vertex_indices']['arr'] = []
+            self.vertex_indices = []
+            for i in range(3):
+                self._debug['vertex_indices']['arr'].append({'start': self._io.pos()})
+                self.vertex_indices.append(self._io.read_u2le())
+                self._debug['vertex_indices']['arr'][i]['end'] = self._io.pos()
+
+            self._debug['vertex_indices']['end'] = self._io.pos()
+            self._debug['tex_point_indices']['start'] = self._io.pos()
+            self._debug['tex_point_indices']['arr'] = []
+            self.tex_point_indices = []
+            for i in range(3):
+                self._debug['tex_point_indices']['arr'].append({'start': self._io.pos()})
+                self.tex_point_indices.append(self._io.read_u2le())
+                self._debug['tex_point_indices']['arr'][i]['end'] = self._io.pos()
+
+            self._debug['tex_point_indices']['end'] = self._io.pos()
+
+
+        def _fetch_instances(self):
+            pass
+            for i in range(len(self.vertex_indices)):
+                pass
+
+            for i in range(len(self.tex_point_indices)):
+                pass
+
+
+
+    class Vec3f(KaitaiStruct):
+        SEQ_FIELDS = ["x", "y", "z"]
+        def __init__(self, _io, _parent=None, _root=None):
+            super(Quake2Md2.Vec3f, self).__init__(_io)
+            self._parent = _parent
+            self._root = _root
+            self._debug = collections.defaultdict(dict)
+
+        def _read(self):
+            self._debug['x']['start'] = self._io.pos()
+            self.x = self._io.read_f4le()
+            self._debug['x']['end'] = self._io.pos()
+            self._debug['y']['start'] = self._io.pos()
+            self.y = self._io.read_f4le()
+            self._debug['y']['end'] = self._io.pos()
+            self._debug['z']['start'] = self._io.pos()
+            self.z = self._io.read_f4le()
+            self._debug['z']['end'] = self._io.pos()
+
+
+        def _fetch_instances(self):
+            pass
+
+
+    class Vertex(KaitaiStruct):
+        SEQ_FIELDS = ["position", "normal_index"]
+        def __init__(self, _io, _parent=None, _root=None):
+            super(Quake2Md2.Vertex, self).__init__(_io)
+            self._parent = _parent
+            self._root = _root
+            self._debug = collections.defaultdict(dict)
+
+        def _read(self):
+            self._debug['position']['start'] = self._io.pos()
+            self.position = Quake2Md2.CompressedVec(self._io, self, self._root)
+            self.position._read()
+            self._debug['position']['end'] = self._io.pos()
+            self._debug['normal_index']['start'] = self._io.pos()
+            self.normal_index = self._io.read_u1()
+            self._debug['normal_index']['end'] = self._io.pos()
+
+
+        def _fetch_instances(self):
+            pass
+            self.position._fetch_instances()
+
+        @property
+        def normal(self):
+            if hasattr(self, '_m_normal'):
+                return self._m_normal
+
+            self._m_normal = self._root.anorms_table[self.normal_index]
+            return getattr(self, '_m_normal', None)
+
+
+    @property
+    def anim_names(self):
+        if hasattr(self, '_m_anim_names'):
+            return self._m_anim_names
+
+        self._m_anim_names = [u"stand", u"run", u"attack", u"pain1", u"pain2", u"pain3", u"jump", u"flip", u"salute", u"taunt", u"wave", u"point", u"crstnd", u"crwalk", u"crattak", u"crpain", u"crdeath", u"death1", u"death2", u"death3"]
+        return getattr(self, '_m_anim_names', None)
+
     @property
     def anim_num_frames(self):
         if hasattr(self, '_m_anim_num_frames'):
@@ -572,6 +685,14 @@ class Quake2Md2(KaitaiStruct):
 
         self._m_anim_num_frames = b"\x28\x06\x08\x04\x04\x04\x06\x0C\x0B\x11\x0B\x0C\x13\x06\x09\x04\x05\x06\x06\x08"
         return getattr(self, '_m_anim_num_frames', None)
+
+    @property
+    def anim_start_indices(self):
+        if hasattr(self, '_m_anim_start_indices'):
+            return self._m_anim_start_indices
+
+        self._m_anim_start_indices = b"\x00\x28\x2E\x36\x3A\x3E\x42\x48\x54\x5F\x70\x7B\x87\x9A\xA0\xA9\xAD\xB2\xB8\xBE"
+        return getattr(self, '_m_anim_start_indices', None)
 
     @property
     def anorms_table(self):
@@ -587,50 +708,6 @@ class Quake2Md2(KaitaiStruct):
         return getattr(self, '_m_anorms_table', None)
 
     @property
-    def tex_coords(self):
-        if hasattr(self, '_m_tex_coords'):
-            return self._m_tex_coords
-
-        _pos = self._io.pos()
-        self._io.seek(self.ofs_tex_coords)
-        self._debug['_m_tex_coords']['start'] = self._io.pos()
-        self._m_tex_coords = []
-        for i in range(self.num_tex_coords):
-            if not 'arr' in self._debug['_m_tex_coords']:
-                self._debug['_m_tex_coords']['arr'] = []
-            self._debug['_m_tex_coords']['arr'].append({'start': self._io.pos()})
-            _t__m_tex_coords = Quake2Md2.TexPoint(self._io, self, self._root)
-            _t__m_tex_coords._read()
-            self._m_tex_coords.append(_t__m_tex_coords)
-            self._debug['_m_tex_coords']['arr'][i]['end'] = self._io.pos()
-
-        self._debug['_m_tex_coords']['end'] = self._io.pos()
-        self._io.seek(_pos)
-        return getattr(self, '_m_tex_coords', None)
-
-    @property
-    def triangles(self):
-        if hasattr(self, '_m_triangles'):
-            return self._m_triangles
-
-        _pos = self._io.pos()
-        self._io.seek(self.ofs_triangles)
-        self._debug['_m_triangles']['start'] = self._io.pos()
-        self._m_triangles = []
-        for i in range(self.num_triangles):
-            if not 'arr' in self._debug['_m_triangles']:
-                self._debug['_m_triangles']['arr'] = []
-            self._debug['_m_triangles']['arr'].append({'start': self._io.pos()})
-            _t__m_triangles = Quake2Md2.Triangle(self._io, self, self._root)
-            _t__m_triangles._read()
-            self._m_triangles.append(_t__m_triangles)
-            self._debug['_m_triangles']['arr'][i]['end'] = self._io.pos()
-
-        self._debug['_m_triangles']['end'] = self._io.pos()
-        self._io.seek(_pos)
-        return getattr(self, '_m_triangles', None)
-
-    @property
     def frames(self):
         if hasattr(self, '_m_frames'):
             return self._m_frames
@@ -638,30 +715,23 @@ class Quake2Md2(KaitaiStruct):
         _pos = self._io.pos()
         self._io.seek(self.ofs_frames)
         self._debug['_m_frames']['start'] = self._io.pos()
+        self._debug['_m_frames']['arr'] = []
         self._raw__m_frames = []
         self._m_frames = []
         for i in range(self.num_frames):
-            if not 'arr' in self._debug['_m_frames']:
-                self._debug['_m_frames']['arr'] = []
             self._debug['_m_frames']['arr'].append({'start': self._io.pos()})
             self._raw__m_frames.append(self._io.read_bytes(self.bytes_per_frame))
             _io__raw__m_frames = KaitaiStream(BytesIO(self._raw__m_frames[i]))
             _t__m_frames = Quake2Md2.Frame(_io__raw__m_frames, self, self._root)
-            _t__m_frames._read()
-            self._m_frames.append(_t__m_frames)
+            try:
+                _t__m_frames._read()
+            finally:
+                self._m_frames.append(_t__m_frames)
             self._debug['_m_frames']['arr'][i]['end'] = self._io.pos()
 
         self._debug['_m_frames']['end'] = self._io.pos()
         self._io.seek(_pos)
         return getattr(self, '_m_frames', None)
-
-    @property
-    def anim_names(self):
-        if hasattr(self, '_m_anim_names'):
-            return self._m_anim_names
-
-        self._m_anim_names = [u"stand", u"run", u"attack", u"pain1", u"pain2", u"pain3", u"jump", u"flip", u"salute", u"taunt", u"wave", u"point", u"crstnd", u"crwalk", u"crattak", u"crpain", u"crdeath", u"death1", u"death2", u"death3"]
-        return getattr(self, '_m_anim_names', None)
 
     @property
     def gl_cmds(self):
@@ -671,7 +741,7 @@ class Quake2Md2(KaitaiStruct):
         _pos = self._io.pos()
         self._io.seek(self.ofs_gl_cmds)
         self._debug['_m_gl_cmds']['start'] = self._io.pos()
-        self._raw__m_gl_cmds = self._io.read_bytes((4 * self.num_gl_cmds))
+        self._raw__m_gl_cmds = self._io.read_bytes(4 * self.num_gl_cmds)
         _io__raw__m_gl_cmds = KaitaiStream(BytesIO(self._raw__m_gl_cmds))
         self._m_gl_cmds = Quake2Md2.GlCmdsList(_io__raw__m_gl_cmds, self, self._root)
         self._m_gl_cmds._read()
@@ -687,12 +757,11 @@ class Quake2Md2(KaitaiStruct):
         _pos = self._io.pos()
         self._io.seek(self.ofs_skins)
         self._debug['_m_skins']['start'] = self._io.pos()
+        self._debug['_m_skins']['arr'] = []
         self._m_skins = []
         for i in range(self.num_skins):
-            if not 'arr' in self._debug['_m_skins']:
-                self._debug['_m_skins']['arr'] = []
             self._debug['_m_skins']['arr'].append({'start': self._io.pos()})
-            self._m_skins.append((KaitaiStream.bytes_terminate(self._io.read_bytes(64), 0, False)).decode(u"ascii"))
+            self._m_skins.append((KaitaiStream.bytes_terminate(self._io.read_bytes(64), 0, False)).decode(u"ASCII"))
             self._debug['_m_skins']['arr'][i]['end'] = self._io.pos()
 
         self._debug['_m_skins']['end'] = self._io.pos()
@@ -700,11 +769,49 @@ class Quake2Md2(KaitaiStruct):
         return getattr(self, '_m_skins', None)
 
     @property
-    def anim_start_indices(self):
-        if hasattr(self, '_m_anim_start_indices'):
-            return self._m_anim_start_indices
+    def tex_coords(self):
+        if hasattr(self, '_m_tex_coords'):
+            return self._m_tex_coords
 
-        self._m_anim_start_indices = b"\x00\x28\x2E\x36\x3A\x3E\x42\x48\x54\x5F\x70\x7B\x87\x9A\xA0\xA9\xAD\xB2\xB8\xBE"
-        return getattr(self, '_m_anim_start_indices', None)
+        _pos = self._io.pos()
+        self._io.seek(self.ofs_tex_coords)
+        self._debug['_m_tex_coords']['start'] = self._io.pos()
+        self._debug['_m_tex_coords']['arr'] = []
+        self._m_tex_coords = []
+        for i in range(self.num_tex_coords):
+            self._debug['_m_tex_coords']['arr'].append({'start': self._io.pos()})
+            _t__m_tex_coords = Quake2Md2.TexPoint(self._io, self, self._root)
+            try:
+                _t__m_tex_coords._read()
+            finally:
+                self._m_tex_coords.append(_t__m_tex_coords)
+            self._debug['_m_tex_coords']['arr'][i]['end'] = self._io.pos()
+
+        self._debug['_m_tex_coords']['end'] = self._io.pos()
+        self._io.seek(_pos)
+        return getattr(self, '_m_tex_coords', None)
+
+    @property
+    def triangles(self):
+        if hasattr(self, '_m_triangles'):
+            return self._m_triangles
+
+        _pos = self._io.pos()
+        self._io.seek(self.ofs_triangles)
+        self._debug['_m_triangles']['start'] = self._io.pos()
+        self._debug['_m_triangles']['arr'] = []
+        self._m_triangles = []
+        for i in range(self.num_triangles):
+            self._debug['_m_triangles']['arr'].append({'start': self._io.pos()})
+            _t__m_triangles = Quake2Md2.Triangle(self._io, self, self._root)
+            try:
+                _t__m_triangles._read()
+            finally:
+                self._m_triangles.append(_t__m_triangles)
+            self._debug['_m_triangles']['arr'][i]['end'] = self._io.pos()
+
+        self._debug['_m_triangles']['end'] = self._io.pos()
+        self._io.seek(_pos)
+        return getattr(self, '_m_triangles', None)
 
 

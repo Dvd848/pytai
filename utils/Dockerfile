@@ -16,8 +16,8 @@ RUN apt-get update \
     && python3 -m pip install --upgrade pip \
     && python3 -m pip install --upgrade pyyaml
     
-RUN curl -LO https://github.com/kaitai-io/kaitai_struct_compiler/releases/download/0.10/kaitai-struct-compiler_0.10_all.deb \
-    && apt-get install ./kaitai-struct-compiler_0.10_all.deb
+RUN curl -fsSLO https://github.com/kaitai-io/kaitai_struct_compiler/releases/download/0.11/kaitai-struct-compiler_0.11_all.deb \
+    && apt-get install ./kaitai-struct-compiler_0.11_all.deb
     
 WORKDIR /home/pytai/shared/utils
 

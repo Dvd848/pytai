@@ -125,15 +125,16 @@
 
 
 # This is a generated file! Please edit source .ksy file and use kaitai-struct-compiler to rebuild
+# type: ignore
 
 import kaitaistruct
 from kaitaistruct import KaitaiStruct, KaitaiStream, BytesIO
 import collections
-from enum import Enum
+from enum import IntEnum
 
 
-if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 9):
-    raise Exception("Incompatible Kaitai Struct Python API: 0.9 or later is required, but you have %s" % (kaitaistruct.__version__))
+if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 11):
+    raise Exception("Incompatible Kaitai Struct Python API: 0.11 or later is required, but you have %s" % (kaitaistruct.__version__))
 
 class UefiTe(KaitaiStruct):
     """This type of executables could be found inside the UEFI firmware. The UEFI
@@ -160,9 +161,9 @@ class UefiTe(KaitaiStruct):
     """
     SEQ_FIELDS = ["te_hdr", "sections"]
     def __init__(self, _io, _parent=None, _root=None):
-        self._io = _io
+        super(UefiTe, self).__init__(_io)
         self._parent = _parent
-        self._root = _root if _root else self
+        self._root = _root or self
         self._debug = collections.defaultdict(dict)
 
     def _read(self):
@@ -173,21 +174,139 @@ class UefiTe(KaitaiStruct):
         self.te_hdr._read()
         self._debug['te_hdr']['end'] = self._io.pos()
         self._debug['sections']['start'] = self._io.pos()
+        self._debug['sections']['arr'] = []
         self.sections = []
         for i in range(self.te_hdr.num_sections):
-            if not 'arr' in self._debug['sections']:
-                self._debug['sections']['arr'] = []
             self._debug['sections']['arr'].append({'start': self._io.pos()})
             _t_sections = UefiTe.Section(self._io, self, self._root)
-            _t_sections._read()
-            self.sections.append(_t_sections)
+            try:
+                _t_sections._read()
+            finally:
+                self.sections.append(_t_sections)
             self._debug['sections']['arr'][i]['end'] = self._io.pos()
 
         self._debug['sections']['end'] = self._io.pos()
 
+
+    def _fetch_instances(self):
+        pass
+        self.te_hdr._fetch_instances()
+        for i in range(len(self.sections)):
+            pass
+            self.sections[i]._fetch_instances()
+
+
+    class DataDir(KaitaiStruct):
+        SEQ_FIELDS = ["virtual_address", "size"]
+        def __init__(self, _io, _parent=None, _root=None):
+            super(UefiTe.DataDir, self).__init__(_io)
+            self._parent = _parent
+            self._root = _root
+            self._debug = collections.defaultdict(dict)
+
+        def _read(self):
+            self._debug['virtual_address']['start'] = self._io.pos()
+            self.virtual_address = self._io.read_u4le()
+            self._debug['virtual_address']['end'] = self._io.pos()
+            self._debug['size']['start'] = self._io.pos()
+            self.size = self._io.read_u4le()
+            self._debug['size']['end'] = self._io.pos()
+
+
+        def _fetch_instances(self):
+            pass
+
+
+    class HeaderDataDirs(KaitaiStruct):
+        SEQ_FIELDS = ["base_relocation_table", "debug"]
+        def __init__(self, _io, _parent=None, _root=None):
+            super(UefiTe.HeaderDataDirs, self).__init__(_io)
+            self._parent = _parent
+            self._root = _root
+            self._debug = collections.defaultdict(dict)
+
+        def _read(self):
+            self._debug['base_relocation_table']['start'] = self._io.pos()
+            self.base_relocation_table = UefiTe.DataDir(self._io, self, self._root)
+            self.base_relocation_table._read()
+            self._debug['base_relocation_table']['end'] = self._io.pos()
+            self._debug['debug']['start'] = self._io.pos()
+            self.debug = UefiTe.DataDir(self._io, self, self._root)
+            self.debug._read()
+            self._debug['debug']['end'] = self._io.pos()
+
+
+        def _fetch_instances(self):
+            pass
+            self.base_relocation_table._fetch_instances()
+            self.debug._fetch_instances()
+
+
+    class Section(KaitaiStruct):
+        SEQ_FIELDS = ["name", "virtual_size", "virtual_address", "size_of_raw_data", "pointer_to_raw_data", "pointer_to_relocations", "pointer_to_linenumbers", "num_relocations", "num_linenumbers", "characteristics"]
+        def __init__(self, _io, _parent=None, _root=None):
+            super(UefiTe.Section, self).__init__(_io)
+            self._parent = _parent
+            self._root = _root
+            self._debug = collections.defaultdict(dict)
+
+        def _read(self):
+            self._debug['name']['start'] = self._io.pos()
+            self.name = (KaitaiStream.bytes_strip_right(self._io.read_bytes(8), 0)).decode(u"UTF-8")
+            self._debug['name']['end'] = self._io.pos()
+            self._debug['virtual_size']['start'] = self._io.pos()
+            self.virtual_size = self._io.read_u4le()
+            self._debug['virtual_size']['end'] = self._io.pos()
+            self._debug['virtual_address']['start'] = self._io.pos()
+            self.virtual_address = self._io.read_u4le()
+            self._debug['virtual_address']['end'] = self._io.pos()
+            self._debug['size_of_raw_data']['start'] = self._io.pos()
+            self.size_of_raw_data = self._io.read_u4le()
+            self._debug['size_of_raw_data']['end'] = self._io.pos()
+            self._debug['pointer_to_raw_data']['start'] = self._io.pos()
+            self.pointer_to_raw_data = self._io.read_u4le()
+            self._debug['pointer_to_raw_data']['end'] = self._io.pos()
+            self._debug['pointer_to_relocations']['start'] = self._io.pos()
+            self.pointer_to_relocations = self._io.read_u4le()
+            self._debug['pointer_to_relocations']['end'] = self._io.pos()
+            self._debug['pointer_to_linenumbers']['start'] = self._io.pos()
+            self.pointer_to_linenumbers = self._io.read_u4le()
+            self._debug['pointer_to_linenumbers']['end'] = self._io.pos()
+            self._debug['num_relocations']['start'] = self._io.pos()
+            self.num_relocations = self._io.read_u2le()
+            self._debug['num_relocations']['end'] = self._io.pos()
+            self._debug['num_linenumbers']['start'] = self._io.pos()
+            self.num_linenumbers = self._io.read_u2le()
+            self._debug['num_linenumbers']['end'] = self._io.pos()
+            self._debug['characteristics']['start'] = self._io.pos()
+            self.characteristics = self._io.read_u4le()
+            self._debug['characteristics']['end'] = self._io.pos()
+
+
+        def _fetch_instances(self):
+            pass
+            _ = self.body
+            if hasattr(self, '_m_body'):
+                pass
+
+
+        @property
+        def body(self):
+            if hasattr(self, '_m_body'):
+                return self._m_body
+
+            _pos = self._io.pos()
+            self._io.seek((self.pointer_to_raw_data - self._root.te_hdr.stripped_size) + self._root.te_hdr._io.size())
+            self._debug['_m_body']['start'] = self._io.pos()
+            self._m_body = self._io.read_bytes(self.size_of_raw_data)
+            self._debug['_m_body']['end'] = self._io.pos()
+            self._io.seek(_pos)
+            return getattr(self, '_m_body', None)
+
+
     class TeHeader(KaitaiStruct):
 
-        class MachineType(Enum):
+        class MachineType(IntEnum):
             unknown = 0
             i386 = 332
             r4000 = 358
@@ -218,7 +337,7 @@ class UefiTe(KaitaiStruct):
             m32r = 36929
             arm64 = 43620
 
-        class SubsystemEnum(Enum):
+        class SubsystemEnum(IntEnum):
             unknown = 0
             native = 1
             windows_gui = 2
@@ -233,9 +352,9 @@ class UefiTe(KaitaiStruct):
             windows_boot_application = 16
         SEQ_FIELDS = ["magic", "machine", "num_sections", "subsystem", "stripped_size", "entry_point_addr", "base_of_code", "image_base", "data_dirs"]
         def __init__(self, _io, _parent=None, _root=None):
-            self._io = _io
+            super(UefiTe.TeHeader, self).__init__(_io)
             self._parent = _parent
-            self._root = _root if _root else self
+            self._root = _root
             self._debug = collections.defaultdict(dict)
 
         def _read(self):
@@ -271,94 +390,9 @@ class UefiTe(KaitaiStruct):
             self._debug['data_dirs']['end'] = self._io.pos()
 
 
-    class HeaderDataDirs(KaitaiStruct):
-        SEQ_FIELDS = ["base_relocation_table", "debug"]
-        def __init__(self, _io, _parent=None, _root=None):
-            self._io = _io
-            self._parent = _parent
-            self._root = _root if _root else self
-            self._debug = collections.defaultdict(dict)
-
-        def _read(self):
-            self._debug['base_relocation_table']['start'] = self._io.pos()
-            self.base_relocation_table = UefiTe.DataDir(self._io, self, self._root)
-            self.base_relocation_table._read()
-            self._debug['base_relocation_table']['end'] = self._io.pos()
-            self._debug['debug']['start'] = self._io.pos()
-            self.debug = UefiTe.DataDir(self._io, self, self._root)
-            self.debug._read()
-            self._debug['debug']['end'] = self._io.pos()
-
-
-    class DataDir(KaitaiStruct):
-        SEQ_FIELDS = ["virtual_address", "size"]
-        def __init__(self, _io, _parent=None, _root=None):
-            self._io = _io
-            self._parent = _parent
-            self._root = _root if _root else self
-            self._debug = collections.defaultdict(dict)
-
-        def _read(self):
-            self._debug['virtual_address']['start'] = self._io.pos()
-            self.virtual_address = self._io.read_u4le()
-            self._debug['virtual_address']['end'] = self._io.pos()
-            self._debug['size']['start'] = self._io.pos()
-            self.size = self._io.read_u4le()
-            self._debug['size']['end'] = self._io.pos()
-
-
-    class Section(KaitaiStruct):
-        SEQ_FIELDS = ["name", "virtual_size", "virtual_address", "size_of_raw_data", "pointer_to_raw_data", "pointer_to_relocations", "pointer_to_linenumbers", "num_relocations", "num_linenumbers", "characteristics"]
-        def __init__(self, _io, _parent=None, _root=None):
-            self._io = _io
-            self._parent = _parent
-            self._root = _root if _root else self
-            self._debug = collections.defaultdict(dict)
-
-        def _read(self):
-            self._debug['name']['start'] = self._io.pos()
-            self.name = (KaitaiStream.bytes_strip_right(self._io.read_bytes(8), 0)).decode(u"UTF-8")
-            self._debug['name']['end'] = self._io.pos()
-            self._debug['virtual_size']['start'] = self._io.pos()
-            self.virtual_size = self._io.read_u4le()
-            self._debug['virtual_size']['end'] = self._io.pos()
-            self._debug['virtual_address']['start'] = self._io.pos()
-            self.virtual_address = self._io.read_u4le()
-            self._debug['virtual_address']['end'] = self._io.pos()
-            self._debug['size_of_raw_data']['start'] = self._io.pos()
-            self.size_of_raw_data = self._io.read_u4le()
-            self._debug['size_of_raw_data']['end'] = self._io.pos()
-            self._debug['pointer_to_raw_data']['start'] = self._io.pos()
-            self.pointer_to_raw_data = self._io.read_u4le()
-            self._debug['pointer_to_raw_data']['end'] = self._io.pos()
-            self._debug['pointer_to_relocations']['start'] = self._io.pos()
-            self.pointer_to_relocations = self._io.read_u4le()
-            self._debug['pointer_to_relocations']['end'] = self._io.pos()
-            self._debug['pointer_to_linenumbers']['start'] = self._io.pos()
-            self.pointer_to_linenumbers = self._io.read_u4le()
-            self._debug['pointer_to_linenumbers']['end'] = self._io.pos()
-            self._debug['num_relocations']['start'] = self._io.pos()
-            self.num_relocations = self._io.read_u2le()
-            self._debug['num_relocations']['end'] = self._io.pos()
-            self._debug['num_linenumbers']['start'] = self._io.pos()
-            self.num_linenumbers = self._io.read_u2le()
-            self._debug['num_linenumbers']['end'] = self._io.pos()
-            self._debug['characteristics']['start'] = self._io.pos()
-            self.characteristics = self._io.read_u4le()
-            self._debug['characteristics']['end'] = self._io.pos()
-
-        @property
-        def body(self):
-            if hasattr(self, '_m_body'):
-                return self._m_body
-
-            _pos = self._io.pos()
-            self._io.seek(((self.pointer_to_raw_data - self._root.te_hdr.stripped_size) + self._root.te_hdr._io.size()))
-            self._debug['_m_body']['start'] = self._io.pos()
-            self._m_body = self._io.read_bytes(self.size_of_raw_data)
-            self._debug['_m_body']['end'] = self._io.pos()
-            self._io.seek(_pos)
-            return getattr(self, '_m_body', None)
+        def _fetch_instances(self):
+            pass
+            self.data_dirs._fetch_instances()
 
 
 

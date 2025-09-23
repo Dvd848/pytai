@@ -125,17 +125,18 @@
 
 
 # This is a generated file! Please edit source .ksy file and use kaitai-struct-compiler to rebuild
+# type: ignore
 
 import kaitaistruct
 from kaitaistruct import KaitaiStruct, KaitaiStream, BytesIO
+import some_ip_sd_entries
+import some_ip_sd_options
 import collections
 
 
-if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 9):
-    raise Exception("Incompatible Kaitai Struct Python API: 0.9 or later is required, but you have %s" % (kaitaistruct.__version__))
+if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 11):
+    raise Exception("Incompatible Kaitai Struct Python API: 0.11 or later is required, but you have %s" % (kaitaistruct.__version__))
 
-import some_ip_sd_entries
-import some_ip_sd_options
 class SomeIpSd(KaitaiStruct):
     """The main tasks of the Service Discovery Protocol are communicating the
     availability of functional entities called services in the in-vehicle
@@ -149,9 +150,9 @@ class SomeIpSd(KaitaiStruct):
     """
     SEQ_FIELDS = ["flags", "reserved", "len_entries", "entries", "len_options", "options"]
     def __init__(self, _io, _parent=None, _root=None):
-        self._io = _io
+        super(SomeIpSd, self).__init__(_io)
         self._parent = _parent
-        self._root = _root if _root else self
+        self._root = _root or self
         self._debug = collections.defaultdict(dict)
 
     def _read(self):
@@ -181,6 +182,13 @@ class SomeIpSd(KaitaiStruct):
         self.options._read()
         self._debug['options']['end'] = self._io.pos()
 
+
+    def _fetch_instances(self):
+        pass
+        self.flags._fetch_instances()
+        self.entries._fetch_instances()
+        self.options._fetch_instances()
+
     class SdFlags(KaitaiStruct):
         """
         .. seealso::
@@ -188,9 +196,9 @@ class SomeIpSd(KaitaiStruct):
         """
         SEQ_FIELDS = ["reboot", "unicast", "initial_data", "reserved"]
         def __init__(self, _io, _parent=None, _root=None):
-            self._io = _io
+            super(SomeIpSd.SdFlags, self).__init__(_io)
             self._parent = _parent
-            self._root = _root if _root else self
+            self._root = _root
             self._debug = collections.defaultdict(dict)
 
         def _read(self):
@@ -206,6 +214,10 @@ class SomeIpSd(KaitaiStruct):
             self._debug['reserved']['start'] = self._io.pos()
             self.reserved = self._io.read_bits_int_be(5)
             self._debug['reserved']['end'] = self._io.pos()
+
+
+        def _fetch_instances(self):
+            pass
 
 
 

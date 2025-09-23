@@ -125,14 +125,15 @@
 
 
 # This is a generated file! Please edit source .ksy file and use kaitai-struct-compiler to rebuild
+# type: ignore
 
 import kaitaistruct
 from kaitaistruct import KaitaiStruct, KaitaiStream, BytesIO
 import collections
 
 
-if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 9):
-    raise Exception("Incompatible Kaitai Struct Python API: 0.9 or later is required, but you have %s" % (kaitaistruct.__version__))
+if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 11):
+    raise Exception("Incompatible Kaitai Struct Python API: 0.11 or later is required, but you have %s" % (kaitaistruct.__version__))
 
 class AmlogicEmmcPartitions(KaitaiStruct):
     """This is an unnamed and undocumented partition table format implemented by
@@ -155,9 +156,9 @@ class AmlogicEmmcPartitions(KaitaiStruct):
     """
     SEQ_FIELDS = ["magic", "version", "num_partitions", "checksum", "partitions"]
     def __init__(self, _io, _parent=None, _root=None):
-        self._io = _io
+        super(AmlogicEmmcPartitions, self).__init__(_io)
         self._parent = _parent
-        self._root = _root if _root else self
+        self._root = _root or self
         self._debug = collections.defaultdict(dict)
 
     def _read(self):
@@ -180,24 +181,33 @@ class AmlogicEmmcPartitions(KaitaiStruct):
         self.checksum = self._io.read_u4le()
         self._debug['checksum']['end'] = self._io.pos()
         self._debug['partitions']['start'] = self._io.pos()
+        self._debug['partitions']['arr'] = []
         self.partitions = []
         for i in range(self.num_partitions):
-            if not 'arr' in self._debug['partitions']:
-                self._debug['partitions']['arr'] = []
             self._debug['partitions']['arr'].append({'start': self._io.pos()})
             _t_partitions = AmlogicEmmcPartitions.Partition(self._io, self, self._root)
-            _t_partitions._read()
-            self.partitions.append(_t_partitions)
+            try:
+                _t_partitions._read()
+            finally:
+                self.partitions.append(_t_partitions)
             self._debug['partitions']['arr'][i]['end'] = self._io.pos()
 
         self._debug['partitions']['end'] = self._io.pos()
 
+
+    def _fetch_instances(self):
+        pass
+        for i in range(len(self.partitions)):
+            pass
+            self.partitions[i]._fetch_instances()
+
+
     class Partition(KaitaiStruct):
         SEQ_FIELDS = ["name", "size", "offset", "flags", "padding"]
         def __init__(self, _io, _parent=None, _root=None):
-            self._io = _io
+            super(AmlogicEmmcPartitions.Partition, self).__init__(_io)
             self._parent = _parent
-            self._root = _root if _root else self
+            self._root = _root
             self._debug = collections.defaultdict(dict)
 
         def _read(self):
@@ -220,12 +230,17 @@ class AmlogicEmmcPartitions(KaitaiStruct):
             self.padding = self._io.read_bytes(4)
             self._debug['padding']['end'] = self._io.pos()
 
+
+        def _fetch_instances(self):
+            pass
+            self.flags._fetch_instances()
+
         class PartFlags(KaitaiStruct):
             SEQ_FIELDS = ["is_code", "is_cache", "is_data"]
             def __init__(self, _io, _parent=None, _root=None):
-                self._io = _io
+                super(AmlogicEmmcPartitions.Partition.PartFlags, self).__init__(_io)
                 self._parent = _parent
-                self._root = _root if _root else self
+                self._root = _root
                 self._debug = collections.defaultdict(dict)
 
             def _read(self):
@@ -238,6 +253,10 @@ class AmlogicEmmcPartitions(KaitaiStruct):
                 self._debug['is_data']['start'] = self._io.pos()
                 self.is_data = self._io.read_bits_int_le(1) != 0
                 self._debug['is_data']['end'] = self._io.pos()
+
+
+            def _fetch_instances(self):
+                pass
 
 
 

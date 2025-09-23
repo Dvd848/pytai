@@ -125,17 +125,18 @@
 
 
 # This is a generated file! Please edit source .ksy file and use kaitai-struct-compiler to rebuild
+# type: ignore
 
 import kaitaistruct
 from kaitaistruct import KaitaiStruct, KaitaiStream, BytesIO
-import collections
-from enum import Enum
-
-
-if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 9):
-    raise Exception("Incompatible Kaitai Struct Python API: 0.9 or later is required, but you have %s" % (kaitaistruct.__version__))
-
 import some_ip_sd
+import collections
+from enum import IntEnum
+
+
+if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 11):
+    raise Exception("Incompatible Kaitai Struct Python API: 0.11 or later is required, but you have %s" % (kaitaistruct.__version__))
+
 class SomeIp(KaitaiStruct):
     """SOME/IP (Scalable service-Oriented MiddlewarE over IP) is an automotive/embedded
     communication protocol which supports remoteprocedure calls, event notifications
@@ -146,9 +147,9 @@ class SomeIp(KaitaiStruct):
     """
     SEQ_FIELDS = ["header", "payload"]
     def __init__(self, _io, _parent=None, _root=None):
-        self._io = _io
+        super(SomeIp, self).__init__(_io)
         self._parent = _parent
-        self._root = _root if _root else self
+        self._root = _root or self
         self._debug = collections.defaultdict(dict)
 
     def _read(self):
@@ -159,17 +160,30 @@ class SomeIp(KaitaiStruct):
         self._debug['payload']['start'] = self._io.pos()
         _on = self.header.message_id.value
         if _on == 4294934784:
-            self._raw_payload = self._io.read_bytes((self.header.length - 8))
+            pass
+            self._raw_payload = self._io.read_bytes(self.header.length - 8)
             _io__raw_payload = KaitaiStream(BytesIO(self._raw_payload))
             self.payload = some_ip_sd.SomeIpSd(_io__raw_payload)
             self.payload._read()
         else:
-            self.payload = self._io.read_bytes((self.header.length - 8))
+            pass
+            self.payload = self._io.read_bytes(self.header.length - 8)
         self._debug['payload']['end'] = self._io.pos()
+
+
+    def _fetch_instances(self):
+        pass
+        self.header._fetch_instances()
+        _on = self.header.message_id.value
+        if _on == 4294934784:
+            pass
+            self.payload._fetch_instances()
+        else:
+            pass
 
     class Header(KaitaiStruct):
 
-        class MessageTypeEnum(Enum):
+        class MessageTypeEnum(IntEnum):
             request = 0
             request_no_return = 1
             notification = 2
@@ -181,7 +195,7 @@ class SomeIp(KaitaiStruct):
             response_ack = 192
             error_ack = 193
 
-        class ReturnCodeEnum(Enum):
+        class ReturnCodeEnum(IntEnum):
             ok = 0
             not_ok = 1
             unknown_service = 2
@@ -195,9 +209,9 @@ class SomeIp(KaitaiStruct):
             wrong_message_type = 10
         SEQ_FIELDS = ["message_id", "length", "request_id", "protocol_version", "interface_version", "message_type", "return_code"]
         def __init__(self, _io, _parent=None, _root=None):
-            self._io = _io
+            super(SomeIp.Header, self).__init__(_io)
             self._parent = _parent
-            self._root = _root if _root else self
+            self._root = _root
             self._debug = collections.defaultdict(dict)
 
         def _read(self):
@@ -229,6 +243,12 @@ class SomeIp(KaitaiStruct):
             self.return_code = KaitaiStream.resolve_enum(SomeIp.Header.ReturnCodeEnum, self._io.read_u1())
             self._debug['return_code']['end'] = self._io.pos()
 
+
+        def _fetch_instances(self):
+            pass
+            self.message_id._fetch_instances()
+            self.request_id._fetch_instances()
+
         class MessageId(KaitaiStruct):
             """[PRS_SOMEIP_00035] The assignment of the Message ID shall be up to
             the user. However, the Message ID shall be unique for the whole
@@ -242,9 +262,9 @@ class SomeIp(KaitaiStruct):
             """
             SEQ_FIELDS = ["service_id", "sub_id", "method_id", "event_id"]
             def __init__(self, _io, _parent=None, _root=None):
-                self._io = _io
+                super(SomeIp.Header.MessageId, self).__init__(_io)
                 self._parent = _parent
-                self._root = _root if _root else self
+                self._root = _root
                 self._debug = collections.defaultdict(dict)
 
             def _read(self):
@@ -255,14 +275,30 @@ class SomeIp(KaitaiStruct):
                 self.sub_id = self._io.read_bits_int_be(1) != 0
                 self._debug['sub_id']['end'] = self._io.pos()
                 if self.sub_id == False:
+                    pass
                     self._debug['method_id']['start'] = self._io.pos()
                     self.method_id = self._io.read_bits_int_be(15)
                     self._debug['method_id']['end'] = self._io.pos()
 
                 if self.sub_id == True:
+                    pass
                     self._debug['event_id']['start'] = self._io.pos()
                     self.event_id = self._io.read_bits_int_be(15)
                     self._debug['event_id']['end'] = self._io.pos()
+
+
+
+            def _fetch_instances(self):
+                pass
+                if self.sub_id == False:
+                    pass
+
+                if self.sub_id == True:
+                    pass
+
+                _ = self.value
+                if hasattr(self, '_m_value'):
+                    pass
 
 
             @property
@@ -289,9 +325,9 @@ class SomeIp(KaitaiStruct):
             """
             SEQ_FIELDS = ["client_id", "session_id"]
             def __init__(self, _io, _parent=None, _root=None):
-                self._io = _io
+                super(SomeIp.Header.RequestId, self).__init__(_io)
                 self._parent = _parent
-                self._root = _root if _root else self
+                self._root = _root
                 self._debug = collections.defaultdict(dict)
 
             def _read(self):
@@ -301,6 +337,14 @@ class SomeIp(KaitaiStruct):
                 self._debug['session_id']['start'] = self._io.pos()
                 self.session_id = self._io.read_u2be()
                 self._debug['session_id']['end'] = self._io.pos()
+
+
+            def _fetch_instances(self):
+                pass
+                _ = self.value
+                if hasattr(self, '_m_value'):
+                    pass
+
 
             @property
             def value(self):

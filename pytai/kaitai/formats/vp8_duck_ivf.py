@@ -125,14 +125,15 @@
 
 
 # This is a generated file! Please edit source .ksy file and use kaitai-struct-compiler to rebuild
+# type: ignore
 
 import kaitaistruct
 from kaitaistruct import KaitaiStruct, KaitaiStream, BytesIO
 import collections
 
 
-if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 9):
-    raise Exception("Incompatible Kaitai Struct Python API: 0.9 or later is required, but you have %s" % (kaitaistruct.__version__))
+if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 11):
+    raise Exception("Incompatible Kaitai Struct Python API: 0.11 or later is required, but you have %s" % (kaitaistruct.__version__))
 
 class Vp8DuckIvf(KaitaiStruct):
     """Duck IVF is a simple container format for raw VP8 data, which is an open and
@@ -146,9 +147,9 @@ class Vp8DuckIvf(KaitaiStruct):
     """
     SEQ_FIELDS = ["magic1", "version", "len_header", "codec", "width", "height", "framerate", "timescale", "num_frames", "unused", "image_data"]
     def __init__(self, _io, _parent=None, _root=None):
-        self._io = _io
+        super(Vp8DuckIvf, self).__init__(_io)
         self._parent = _parent
-        self._root = _root if _root else self
+        self._root = _root or self
         self._debug = collections.defaultdict(dict)
 
     def _read(self):
@@ -187,39 +188,33 @@ class Vp8DuckIvf(KaitaiStruct):
         self.unused = self._io.read_u4le()
         self._debug['unused']['end'] = self._io.pos()
         self._debug['image_data']['start'] = self._io.pos()
+        self._debug['image_data']['arr'] = []
         self.image_data = []
         for i in range(self.num_frames):
-            if not 'arr' in self._debug['image_data']:
-                self._debug['image_data']['arr'] = []
             self._debug['image_data']['arr'].append({'start': self._io.pos()})
             _t_image_data = Vp8DuckIvf.Blocks(self._io, self, self._root)
-            _t_image_data._read()
-            self.image_data.append(_t_image_data)
+            try:
+                _t_image_data._read()
+            finally:
+                self.image_data.append(_t_image_data)
             self._debug['image_data']['arr'][i]['end'] = self._io.pos()
 
         self._debug['image_data']['end'] = self._io.pos()
 
-    class Blocks(KaitaiStruct):
-        SEQ_FIELDS = ["entries"]
-        def __init__(self, _io, _parent=None, _root=None):
-            self._io = _io
-            self._parent = _parent
-            self._root = _root if _root else self
-            self._debug = collections.defaultdict(dict)
 
-        def _read(self):
-            self._debug['entries']['start'] = self._io.pos()
-            self.entries = Vp8DuckIvf.Block(self._io, self, self._root)
-            self.entries._read()
-            self._debug['entries']['end'] = self._io.pos()
+    def _fetch_instances(self):
+        pass
+        for i in range(len(self.image_data)):
+            pass
+            self.image_data[i]._fetch_instances()
 
 
     class Block(KaitaiStruct):
         SEQ_FIELDS = ["len_frame", "timestamp", "framedata"]
         def __init__(self, _io, _parent=None, _root=None):
-            self._io = _io
+            super(Vp8DuckIvf.Block, self).__init__(_io)
             self._parent = _parent
-            self._root = _root if _root else self
+            self._root = _root
             self._debug = collections.defaultdict(dict)
 
         def _read(self):
@@ -232,6 +227,30 @@ class Vp8DuckIvf(KaitaiStruct):
             self._debug['framedata']['start'] = self._io.pos()
             self.framedata = self._io.read_bytes(self.len_frame)
             self._debug['framedata']['end'] = self._io.pos()
+
+
+        def _fetch_instances(self):
+            pass
+
+
+    class Blocks(KaitaiStruct):
+        SEQ_FIELDS = ["entries"]
+        def __init__(self, _io, _parent=None, _root=None):
+            super(Vp8DuckIvf.Blocks, self).__init__(_io)
+            self._parent = _parent
+            self._root = _root
+            self._debug = collections.defaultdict(dict)
+
+        def _read(self):
+            self._debug['entries']['start'] = self._io.pos()
+            self.entries = Vp8DuckIvf.Block(self._io, self, self._root)
+            self.entries._read()
+            self._debug['entries']['end'] = self._io.pos()
+
+
+        def _fetch_instances(self):
+            pass
+            self.entries._fetch_instances()
 
 
 

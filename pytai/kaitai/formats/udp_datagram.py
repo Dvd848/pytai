@@ -125,14 +125,15 @@
 
 
 # This is a generated file! Please edit source .ksy file and use kaitai-struct-compiler to rebuild
+# type: ignore
 
 import kaitaistruct
 from kaitaistruct import KaitaiStruct, KaitaiStream, BytesIO
 import collections
 
 
-if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 9):
-    raise Exception("Incompatible Kaitai Struct Python API: 0.9 or later is required, but you have %s" % (kaitaistruct.__version__))
+if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 11):
+    raise Exception("Incompatible Kaitai Struct Python API: 0.11 or later is required, but you have %s" % (kaitaistruct.__version__))
 
 class UdpDatagram(KaitaiStruct):
     """UDP is a simple stateless transport layer (AKA OSI layer 4)
@@ -142,9 +143,9 @@ class UdpDatagram(KaitaiStruct):
     """
     SEQ_FIELDS = ["src_port", "dst_port", "length", "checksum", "body"]
     def __init__(self, _io, _parent=None, _root=None):
-        self._io = _io
+        super(UdpDatagram, self).__init__(_io)
         self._parent = _parent
-        self._root = _root if _root else self
+        self._root = _root or self
         self._debug = collections.defaultdict(dict)
 
     def _read(self):
@@ -161,7 +162,11 @@ class UdpDatagram(KaitaiStruct):
         self.checksum = self._io.read_u2be()
         self._debug['checksum']['end'] = self._io.pos()
         self._debug['body']['start'] = self._io.pos()
-        self.body = self._io.read_bytes((self.length - 8))
+        self.body = self._io.read_bytes(self.length - 8)
         self._debug['body']['end'] = self._io.pos()
+
+
+    def _fetch_instances(self):
+        pass
 
 

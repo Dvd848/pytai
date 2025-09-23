@@ -125,18 +125,19 @@
 
 
 # This is a generated file! Please edit source .ksy file and use kaitai-struct-compiler to rebuild
+# type: ignore
 
 import kaitaistruct
 from kaitaistruct import KaitaiStruct, KaitaiStream, BytesIO
-from enum import Enum
+import windows_systemtime
+import ethernet_frame
+from enum import IntEnum
 import collections
 
 
-if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 9):
-    raise Exception("Incompatible Kaitai Struct Python API: 0.9 or later is required, but you have %s" % (kaitaistruct.__version__))
+if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 11):
+    raise Exception("Incompatible Kaitai Struct Python API: 0.11 or later is required, but you have %s" % (kaitaistruct.__version__))
 
-import ethernet_frame
-import windows_systemtime
 class MicrosoftNetworkMonitorV2(KaitaiStruct):
     """Microsoft Network Monitor (AKA Netmon) is a proprietary Microsoft's
     network packet sniffing and analysis tool. It can save captured
@@ -151,7 +152,7 @@ class MicrosoftNetworkMonitorV2(KaitaiStruct):
        Source - https://learn.microsoft.com/en-us/windows/win32/netmon2/capturefile-header-values
     """
 
-    class Linktype(Enum):
+    class Linktype(IntEnum):
         null_linktype = 0
         ethernet = 1
         ax25 = 3
@@ -258,9 +259,9 @@ class MicrosoftNetworkMonitorV2(KaitaiStruct):
         iso_14443 = 264
     SEQ_FIELDS = ["signature", "version_minor", "version_major", "mac_type", "time_capture_start", "frame_table_ofs", "frame_table_len", "user_data_ofs", "user_data_len", "comment_ofs", "comment_len", "statistics_ofs", "statistics_len", "network_info_ofs", "network_info_len", "conversation_stats_ofs", "conversation_stats_len"]
     def __init__(self, _io, _parent=None, _root=None):
-        self._io = _io
+        super(MicrosoftNetworkMonitorV2, self).__init__(_io)
         self._parent = _parent
-        self._root = _root if _root else self
+        self._root = _root or self
         self._debug = collections.defaultdict(dict)
 
     def _read(self):
@@ -319,29 +320,97 @@ class MicrosoftNetworkMonitorV2(KaitaiStruct):
         self.conversation_stats_len = self._io.read_u4le()
         self._debug['conversation_stats_len']['end'] = self._io.pos()
 
+
+    def _fetch_instances(self):
+        pass
+        self.time_capture_start._fetch_instances()
+        _ = self.frame_table
+        if hasattr(self, '_m_frame_table'):
+            pass
+            self._m_frame_table._fetch_instances()
+
+
+    class Frame(KaitaiStruct):
+        """A container for actually captured network data. Allow to
+        timestamp individual frames and designates how much data from
+        the original packet was actually written into the file.
+        
+        .. seealso::
+           Source - https://learn.microsoft.com/en-us/windows/win32/netmon2/frame
+        """
+        SEQ_FIELDS = ["ts_delta", "orig_len", "inc_len", "body"]
+        def __init__(self, _io, _parent=None, _root=None):
+            super(MicrosoftNetworkMonitorV2.Frame, self).__init__(_io)
+            self._parent = _parent
+            self._root = _root
+            self._debug = collections.defaultdict(dict)
+
+        def _read(self):
+            self._debug['ts_delta']['start'] = self._io.pos()
+            self.ts_delta = self._io.read_u8le()
+            self._debug['ts_delta']['end'] = self._io.pos()
+            self._debug['orig_len']['start'] = self._io.pos()
+            self.orig_len = self._io.read_u4le()
+            self._debug['orig_len']['end'] = self._io.pos()
+            self._debug['inc_len']['start'] = self._io.pos()
+            self.inc_len = self._io.read_u4le()
+            self._debug['inc_len']['end'] = self._io.pos()
+            self._debug['body']['start'] = self._io.pos()
+            _on = self._root.mac_type
+            if _on == MicrosoftNetworkMonitorV2.Linktype.ethernet:
+                pass
+                self._raw_body = self._io.read_bytes(self.inc_len)
+                _io__raw_body = KaitaiStream(BytesIO(self._raw_body))
+                self.body = ethernet_frame.EthernetFrame(_io__raw_body)
+                self.body._read()
+            else:
+                pass
+                self.body = self._io.read_bytes(self.inc_len)
+            self._debug['body']['end'] = self._io.pos()
+
+
+        def _fetch_instances(self):
+            pass
+            _on = self._root.mac_type
+            if _on == MicrosoftNetworkMonitorV2.Linktype.ethernet:
+                pass
+                self.body._fetch_instances()
+            else:
+                pass
+
+
     class FrameIndex(KaitaiStruct):
         SEQ_FIELDS = ["entries"]
         def __init__(self, _io, _parent=None, _root=None):
-            self._io = _io
+            super(MicrosoftNetworkMonitorV2.FrameIndex, self).__init__(_io)
             self._parent = _parent
-            self._root = _root if _root else self
+            self._root = _root
             self._debug = collections.defaultdict(dict)
 
         def _read(self):
             self._debug['entries']['start'] = self._io.pos()
+            self._debug['entries']['arr'] = []
             self.entries = []
             i = 0
             while not self._io.is_eof():
-                if not 'arr' in self._debug['entries']:
-                    self._debug['entries']['arr'] = []
                 self._debug['entries']['arr'].append({'start': self._io.pos()})
                 _t_entries = MicrosoftNetworkMonitorV2.FrameIndexEntry(self._io, self, self._root)
-                _t_entries._read()
-                self.entries.append(_t_entries)
+                try:
+                    _t_entries._read()
+                finally:
+                    self.entries.append(_t_entries)
                 self._debug['entries']['arr'][len(self.entries) - 1]['end'] = self._io.pos()
                 i += 1
 
             self._debug['entries']['end'] = self._io.pos()
+
+
+        def _fetch_instances(self):
+            pass
+            for i in range(len(self.entries)):
+                pass
+                self.entries[i]._fetch_instances()
+
 
 
     class FrameIndexEntry(KaitaiStruct):
@@ -350,15 +419,24 @@ class MicrosoftNetworkMonitorV2(KaitaiStruct):
         """
         SEQ_FIELDS = ["ofs"]
         def __init__(self, _io, _parent=None, _root=None):
-            self._io = _io
+            super(MicrosoftNetworkMonitorV2.FrameIndexEntry, self).__init__(_io)
             self._parent = _parent
-            self._root = _root if _root else self
+            self._root = _root
             self._debug = collections.defaultdict(dict)
 
         def _read(self):
             self._debug['ofs']['start'] = self._io.pos()
             self.ofs = self._io.read_u4le()
             self._debug['ofs']['end'] = self._io.pos()
+
+
+        def _fetch_instances(self):
+            pass
+            _ = self.body
+            if hasattr(self, '_m_body'):
+                pass
+                self._m_body._fetch_instances()
+
 
         @property
         def body(self):
@@ -375,43 +453,6 @@ class MicrosoftNetworkMonitorV2(KaitaiStruct):
             self._debug['_m_body']['end'] = io.pos()
             io.seek(_pos)
             return getattr(self, '_m_body', None)
-
-
-    class Frame(KaitaiStruct):
-        """A container for actually captured network data. Allow to
-        timestamp individual frames and designates how much data from
-        the original packet was actually written into the file.
-        
-        .. seealso::
-           Source - https://learn.microsoft.com/en-us/windows/win32/netmon2/frame
-        """
-        SEQ_FIELDS = ["ts_delta", "orig_len", "inc_len", "body"]
-        def __init__(self, _io, _parent=None, _root=None):
-            self._io = _io
-            self._parent = _parent
-            self._root = _root if _root else self
-            self._debug = collections.defaultdict(dict)
-
-        def _read(self):
-            self._debug['ts_delta']['start'] = self._io.pos()
-            self.ts_delta = self._io.read_u8le()
-            self._debug['ts_delta']['end'] = self._io.pos()
-            self._debug['orig_len']['start'] = self._io.pos()
-            self.orig_len = self._io.read_u4le()
-            self._debug['orig_len']['end'] = self._io.pos()
-            self._debug['inc_len']['start'] = self._io.pos()
-            self.inc_len = self._io.read_u4le()
-            self._debug['inc_len']['end'] = self._io.pos()
-            self._debug['body']['start'] = self._io.pos()
-            _on = self._root.mac_type
-            if _on == MicrosoftNetworkMonitorV2.Linktype.ethernet:
-                self._raw_body = self._io.read_bytes(self.inc_len)
-                _io__raw_body = KaitaiStream(BytesIO(self._raw_body))
-                self.body = ethernet_frame.EthernetFrame(_io__raw_body)
-                self.body._read()
-            else:
-                self.body = self._io.read_bytes(self.inc_len)
-            self._debug['body']['end'] = self._io.pos()
 
 
     @property
