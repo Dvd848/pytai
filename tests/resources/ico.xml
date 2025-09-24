@@ -1,0 +1,20 @@
+<?xml version="1.0" ?>
+<root>
+   <node name="magic" extra_info="Byte Array (Length: 4)" start_offset="0" end_offset="4" is_metavar="False"/>
+   <node name="num_images" extra_info="1 (0x1)" start_offset="4" end_offset="6" is_metavar="False"/>
+   <node name="images" extra_info="" start_offset="6" end_offset="22" is_metavar="False">
+      <node name="[0]" extra_info="" start_offset="6" end_offset="22" is_metavar="False">
+         <node name="width" extra_info="2 (0x2)" start_offset="6" end_offset="7" is_metavar="False"/>
+         <node name="height" extra_info="1 (0x1)" start_offset="7" end_offset="8" is_metavar="False"/>
+         <node name="num_colors" extra_info="0 (0x0)" start_offset="8" end_offset="9" is_metavar="False"/>
+         <node name="reserved" extra_info="Byte Array (Length: 1)" start_offset="9" end_offset="10" is_metavar="False"/>
+         <node name="num_planes" extra_info="1 (0x1)" start_offset="10" end_offset="12" is_metavar="False"/>
+         <node name="bpp" extra_info="24 (0x18)" start_offset="12" end_offset="14" is_metavar="False"/>
+         <node name="len_img" extra_info="52 (0x34)" start_offset="14" end_offset="18" is_metavar="False"/>
+         <node name="ofs_img" extra_info="22 (0x16)" start_offset="18" end_offset="22" is_metavar="False"/>
+         <node name="img" extra_info="Byte Array (Length: 52)" start_offset="22" end_offset="74" is_metavar="True"/>
+         <node name="is_png" extra_info="False (0x0)" start_offset="None" end_offset="None" is_metavar="True"/>
+         <node name="png_header" extra_info="Byte Array (Length: 8)" start_offset="22" end_offset="30" is_metavar="True"/>
+      </node>
+   </node>
+</root>

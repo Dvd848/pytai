@@ -670,7 +670,7 @@ class Sqlite3(KaitaiStruct):
                 pass
                 self._m_len_content = (self.code.value - 12) // 2
 
-            return getattr(self, '_m_len_content', None)
+            return getattr(self, '_m_len_content', 0)
 
 
     class Serials(KaitaiStruct):

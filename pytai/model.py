@@ -103,7 +103,7 @@ class Parser(object):
         if isinstance(item, (bytes, bytearray)):
             return f"Byte Array (Length: {len(item)})"
         elif isinstance(item, str):
-            return item
+            return item.rstrip('\x00')
         elif isinstance(item, Enum):
             return item.name
         elif isinstance(item, int):

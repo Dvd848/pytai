@@ -1,0 +1,121 @@
+<?xml version="1.0" ?>
+<root>
+   <node name="segments" extra_info="" start_offset="0" end_offset="299" is_metavar="False">
+      <node name="[0]" extra_info="" start_offset="0" end_offset="2" is_metavar="False">
+         <node name="magic" extra_info="Byte Array (Length: 1)" start_offset="0" end_offset="1" is_metavar="False"/>
+         <node name="marker" extra_info="soi" start_offset="1" end_offset="2" is_metavar="False"/>
+      </node>
+      <node name="[1]" extra_info="" start_offset="2" end_offset="20" is_metavar="False">
+         <node name="magic" extra_info="Byte Array (Length: 1)" start_offset="2" end_offset="3" is_metavar="False"/>
+         <node name="marker" extra_info="app0" start_offset="3" end_offset="4" is_metavar="False"/>
+         <node name="length" extra_info="16 (0x10)" start_offset="4" end_offset="6" is_metavar="False"/>
+         <node name="data" extra_info="" start_offset="6" end_offset="20" is_metavar="False">
+            <node name="magic" extra_info="JFIF" start_offset="6" end_offset="11" is_metavar="False"/>
+            <node name="version_major" extra_info="1 (0x1)" start_offset="11" end_offset="12" is_metavar="False"/>
+            <node name="version_minor" extra_info="1 (0x1)" start_offset="12" end_offset="13" is_metavar="False"/>
+            <node name="density_units" extra_info="pixels_per_inch" start_offset="13" end_offset="14" is_metavar="False"/>
+            <node name="density_x" extra_info="300 (0x12c)" start_offset="14" end_offset="16" is_metavar="False"/>
+            <node name="density_y" extra_info="300 (0x12c)" start_offset="16" end_offset="18" is_metavar="False"/>
+            <node name="thumbnail_x" extra_info="0 (0x0)" start_offset="18" end_offset="19" is_metavar="False"/>
+            <node name="thumbnail_y" extra_info="0 (0x0)" start_offset="19" end_offset="20" is_metavar="False"/>
+            <node name="thumbnail" extra_info="Byte Array (Length: 0)" start_offset="20" end_offset="20" is_metavar="False"/>
+         </node>
+      </node>
+      <node name="[2]" extra_info="" start_offset="20" end_offset="89" is_metavar="False">
+         <node name="magic" extra_info="Byte Array (Length: 1)" start_offset="20" end_offset="21" is_metavar="False"/>
+         <node name="marker" extra_info="dqt" start_offset="21" end_offset="22" is_metavar="False"/>
+         <node name="length" extra_info="67 (0x43)" start_offset="22" end_offset="24" is_metavar="False"/>
+         <node name="data" extra_info="Byte Array (Length: 65)" start_offset="24" end_offset="89" is_metavar="False"/>
+      </node>
+      <node name="[3]" extra_info="" start_offset="89" end_offset="158" is_metavar="False">
+         <node name="magic" extra_info="Byte Array (Length: 1)" start_offset="89" end_offset="90" is_metavar="False"/>
+         <node name="marker" extra_info="dqt" start_offset="90" end_offset="91" is_metavar="False"/>
+         <node name="length" extra_info="67 (0x43)" start_offset="91" end_offset="93" is_metavar="False"/>
+         <node name="data" extra_info="Byte Array (Length: 65)" start_offset="93" end_offset="158" is_metavar="False"/>
+      </node>
+      <node name="[4]" extra_info="" start_offset="158" end_offset="177" is_metavar="False">
+         <node name="magic" extra_info="Byte Array (Length: 1)" start_offset="158" end_offset="159" is_metavar="False"/>
+         <node name="marker" extra_info="sof0" start_offset="159" end_offset="160" is_metavar="False"/>
+         <node name="length" extra_info="17 (0x11)" start_offset="160" end_offset="162" is_metavar="False"/>
+         <node name="data" extra_info="" start_offset="162" end_offset="177" is_metavar="False">
+            <node name="bits_per_sample" extra_info="8 (0x8)" start_offset="162" end_offset="163" is_metavar="False"/>
+            <node name="image_height" extra_info="1 (0x1)" start_offset="163" end_offset="165" is_metavar="False"/>
+            <node name="image_width" extra_info="2 (0x2)" start_offset="165" end_offset="167" is_metavar="False"/>
+            <node name="num_components" extra_info="3 (0x3)" start_offset="167" end_offset="168" is_metavar="False"/>
+            <node name="components" extra_info="" start_offset="168" end_offset="177" is_metavar="False">
+               <node name="[0]" extra_info="" start_offset="168" end_offset="171" is_metavar="False">
+                  <node name="id" extra_info="y" start_offset="168" end_offset="169" is_metavar="False"/>
+                  <node name="sampling_factors" extra_info="34 (0x22)" start_offset="169" end_offset="170" is_metavar="False"/>
+                  <node name="quantization_table_id" extra_info="0 (0x0)" start_offset="170" end_offset="171" is_metavar="False"/>
+                  <node name="sampling_x" extra_info="2 (0x2)" start_offset="None" end_offset="None" is_metavar="True"/>
+                  <node name="sampling_y" extra_info="2 (0x2)" start_offset="None" end_offset="None" is_metavar="True"/>
+               </node>
+               <node name="[1]" extra_info="" start_offset="171" end_offset="174" is_metavar="False">
+                  <node name="id" extra_info="cb" start_offset="171" end_offset="172" is_metavar="False"/>
+                  <node name="sampling_factors" extra_info="17 (0x11)" start_offset="172" end_offset="173" is_metavar="False"/>
+                  <node name="quantization_table_id" extra_info="1 (0x1)" start_offset="173" end_offset="174" is_metavar="False"/>
+                  <node name="sampling_x" extra_info="1 (0x1)" start_offset="None" end_offset="None" is_metavar="True"/>
+                  <node name="sampling_y" extra_info="1 (0x1)" start_offset="None" end_offset="None" is_metavar="True"/>
+               </node>
+               <node name="[2]" extra_info="" start_offset="174" end_offset="177" is_metavar="False">
+                  <node name="id" extra_info="cr" start_offset="174" end_offset="175" is_metavar="False"/>
+                  <node name="sampling_factors" extra_info="17 (0x11)" start_offset="175" end_offset="176" is_metavar="False"/>
+                  <node name="quantization_table_id" extra_info="1 (0x1)" start_offset="176" end_offset="177" is_metavar="False"/>
+                  <node name="sampling_x" extra_info="1 (0x1)" start_offset="None" end_offset="None" is_metavar="True"/>
+                  <node name="sampling_y" extra_info="1 (0x1)" start_offset="None" end_offset="None" is_metavar="True"/>
+               </node>
+            </node>
+         </node>
+      </node>
+      <node name="[5]" extra_info="" start_offset="177" end_offset="200" is_metavar="False">
+         <node name="magic" extra_info="Byte Array (Length: 1)" start_offset="177" end_offset="178" is_metavar="False"/>
+         <node name="marker" extra_info="dht" start_offset="178" end_offset="179" is_metavar="False"/>
+         <node name="length" extra_info="21 (0x15)" start_offset="179" end_offset="181" is_metavar="False"/>
+         <node name="data" extra_info="Byte Array (Length: 19)" start_offset="181" end_offset="200" is_metavar="False"/>
+      </node>
+      <node name="[6]" extra_info="" start_offset="200" end_offset="229" is_metavar="False">
+         <node name="magic" extra_info="Byte Array (Length: 1)" start_offset="200" end_offset="201" is_metavar="False"/>
+         <node name="marker" extra_info="dht" start_offset="201" end_offset="202" is_metavar="False"/>
+         <node name="length" extra_info="27 (0x1b)" start_offset="202" end_offset="204" is_metavar="False"/>
+         <node name="data" extra_info="Byte Array (Length: 25)" start_offset="204" end_offset="229" is_metavar="False"/>
+      </node>
+      <node name="[7]" extra_info="" start_offset="229" end_offset="251" is_metavar="False">
+         <node name="magic" extra_info="Byte Array (Length: 1)" start_offset="229" end_offset="230" is_metavar="False"/>
+         <node name="marker" extra_info="dht" start_offset="230" end_offset="231" is_metavar="False"/>
+         <node name="length" extra_info="20 (0x14)" start_offset="231" end_offset="233" is_metavar="False"/>
+         <node name="data" extra_info="Byte Array (Length: 18)" start_offset="233" end_offset="251" is_metavar="False"/>
+      </node>
+      <node name="[8]" extra_info="" start_offset="251" end_offset="273" is_metavar="False">
+         <node name="magic" extra_info="Byte Array (Length: 1)" start_offset="251" end_offset="252" is_metavar="False"/>
+         <node name="marker" extra_info="dht" start_offset="252" end_offset="253" is_metavar="False"/>
+         <node name="length" extra_info="20 (0x14)" start_offset="253" end_offset="255" is_metavar="False"/>
+         <node name="data" extra_info="Byte Array (Length: 18)" start_offset="255" end_offset="273" is_metavar="False"/>
+      </node>
+      <node name="[9]" extra_info="" start_offset="273" end_offset="299" is_metavar="False">
+         <node name="magic" extra_info="Byte Array (Length: 1)" start_offset="273" end_offset="274" is_metavar="False"/>
+         <node name="marker" extra_info="sos" start_offset="274" end_offset="275" is_metavar="False"/>
+         <node name="length" extra_info="12 (0xc)" start_offset="275" end_offset="277" is_metavar="False"/>
+         <node name="data" extra_info="" start_offset="277" end_offset="287" is_metavar="False">
+            <node name="num_components" extra_info="3 (0x3)" start_offset="277" end_offset="278" is_metavar="False"/>
+            <node name="components" extra_info="" start_offset="278" end_offset="284" is_metavar="False">
+               <node name="[0]" extra_info="" start_offset="278" end_offset="280" is_metavar="False">
+                  <node name="id" extra_info="y" start_offset="278" end_offset="279" is_metavar="False"/>
+                  <node name="huffman_table" extra_info="0 (0x0)" start_offset="279" end_offset="280" is_metavar="False"/>
+               </node>
+               <node name="[1]" extra_info="" start_offset="280" end_offset="282" is_metavar="False">
+                  <node name="id" extra_info="cb" start_offset="280" end_offset="281" is_metavar="False"/>
+                  <node name="huffman_table" extra_info="17 (0x11)" start_offset="281" end_offset="282" is_metavar="False"/>
+               </node>
+               <node name="[2]" extra_info="" start_offset="282" end_offset="284" is_metavar="False">
+                  <node name="id" extra_info="cr" start_offset="282" end_offset="283" is_metavar="False"/>
+                  <node name="huffman_table" extra_info="17 (0x11)" start_offset="283" end_offset="284" is_metavar="False"/>
+               </node>
+            </node>
+            <node name="start_spectral_selection" extra_info="0 (0x0)" start_offset="284" end_offset="285" is_metavar="False"/>
+            <node name="end_spectral" extra_info="63 (0x3f)" start_offset="285" end_offset="286" is_metavar="False"/>
+            <node name="appr_bit_pos" extra_info="0 (0x0)" start_offset="286" end_offset="287" is_metavar="False"/>
+         </node>
+         <node name="image_data" extra_info="Byte Array (Length: 12)" start_offset="287" end_offset="299" is_metavar="False"/>
+      </node>
+   </node>
+</root>

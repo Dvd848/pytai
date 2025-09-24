@@ -69,8 +69,9 @@ class TestOffsets(unittest.TestCase):
     def get_resource_path(file_name: str):
         return Path(__file__).resolve().parent / "resources" / file_name
 
-    def generic_test(self, file_type):
-        path = self.get_resource_path(f"{file_type}.{file_type}")
+    def generic_test(self, file_name: str):
+        path = self.get_resource_path(file_name)
+        file_type = file_name.split(".")[0]
         format = {"kaitai_format": file_type}
 
         with patch(__name__ + '.application.v.View', MockView()):
@@ -87,22 +88,43 @@ class TestOffsets(unittest.TestCase):
                 self.fail(str(e))
     
     def test_png(self):
-        self.generic_test("png")
+        self.generic_test("png.png")
 
     def test_bmp(self):
-        self.generic_test("bmp")
+        self.generic_test("bmp.bmp")
 
     def test_zip(self):
-        self.generic_test("zip")
+        self.generic_test("zip.zip")
 
     def test_elf(self):
-        self.generic_test("elf")
+        self.generic_test("elf.elf")
 
     def test_wav(self):
-        self.generic_test("wav")
+        self.generic_test("wav.wav")
 
     def test_ttf(self):
-        self.generic_test("ttf")
+        self.generic_test("ttf.ttf")
+
+    def test_asn1_der(self):
+        self.generic_test("asn1_der.cer")
+
+    def test_gif(self):
+        self.generic_test("gif.gif")
+
+    def test_gzip(self):
+        self.generic_test("gzip.gz")
+
+    def test_ico(self):
+        self.generic_test("ico.ico")
+
+    def test_jpeg(self):
+        self.generic_test("jpeg.jpg")
+
+    def test_ogg(self):
+        self.generic_test("ogg.ogg")
+
+    def test_sqlite3(self):
+        self.generic_test("sqlite3.db")
 
 if __name__ == "__main__":
     unittest.main()

@@ -51,7 +51,7 @@ def xml_compare(x1: ET.Element, x2: ET.Element, excludes: Optional[List[str]] = 
 
     for name, value in x1.attrib.items():
         if not name in excludes:
-            if x2.attrib.get(name) != value:
+            if x2.attrib.get(name) != value.replace('\n', ' '):
                 raise RuntimeError(f'Attributes do not match: {name}={value}, {name}={x2.attrib.get(name)}')
 
     for name in x2.attrib.keys():

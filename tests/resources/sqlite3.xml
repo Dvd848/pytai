@@ -1,0 +1,312 @@
+<?xml version="1.0" ?>
+<root>
+   <node name="magic" extra_info="Byte Array (Length: 16)" start_offset="0" end_offset="16" is_metavar="False"/>
+   <node name="len_page_mod" extra_info="4096 (0x1000)" start_offset="16" end_offset="18" is_metavar="False"/>
+   <node name="write_version" extra_info="legacy" start_offset="18" end_offset="19" is_metavar="False"/>
+   <node name="read_version" extra_info="legacy" start_offset="19" end_offset="20" is_metavar="False"/>
+   <node name="reserved_space" extra_info="0 (0x0)" start_offset="20" end_offset="21" is_metavar="False"/>
+   <node name="max_payload_frac" extra_info="64 (0x40)" start_offset="21" end_offset="22" is_metavar="False"/>
+   <node name="min_payload_frac" extra_info="32 (0x20)" start_offset="22" end_offset="23" is_metavar="False"/>
+   <node name="leaf_payload_frac" extra_info="32 (0x20)" start_offset="23" end_offset="24" is_metavar="False"/>
+   <node name="file_change_counter" extra_info="2 (0x2)" start_offset="24" end_offset="28" is_metavar="False"/>
+   <node name="num_pages" extra_info="3 (0x3)" start_offset="28" end_offset="32" is_metavar="False"/>
+   <node name="first_freelist_trunk_page" extra_info="0 (0x0)" start_offset="32" end_offset="36" is_metavar="False"/>
+   <node name="num_freelist_pages" extra_info="0 (0x0)" start_offset="36" end_offset="40" is_metavar="False"/>
+   <node name="schema_cookie" extra_info="1 (0x1)" start_offset="40" end_offset="44" is_metavar="False"/>
+   <node name="schema_format" extra_info="4 (0x4)" start_offset="44" end_offset="48" is_metavar="False"/>
+   <node name="def_page_cache_size" extra_info="0 (0x0)" start_offset="48" end_offset="52" is_metavar="False"/>
+   <node name="largest_root_page" extra_info="0 (0x0)" start_offset="52" end_offset="56" is_metavar="False"/>
+   <node name="text_encoding" extra_info="utf_8" start_offset="56" end_offset="60" is_metavar="False"/>
+   <node name="user_version" extra_info="0 (0x0)" start_offset="60" end_offset="64" is_metavar="False"/>
+   <node name="is_incremental_vacuum" extra_info="0 (0x0)" start_offset="64" end_offset="68" is_metavar="False"/>
+   <node name="application_id" extra_info="0 (0x0)" start_offset="68" end_offset="72" is_metavar="False"/>
+   <node name="reserved" extra_info="Byte Array (Length: 20)" start_offset="72" end_offset="92" is_metavar="False"/>
+   <node name="version_valid_for" extra_info="2 (0x2)" start_offset="92" end_offset="96" is_metavar="False"/>
+   <node name="sqlite_version_number" extra_info="3031001 (0x2e3fd9)" start_offset="96" end_offset="100" is_metavar="False"/>
+   <node name="root_page" extra_info="" start_offset="100" end_offset="112" is_metavar="False">
+      <node name="page_type" extra_info="13 (0xd)" start_offset="100" end_offset="101" is_metavar="False"/>
+      <node name="first_freeblock" extra_info="0 (0x0)" start_offset="101" end_offset="103" is_metavar="False"/>
+      <node name="num_cells" extra_info="2 (0x2)" start_offset="103" end_offset="105" is_metavar="False"/>
+      <node name="ofs_cells" extra_info="3885 (0xf2d)" start_offset="105" end_offset="107" is_metavar="False"/>
+      <node name="num_frag_free_bytes" extra_info="0 (0x0)" start_offset="107" end_offset="108" is_metavar="False"/>
+      <node name="cells" extra_info="" start_offset="108" end_offset="112" is_metavar="False">
+         <node name="[0]" extra_info="" start_offset="108" end_offset="110" is_metavar="False">
+            <node name="ofs_body" extra_info="3967 (0xf7f)" start_offset="108" end_offset="110" is_metavar="False"/>
+            <node name="body" extra_info="" start_offset="3967" end_offset="4096" is_metavar="True">
+               <node name="len_payload" extra_info="" start_offset="3967" end_offset="3968" is_metavar="False">
+                  <node name="groups" extra_info="" start_offset="3967" end_offset="3968" is_metavar="False">
+                     <node name="[0]" extra_info="" start_offset="3967" end_offset="3968" is_metavar="False">
+                        <node name="has_next" extra_info="False (0x0)" start_offset="3967" end_offset="3968" is_metavar="False"/>
+                        <node name="value" extra_info="127 (0x7f)" start_offset="3968" end_offset="3968" is_metavar="False"/>
+                     </node>
+                  </node>
+                  <node name="last" extra_info="0 (0x0)" start_offset="None" end_offset="None" is_metavar="True"/>
+                  <node name="value" extra_info="127 (0x7f)" start_offset="None" end_offset="None" is_metavar="True"/>
+               </node>
+               <node name="row_id" extra_info="" start_offset="3968" end_offset="3969" is_metavar="False">
+                  <node name="groups" extra_info="" start_offset="3968" end_offset="3969" is_metavar="False">
+                     <node name="[0]" extra_info="" start_offset="3968" end_offset="3969" is_metavar="False">
+                        <node name="has_next" extra_info="False (0x0)" start_offset="3968" end_offset="3969" is_metavar="False"/>
+                        <node name="value" extra_info="1 (0x1)" start_offset="3969" end_offset="3969" is_metavar="False"/>
+                     </node>
+                  </node>
+                  <node name="last" extra_info="0 (0x0)" start_offset="None" end_offset="None" is_metavar="True"/>
+                  <node name="value" extra_info="1 (0x1)" start_offset="None" end_offset="None" is_metavar="True"/>
+               </node>
+               <node name="payload" extra_info="" start_offset="3969" end_offset="4096" is_metavar="False">
+                  <node name="len_header_and_len" extra_info="" start_offset="3969" end_offset="3970" is_metavar="False">
+                     <node name="groups" extra_info="" start_offset="3969" end_offset="3970" is_metavar="False">
+                        <node name="[0]" extra_info="" start_offset="3969" end_offset="3970" is_metavar="False">
+                           <node name="has_next" extra_info="False (0x0)" start_offset="3969" end_offset="3970" is_metavar="False"/>
+                           <node name="value" extra_info="7 (0x7)" start_offset="3970" end_offset="3970" is_metavar="False"/>
+                        </node>
+                     </node>
+                     <node name="last" extra_info="0 (0x0)" start_offset="None" end_offset="None" is_metavar="True"/>
+                     <node name="value" extra_info="7 (0x7)" start_offset="None" end_offset="None" is_metavar="True"/>
+                  </node>
+                  <node name="column_serials" extra_info="" start_offset="3970" end_offset="3976" is_metavar="False">
+                     <node name="entries" extra_info="" start_offset="3970" end_offset="3976" is_metavar="False">
+                        <node name="[0]" extra_info="" start_offset="3970" end_offset="3971" is_metavar="False">
+                           <node name="code" extra_info="" start_offset="3970" end_offset="3971" is_metavar="False">
+                              <node name="groups" extra_info="" start_offset="3970" end_offset="3971" is_metavar="False">
+                                 <node name="[0]" extra_info="" start_offset="3970" end_offset="3971" is_metavar="False">
+                                    <node name="has_next" extra_info="False (0x0)" start_offset="3970" end_offset="3971" is_metavar="False"/>
+                                    <node name="value" extra_info="23 (0x17)" start_offset="3971" end_offset="3971" is_metavar="False"/>
+                                 </node>
+                              </node>
+                              <node name="last" extra_info="0 (0x0)" start_offset="None" end_offset="None" is_metavar="True"/>
+                              <node name="value" extra_info="23 (0x17)" start_offset="None" end_offset="None" is_metavar="True"/>
+                           </node>
+                           <node name="is_blob" extra_info="False (0x0)" start_offset="None" end_offset="None" is_metavar="True"/>
+                           <node name="is_string" extra_info="True (0x1)" start_offset="None" end_offset="None" is_metavar="True"/>
+                           <node name="len_content" extra_info="5 (0x5)" start_offset="None" end_offset="None" is_metavar="True"/>
+                        </node>
+                        <node name="[1]" extra_info="" start_offset="3971" end_offset="3972" is_metavar="False">
+                           <node name="code" extra_info="" start_offset="3971" end_offset="3972" is_metavar="False">
+                              <node name="groups" extra_info="" start_offset="3971" end_offset="3972" is_metavar="False">
+                                 <node name="[0]" extra_info="" start_offset="3971" end_offset="3972" is_metavar="False">
+                                    <node name="has_next" extra_info="False (0x0)" start_offset="3971" end_offset="3972" is_metavar="False"/>
+                                    <node name="value" extra_info="23 (0x17)" start_offset="3972" end_offset="3972" is_metavar="False"/>
+                                 </node>
+                              </node>
+                              <node name="last" extra_info="0 (0x0)" start_offset="None" end_offset="None" is_metavar="True"/>
+                              <node name="value" extra_info="23 (0x17)" start_offset="None" end_offset="None" is_metavar="True"/>
+                           </node>
+                           <node name="is_blob" extra_info="False (0x0)" start_offset="None" end_offset="None" is_metavar="True"/>
+                           <node name="is_string" extra_info="True (0x1)" start_offset="None" end_offset="None" is_metavar="True"/>
+                           <node name="len_content" extra_info="5 (0x5)" start_offset="None" end_offset="None" is_metavar="True"/>
+                        </node>
+                        <node name="[2]" extra_info="" start_offset="3972" end_offset="3973" is_metavar="False">
+                           <node name="code" extra_info="" start_offset="3972" end_offset="3973" is_metavar="False">
+                              <node name="groups" extra_info="" start_offset="3972" end_offset="3973" is_metavar="False">
+                                 <node name="[0]" extra_info="" start_offset="3972" end_offset="3973" is_metavar="False">
+                                    <node name="has_next" extra_info="False (0x0)" start_offset="3972" end_offset="3973" is_metavar="False"/>
+                                    <node name="value" extra_info="23 (0x17)" start_offset="3973" end_offset="3973" is_metavar="False"/>
+                                 </node>
+                              </node>
+                              <node name="last" extra_info="0 (0x0)" start_offset="None" end_offset="None" is_metavar="True"/>
+                              <node name="value" extra_info="23 (0x17)" start_offset="None" end_offset="None" is_metavar="True"/>
+                           </node>
+                           <node name="is_blob" extra_info="False (0x0)" start_offset="None" end_offset="None" is_metavar="True"/>
+                           <node name="is_string" extra_info="True (0x1)" start_offset="None" end_offset="None" is_metavar="True"/>
+                           <node name="len_content" extra_info="5 (0x5)" start_offset="None" end_offset="None" is_metavar="True"/>
+                        </node>
+                        <node name="[3]" extra_info="" start_offset="3973" end_offset="3974" is_metavar="False">
+                           <node name="code" extra_info="" start_offset="3973" end_offset="3974" is_metavar="False">
+                              <node name="groups" extra_info="" start_offset="3973" end_offset="3974" is_metavar="False">
+                                 <node name="[0]" extra_info="" start_offset="3973" end_offset="3974" is_metavar="False">
+                                    <node name="has_next" extra_info="False (0x0)" start_offset="3973" end_offset="3974" is_metavar="False"/>
+                                    <node name="value" extra_info="1 (0x1)" start_offset="3974" end_offset="3974" is_metavar="False"/>
+                                 </node>
+                              </node>
+                              <node name="last" extra_info="0 (0x0)" start_offset="None" end_offset="None" is_metavar="True"/>
+                              <node name="value" extra_info="1 (0x1)" start_offset="None" end_offset="None" is_metavar="True"/>
+                           </node>
+                           <node name="is_blob" extra_info="False (0x0)" start_offset="None" end_offset="None" is_metavar="True"/>
+                           <node name="is_string" extra_info="False (0x0)" start_offset="None" end_offset="None" is_metavar="True"/>
+                           <node name="len_content" extra_info="0 (0x0)" start_offset="None" end_offset="None" is_metavar="True"/>
+                        </node>
+                        <node name="[4]" extra_info="" start_offset="3974" end_offset="3976" is_metavar="False">
+                           <node name="code" extra_info="" start_offset="3974" end_offset="3976" is_metavar="False">
+                              <node name="groups" extra_info="" start_offset="3974" end_offset="3976" is_metavar="False">
+                                 <node name="[0]" extra_info="" start_offset="3974" end_offset="3975" is_metavar="False">
+                                    <node name="has_next" extra_info="True (0x1)" start_offset="3974" end_offset="3975" is_metavar="False"/>
+                                    <node name="value" extra_info="1 (0x1)" start_offset="3975" end_offset="3975" is_metavar="False"/>
+                                 </node>
+                                 <node name="[1]" extra_info="" start_offset="3975" end_offset="3976" is_metavar="False">
+                                    <node name="has_next" extra_info="False (0x0)" start_offset="3975" end_offset="3976" is_metavar="False"/>
+                                    <node name="value" extra_info="93 (0x5d)" start_offset="3976" end_offset="3976" is_metavar="False"/>
+                                 </node>
+                              </node>
+                              <node name="last" extra_info="1 (0x1)" start_offset="None" end_offset="None" is_metavar="True"/>
+                              <node name="value" extra_info="221 (0xdd)" start_offset="None" end_offset="None" is_metavar="True"/>
+                           </node>
+                           <node name="is_blob" extra_info="False (0x0)" start_offset="None" end_offset="None" is_metavar="True"/>
+                           <node name="is_string" extra_info="True (0x1)" start_offset="None" end_offset="None" is_metavar="True"/>
+                           <node name="len_content" extra_info="104 (0x68)" start_offset="None" end_offset="None" is_metavar="True"/>
+                        </node>
+                     </node>
+                  </node>
+                  <node name="column_contents" extra_info="" start_offset="3976" end_offset="4096" is_metavar="False">
+                     <node name="[0]" extra_info="" start_offset="3976" end_offset="3981" is_metavar="False">
+                        <node name="as_str" extra_info="table" start_offset="3976" end_offset="3981" is_metavar="False"/>
+                     </node>
+                     <node name="[1]" extra_info="" start_offset="3981" end_offset="3986" is_metavar="False">
+                        <node name="as_str" extra_info="users" start_offset="3981" end_offset="3986" is_metavar="False"/>
+                     </node>
+                     <node name="[2]" extra_info="" start_offset="3986" end_offset="3991" is_metavar="False">
+                        <node name="as_str" extra_info="users" start_offset="3986" end_offset="3991" is_metavar="False"/>
+                     </node>
+                     <node name="[3]" extra_info="" start_offset="3991" end_offset="3992" is_metavar="False">
+                        <node name="as_int" extra_info="2 (0x2)" start_offset="3991" end_offset="3992" is_metavar="False"/>
+                        <node name="as_str" extra_info="" start_offset="3992" end_offset="3992" is_metavar="False"/>
+                     </node>
+                     <node name="[4]" extra_info="" start_offset="3992" end_offset="4096" is_metavar="False">
+                        <node name="as_str" extra_info="CREATE TABLE users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    age INTEGER
+)" start_offset="3992" end_offset="4096" is_metavar="False"/>
+                     </node>
+                  </node>
+               </node>
+            </node>
+         </node>
+         <node name="[1]" extra_info="" start_offset="110" end_offset="112" is_metavar="False">
+            <node name="ofs_body" extra_info="3885 (0xf2d)" start_offset="110" end_offset="112" is_metavar="False"/>
+            <node name="body" extra_info="" start_offset="3885" end_offset="3967" is_metavar="True">
+               <node name="len_payload" extra_info="" start_offset="3885" end_offset="3886" is_metavar="False">
+                  <node name="groups" extra_info="" start_offset="3885" end_offset="3886" is_metavar="False">
+                     <node name="[0]" extra_info="" start_offset="3885" end_offset="3886" is_metavar="False">
+                        <node name="has_next" extra_info="False (0x0)" start_offset="3885" end_offset="3886" is_metavar="False"/>
+                        <node name="value" extra_info="80 (0x50)" start_offset="3886" end_offset="3886" is_metavar="False"/>
+                     </node>
+                  </node>
+                  <node name="last" extra_info="0 (0x0)" start_offset="None" end_offset="None" is_metavar="True"/>
+                  <node name="value" extra_info="80 (0x50)" start_offset="None" end_offset="None" is_metavar="True"/>
+               </node>
+               <node name="row_id" extra_info="" start_offset="3886" end_offset="3887" is_metavar="False">
+                  <node name="groups" extra_info="" start_offset="3886" end_offset="3887" is_metavar="False">
+                     <node name="[0]" extra_info="" start_offset="3886" end_offset="3887" is_metavar="False">
+                        <node name="has_next" extra_info="False (0x0)" start_offset="3886" end_offset="3887" is_metavar="False"/>
+                        <node name="value" extra_info="2 (0x2)" start_offset="3887" end_offset="3887" is_metavar="False"/>
+                     </node>
+                  </node>
+                  <node name="last" extra_info="0 (0x0)" start_offset="None" end_offset="None" is_metavar="True"/>
+                  <node name="value" extra_info="2 (0x2)" start_offset="None" end_offset="None" is_metavar="True"/>
+               </node>
+               <node name="payload" extra_info="" start_offset="3887" end_offset="3967" is_metavar="False">
+                  <node name="len_header_and_len" extra_info="" start_offset="3887" end_offset="3888" is_metavar="False">
+                     <node name="groups" extra_info="" start_offset="3887" end_offset="3888" is_metavar="False">
+                        <node name="[0]" extra_info="" start_offset="3887" end_offset="3888" is_metavar="False">
+                           <node name="has_next" extra_info="False (0x0)" start_offset="3887" end_offset="3888" is_metavar="False"/>
+                           <node name="value" extra_info="6 (0x6)" start_offset="3888" end_offset="3888" is_metavar="False"/>
+                        </node>
+                     </node>
+                     <node name="last" extra_info="0 (0x0)" start_offset="None" end_offset="None" is_metavar="True"/>
+                     <node name="value" extra_info="6 (0x6)" start_offset="None" end_offset="None" is_metavar="True"/>
+                  </node>
+                  <node name="column_serials" extra_info="" start_offset="3888" end_offset="3893" is_metavar="False">
+                     <node name="entries" extra_info="" start_offset="3888" end_offset="3893" is_metavar="False">
+                        <node name="[0]" extra_info="" start_offset="3888" end_offset="3889" is_metavar="False">
+                           <node name="code" extra_info="" start_offset="3888" end_offset="3889" is_metavar="False">
+                              <node name="groups" extra_info="" start_offset="3888" end_offset="3889" is_metavar="False">
+                                 <node name="[0]" extra_info="" start_offset="3888" end_offset="3889" is_metavar="False">
+                                    <node name="has_next" extra_info="False (0x0)" start_offset="3888" end_offset="3889" is_metavar="False"/>
+                                    <node name="value" extra_info="23 (0x17)" start_offset="3889" end_offset="3889" is_metavar="False"/>
+                                 </node>
+                              </node>
+                              <node name="last" extra_info="0 (0x0)" start_offset="None" end_offset="None" is_metavar="True"/>
+                              <node name="value" extra_info="23 (0x17)" start_offset="None" end_offset="None" is_metavar="True"/>
+                           </node>
+                           <node name="is_blob" extra_info="False (0x0)" start_offset="None" end_offset="None" is_metavar="True"/>
+                           <node name="is_string" extra_info="True (0x1)" start_offset="None" end_offset="None" is_metavar="True"/>
+                           <node name="len_content" extra_info="5 (0x5)" start_offset="None" end_offset="None" is_metavar="True"/>
+                        </node>
+                        <node name="[1]" extra_info="" start_offset="3889" end_offset="3890" is_metavar="False">
+                           <node name="code" extra_info="" start_offset="3889" end_offset="3890" is_metavar="False">
+                              <node name="groups" extra_info="" start_offset="3889" end_offset="3890" is_metavar="False">
+                                 <node name="[0]" extra_info="" start_offset="3889" end_offset="3890" is_metavar="False">
+                                    <node name="has_next" extra_info="False (0x0)" start_offset="3889" end_offset="3890" is_metavar="False"/>
+                                    <node name="value" extra_info="43 (0x2b)" start_offset="3890" end_offset="3890" is_metavar="False"/>
+                                 </node>
+                              </node>
+                              <node name="last" extra_info="0 (0x0)" start_offset="None" end_offset="None" is_metavar="True"/>
+                              <node name="value" extra_info="43 (0x2b)" start_offset="None" end_offset="None" is_metavar="True"/>
+                           </node>
+                           <node name="is_blob" extra_info="False (0x0)" start_offset="None" end_offset="None" is_metavar="True"/>
+                           <node name="is_string" extra_info="True (0x1)" start_offset="None" end_offset="None" is_metavar="True"/>
+                           <node name="len_content" extra_info="15 (0xf)" start_offset="None" end_offset="None" is_metavar="True"/>
+                        </node>
+                        <node name="[2]" extra_info="" start_offset="3890" end_offset="3891" is_metavar="False">
+                           <node name="code" extra_info="" start_offset="3890" end_offset="3891" is_metavar="False">
+                              <node name="groups" extra_info="" start_offset="3890" end_offset="3891" is_metavar="False">
+                                 <node name="[0]" extra_info="" start_offset="3890" end_offset="3891" is_metavar="False">
+                                    <node name="has_next" extra_info="False (0x0)" start_offset="3890" end_offset="3891" is_metavar="False"/>
+                                    <node name="value" extra_info="43 (0x2b)" start_offset="3891" end_offset="3891" is_metavar="False"/>
+                                 </node>
+                              </node>
+                              <node name="last" extra_info="0 (0x0)" start_offset="None" end_offset="None" is_metavar="True"/>
+                              <node name="value" extra_info="43 (0x2b)" start_offset="None" end_offset="None" is_metavar="True"/>
+                           </node>
+                           <node name="is_blob" extra_info="False (0x0)" start_offset="None" end_offset="None" is_metavar="True"/>
+                           <node name="is_string" extra_info="True (0x1)" start_offset="None" end_offset="None" is_metavar="True"/>
+                           <node name="len_content" extra_info="15 (0xf)" start_offset="None" end_offset="None" is_metavar="True"/>
+                        </node>
+                        <node name="[3]" extra_info="" start_offset="3891" end_offset="3892" is_metavar="False">
+                           <node name="code" extra_info="" start_offset="3891" end_offset="3892" is_metavar="False">
+                              <node name="groups" extra_info="" start_offset="3891" end_offset="3892" is_metavar="False">
+                                 <node name="[0]" extra_info="" start_offset="3891" end_offset="3892" is_metavar="False">
+                                    <node name="has_next" extra_info="False (0x0)" start_offset="3891" end_offset="3892" is_metavar="False"/>
+                                    <node name="value" extra_info="1 (0x1)" start_offset="3892" end_offset="3892" is_metavar="False"/>
+                                 </node>
+                              </node>
+                              <node name="last" extra_info="0 (0x0)" start_offset="None" end_offset="None" is_metavar="True"/>
+                              <node name="value" extra_info="1 (0x1)" start_offset="None" end_offset="None" is_metavar="True"/>
+                           </node>
+                           <node name="is_blob" extra_info="False (0x0)" start_offset="None" end_offset="None" is_metavar="True"/>
+                           <node name="is_string" extra_info="False (0x0)" start_offset="None" end_offset="None" is_metavar="True"/>
+                           <node name="len_content" extra_info="0 (0x0)" start_offset="None" end_offset="None" is_metavar="True"/>
+                        </node>
+                        <node name="[4]" extra_info="" start_offset="3892" end_offset="3893" is_metavar="False">
+                           <node name="code" extra_info="" start_offset="3892" end_offset="3893" is_metavar="False">
+                              <node name="groups" extra_info="" start_offset="3892" end_offset="3893" is_metavar="False">
+                                 <node name="[0]" extra_info="" start_offset="3892" end_offset="3893" is_metavar="False">
+                                    <node name="has_next" extra_info="False (0x0)" start_offset="3892" end_offset="3893" is_metavar="False"/>
+                                    <node name="value" extra_info="89 (0x59)" start_offset="3893" end_offset="3893" is_metavar="False"/>
+                                 </node>
+                              </node>
+                              <node name="last" extra_info="0 (0x0)" start_offset="None" end_offset="None" is_metavar="True"/>
+                              <node name="value" extra_info="89 (0x59)" start_offset="None" end_offset="None" is_metavar="True"/>
+                           </node>
+                           <node name="is_blob" extra_info="False (0x0)" start_offset="None" end_offset="None" is_metavar="True"/>
+                           <node name="is_string" extra_info="True (0x1)" start_offset="None" end_offset="None" is_metavar="True"/>
+                           <node name="len_content" extra_info="38 (0x26)" start_offset="None" end_offset="None" is_metavar="True"/>
+                        </node>
+                     </node>
+                  </node>
+                  <node name="column_contents" extra_info="" start_offset="3893" end_offset="3967" is_metavar="False">
+                     <node name="[0]" extra_info="" start_offset="3893" end_offset="3898" is_metavar="False">
+                        <node name="as_str" extra_info="table" start_offset="3893" end_offset="3898" is_metavar="False"/>
+                     </node>
+                     <node name="[1]" extra_info="" start_offset="3898" end_offset="3913" is_metavar="False">
+                        <node name="as_str" extra_info="sqlite_sequence" start_offset="3898" end_offset="3913" is_metavar="False"/>
+                     </node>
+                     <node name="[2]" extra_info="" start_offset="3913" end_offset="3928" is_metavar="False">
+                        <node name="as_str" extra_info="sqlite_sequence" start_offset="3913" end_offset="3928" is_metavar="False"/>
+                     </node>
+                     <node name="[3]" extra_info="" start_offset="3928" end_offset="3929" is_metavar="False">
+                        <node name="as_int" extra_info="3 (0x3)" start_offset="3928" end_offset="3929" is_metavar="False"/>
+                        <node name="as_str" extra_info="" start_offset="3929" end_offset="3929" is_metavar="False"/>
+                     </node>
+                     <node name="[4]" extra_info="" start_offset="3929" end_offset="3967" is_metavar="False">
+                        <node name="as_str" extra_info="CREATE TABLE sqlite_sequence(name,seq)" start_offset="3929" end_offset="3967" is_metavar="False"/>
+                     </node>
+                  </node>
+               </node>
+            </node>
+         </node>
+      </node>
+   </node>
+   <node name="len_page" extra_info="4096 (0x1000)" start_offset="None" end_offset="None" is_metavar="True"/>
+</root>

@@ -1,0 +1,22 @@
+<?xml version="1.0" ?>
+<root>
+   <node name="magic" extra_info="Byte Array (Length: 2)" start_offset="0" end_offset="2" is_metavar="False"/>
+   <node name="compression_method" extra_info="deflate" start_offset="2" end_offset="3" is_metavar="False"/>
+   <node name="flags" extra_info="" start_offset="3" end_offset="4" is_metavar="False">
+      <node name="reserved1" extra_info="0 (0x0)" start_offset="3" end_offset="4" is_metavar="False"/>
+      <node name="has_comment" extra_info="False (0x0)" start_offset="4" end_offset="4" is_metavar="False"/>
+      <node name="has_name" extra_info="True (0x1)" start_offset="4" end_offset="4" is_metavar="False"/>
+      <node name="has_extra" extra_info="False (0x0)" start_offset="4" end_offset="4" is_metavar="False"/>
+      <node name="has_header_crc" extra_info="False (0x0)" start_offset="4" end_offset="4" is_metavar="False"/>
+      <node name="is_text" extra_info="False (0x0)" start_offset="4" end_offset="4" is_metavar="False"/>
+   </node>
+   <node name="mod_time" extra_info="1758715585 (0x68d3dec1)" start_offset="4" end_offset="8" is_metavar="False"/>
+   <node name="extra_flags" extra_info="" start_offset="8" end_offset="9" is_metavar="False">
+      <node name="compression_strength" extra_info="0 (0x0)" start_offset="8" end_offset="9" is_metavar="False"/>
+   </node>
+   <node name="os" extra_info="unix" start_offset="9" end_offset="10" is_metavar="False"/>
+   <node name="name" extra_info="Byte Array (Length: 8)" start_offset="10" end_offset="19" is_metavar="False"/>
+   <node name="body" extra_info="Byte Array (Length: 14)" start_offset="19" end_offset="33" is_metavar="False"/>
+   <node name="body_crc32" extra_info="472456355 (0x1c291ca3)" start_offset="33" end_offset="37" is_metavar="False"/>
+   <node name="len_uncompressed" extra_info="12 (0xc)" start_offset="37" end_offset="41" is_metavar="False"/>
+</root>
