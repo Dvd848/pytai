@@ -39,6 +39,9 @@ KAITAI_FORMAT_DIR = KAITAI_DIR / SUBFOLDER_FORMATS
 class PyTaiException(Exception):
     pass
 
+class PyTaiWarning(Exception):
+    pass
+
 class PyTaiViewException(Exception):
     pass
 

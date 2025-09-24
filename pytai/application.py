@@ -167,6 +167,9 @@ class Application():
                     self.view.reset_tree()
                     self.init_per_parse_members()
                     return True
+                elif isinstance(queue_item, PyTaiWarning):
+                    self.view.display_warning(str(queue_item))
+                    continue
                 elif isinstance(queue_item, Exception):
                     raise queue_item
 

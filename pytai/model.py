@@ -172,13 +172,18 @@ class KaitaiParser(Parser):
         parsed_file = None
         try:
             parsed_file = self.parser.from_file(path_file)
+            parsed_file.parse_errors = []
             parsed_file._read()
             parsed_file._io._base_offset = 0
             yield parsed_file
-        except self.kaitaistruct.ValidationNotEqualError as e:
-            raise PyTaiException(f"Can't parse file as '{self.format}': {str(e)}") from e
-        except Exception:
-            raise
+#        except self.kaitaistruct.ValidationNotEqualError as e:
+#            raise PyTaiException(f"Can't parse file as '{self.format}': {str(e)}") from e
+        except self.kaitaistruct.ValidationFailedError as e:
+            parsed_file._io._base_offset = 0
+            parsed_file.parse_errors = [str(e)]
+            yield parsed_file
+        except Exception as e:
+            raise e
         finally:
             if parsed_file is not None:
                 parsed_file.close()
@@ -235,7 +240,8 @@ class KaitaiParser(Parser):
 
             # Note: debug_dict[child_name] might not exist
             start_offset = debug_dict[child_name]['start'] + debug_dict[child_name]['start'].data._base_offset 
-            end_offset = debug_dict[child_name]['end'] + debug_dict[child_name]['end'].data._base_offset       
+            if 'end' in debug_dict[child_name]:
+                end_offset = debug_dict[child_name]['end'] + debug_dict[child_name]['end'].data._base_offset       
 
             real_value = getattr(parent, child_name)
 
@@ -245,10 +251,13 @@ class KaitaiParser(Parser):
                 new_value = []
                 for i, v in enumerate(value):
                     self._add_base_offset(v, debug_dict[child_name]['arr'][i]['start'] + debug_dict[child_name]['start'].data._base_offset, base_offset)
+                    arr_end_offset = None
+                    if 'end' in debug_dict[child_name]['arr'][i]:
+                        arr_end_offset = debug_dict[child_name]['arr'][i]['end'] + debug_dict[child_name]['end'].data._base_offset
                     new_value.append(Parser.ChildAttr(name = f"[{i}]",
                                                 value = v, 
                                                 start_offset = debug_dict[child_name]['arr'][i]['start'] + debug_dict[child_name]['start'].data._base_offset, 
-                                                end_offset = debug_dict[child_name]['arr'][i]['end'] + debug_dict[child_name]['end'].data._base_offset, 
+                                                end_offset = arr_end_offset, 
                                                 is_metavar = False,
                                                 is_array = False))
                 value = new_value
@@ -281,18 +290,24 @@ class KaitaiParser(Parser):
             except PytaiUnparsedAccessException:
                 yield None
 
-        for name, value in utils.getproperties(parent):
-            if value is None:
-                continue
-            
-            try:
-                start_offset, end_offset, is_array, value = self._get_details(debug_dict, parent, f"_m_{name}", value)
+        try:
+            for name, value in utils.getproperties(parent):
+                if value is None:
+                    continue
+                
+                try:
+                    start_offset, end_offset, is_array, value = self._get_details(debug_dict, parent, f"_m_{name}", value)
 
-                yield Parser.ChildAttr(name = name, value = value, start_offset = start_offset, 
-                                       end_offset = end_offset, is_metavar = True, 
-                                       is_array = is_array)
-            except PytaiUnparsedAccessException:
-                yield None
+                    yield Parser.ChildAttr(name = name, value = value, start_offset = start_offset, 
+                                        end_offset = end_offset, is_metavar = True, 
+                                        is_array = is_array)
+                except PytaiUnparsedAccessException:
+                    yield None
+        except AttributeError as e:
+            # This might happen if the binary content is illegal (i.e. a ValidationFailedError was raised during parsing)
+            # and some property relies on a field that wasn't parsed. Just ignore properties in such a case.
+            print(e)
+
 
 class Model(object):
 
@@ -393,6 +408,12 @@ class Model(object):
 
                     if not reparse_needed or abort_cb():
                         # We are done
+                        if (len(parsed_file.parse_errors) > 0):
+                            comm_queue.put(PyTaiWarning(f"File parsed with errors!\n"
+                                                        + "Structure is likely incomplete since parsing was aborted.\n"
+                                                        + "Error is usually in last field parsed.\n\nRaw error string:\n"
+                                                        + "; ".join(parsed_file.parse_errors)))
+                        
                         comm_queue.put(None)
                         break
                     else:
@@ -405,6 +426,7 @@ class Model(object):
                         comm_queue.put(PyTaiReparseException(f"Reparse Needed, attempt #{retry_num}"))
                 else:
                     raise PyTaiException("Unable to parse file!")
+                
 
         except PyTaiException as e:
             comm_queue.put(e)

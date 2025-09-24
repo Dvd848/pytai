@@ -202,6 +202,16 @@ class View(tk.Tk):
         """
         messagebox.showerror("Error", msg)
 
+    @staticmethod
+    def display_warning(msg: str) -> None:
+        """Display the given warning.
+        
+        Args:
+            msg:
+                Warning message to display.
+        """
+        messagebox.showwarning("Warning", msg)
+
     def mark_range(self, start_offset: int, end_offset: int, mark: bool, highlight_type: HighlightType = HighlightType.DEFAULT) -> None:
         """Highlight a range between the given offsets.
         
